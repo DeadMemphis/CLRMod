@@ -1,0 +1,172 @@
+﻿using ExitGames.Client.Photon;
+using System;
+using UnityEngine;
+
+internal class PhotonHandler : Photon.MonoBehaviour, IPhotonPeerListener
+{
+    private const string PlayerPrefsKey = "PUNCloudBestRegion";
+    private static bool sendThreadShouldRun;
+    private int nextSendTickCount;
+    private int nextSendTickCountOnSerialize;
+    internal static CloudRegionCode BestRegionCodeCurrently = CloudRegionCode.none;
+    public static bool AppQuits;
+    public static Type PingImplementation = null;
+    public static PhotonHandler SP;
+    public int updateInterval;
+    public int updateIntervalOnSerialize;
+
+    internal static CloudRegionCode BestRegionCodeInPreferences
+    {
+        get
+        {
+            string @string = PlayerPrefs.GetString("PUNCloudBestRegion", string.Empty);
+            if (!string.IsNullOrEmpty(@string))
+            {
+                return Region.Parse(@string);
+            }
+            return CloudRegionCode.none;
+        }
+        set
+        {
+            if (value == CloudRegionCode.none)
+            {
+                PlayerPrefs.DeleteKey("PUNCloudBestRegion");
+            }
+            else
+            {
+                PlayerPrefs.SetString("PUNCloudBestRegion", value.ToString());
+            }
+        }
+    }
+
+    protected void Awake()
+    {
+        if (PhotonHandler.SP != null && PhotonHandler.SP != this && PhotonHandler.SP.gameObject != null)
+        {
+            UnityEngine.Object.DestroyImmediate(PhotonHandler.SP.gameObject);
+        }
+        PhotonHandler.SP = this;
+        UnityEngine.Object.DontDestroyOnLoad(base.gameObject);
+        this.updateInterval = 1000 / PhotonNetwork.sendRate;
+        this.updateIntervalOnSerialize = 1000 / PhotonNetwork.sendRateOnSerialize;
+        PhotonHandler.StartFallbackSendAckThread();
+    }
+
+    protected void OnApplicationQuit()
+    {
+        PhotonHandler.AppQuits = true;
+        PhotonHandler.StopFallbackSendAckThread();
+        PhotonNetwork.Disconnect();
+    }
+
+    protected void OnCreatedRoom()
+    {
+        PhotonNetwork.networkingPeer.SetLevelInPropsIfSynced(Application.loadedLevelName);
+    }
+
+    protected void OnJoinedRoom()
+    {
+        PhotonNetwork.networkingPeer.LoadLevelIfSynced();
+    }
+
+    protected void OnLevelWasLoaded(int level)
+    {
+        PhotonNetwork.networkingPeer.NewSceneLoaded();
+        PhotonNetwork.networkingPeer.SetLevelInPropsIfSynced(Application.loadedLevelName);
+    }
+
+    protected void Update()
+    {
+        if (PhotonNetwork.networkingPeer == null)
+        {
+            Debug.LogError("NetworkPeer broke!");
+            return;
+        }
+        if (PhotonNetwork.connectionStateDetailed == PeerStates.PeerCreated || PhotonNetwork.connectionStateDetailed == PeerStates.Disconnected || PhotonNetwork.offlineMode)
+        {
+            return;
+        }
+        if (!PhotonNetwork.isMessageQueueRunning)
+        {
+            return;
+        }
+        bool flag = true;
+        while (PhotonNetwork.isMessageQueueRunning && flag)
+        {
+            flag = PhotonNetwork.networkingPeer.DispatchIncomingCommands();
+        }
+        int num = (int)(Time.realtimeSinceStartup * 1000f);
+        if (PhotonNetwork.isMessageQueueRunning && num > this.nextSendTickCountOnSerialize)
+        {
+            PhotonNetwork.networkingPeer.RunViewUpdate();
+            this.nextSendTickCountOnSerialize = num + this.updateIntervalOnSerialize;
+            this.nextSendTickCount = 0;
+        }
+        num = (int)(Time.realtimeSinceStartup * 1000f);
+        if (num > this.nextSendTickCount)
+        {
+            bool flag2 = true;
+            while (PhotonNetwork.isMessageQueueRunning && flag2)
+            {
+                flag2 = PhotonNetwork.networkingPeer.SendOutgoingCommands();
+            }
+            this.nextSendTickCount = num + this.updateInterval;
+        }
+    }
+
+    public static bool FallbackSendAckThread()
+    {
+        if (PhotonHandler.sendThreadShouldRun && PhotonNetwork.networkingPeer != null)
+        {
+            PhotonNetwork.networkingPeer.SendAcksOnly();
+        }
+        return PhotonHandler.sendThreadShouldRun;
+    }
+
+    public static void StartFallbackSendAckThread()
+    {
+        if (PhotonHandler.sendThreadShouldRun)
+        {
+            return;
+        }
+        PhotonHandler.sendThreadShouldRun = true;
+        SupportClass.StartBackgroundCalls(new Func<bool>(FallbackSendAckThread));
+    }
+
+    public static void StopFallbackSendAckThread()
+    {
+        PhotonHandler.sendThreadShouldRun = false;
+    }
+
+    public void DebugReturn(DebugLevel level, string message)
+    {
+        if (level == DebugLevel.ERROR)
+        {
+            Debug.LogError(message);
+        }
+        else if (level == DebugLevel.WARNING)
+        {
+            Debug.LogWarning(message);
+        }
+        else if (level == DebugLevel.INFO && PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
+        {
+            Debug.Log(message);
+        }
+        else if (level == DebugLevel.ALL && PhotonNetwork.logLevel == PhotonLogLevel.Full)
+        {
+            Debug.Log(message);
+        }
+    }
+
+    public void OnEvent(EventData photonEvent)
+    {
+    }
+
+    public void OnOperationResponse(OperationResponse operationResponse)
+    {
+    }
+
+    public void OnStatusChanged(StatusCode statusCode)
+    {
+    }
+}
