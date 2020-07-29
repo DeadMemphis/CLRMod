@@ -9,7 +9,6 @@ public class BTN_BackToMain : MonoBehaviour
         NGUITools.SetActive(BRM.CacheGameObject.Find<UIMainReferences>("UIRefer").panelMain, true);
         BRM.CacheGameObject.Find<FengCustomInputs>("InputManagerController").menuOn = false;
         PhotonNetwork.Disconnect();
-        FengGameManagerMKII.ShowMenuButtonGUI = true;
     }
 }
 

@@ -68,40 +68,53 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
         component.init();
         component.myCostume = HeroCostume.costume[this.costumeId];
         component.setCharacterComponent();
-        this.mainCameraT = CacheGameObject.Find("MainCamera_Mono").transform;
+      //  this.mainCameraT = CacheGameObject.Find("MainCamera_Mono").transform;
         this.head = base.transform.Find("Amarture/Controller_Body/hip/spine/chest/neck/head");
         this.cameraPref = base.transform.Find("Amarture/Controller_Body/hip/spine/chest/shoulder_R/upper_arm_R");
         if (this.costumeId == 9)
         {
+            this.cameraOffset = GameObject.Find("MainCamera_Mono").transform.position - this.cameraPref.position;
 
-
-            //GameObject gameObject = base.gameObject;
-            //GameObject gameObject2 = CacheGameObject.Find("MenuBackGround");
-            //string[] array = new string[]
-            //{
-            //    "head",
-            //    "hand_L",
-            //    "hand_R",
-            //    "chest",
-            //    "spine",
-            //    "MenuBackGround"
-            //};
-            //foreach (Renderer renderer in gameObject2.GetComponentsInChildren<Renderer>())
-            //{
-            //    GameObject gameObject3;
-            //    if (renderer != null && renderer.enabled && !(gameObject3 = renderer.transform.parent.gameObject).name.EqualTo(false, array) && gameObject3 != gameObject)
-            //    {
-            //        UnityEngine.Object.DestroyImmediate(gameObject3, false);
-            //    }
-            //}
-            this.mainCameraT.position = new Vector3(10.9f, 5841.2f, 3338.3f);
-            this.mainCameraT.rotation = new Quaternion(-0.4f, 0.3f, 0.1f, 0.9f);
-            ThunderPos = this.mainCameraT.position;
-            TitanDiePos = this.mainCameraT.position + Vector3.down * 15f + this.mainCameraT.right * 3.5f;
-            //Camera.main.GetComponent<Skybox>().material = new Material(FengGameManagerMKII.skinCache[4]["NIGHT"]);
-            return;
+            ////GameObject gameObject = base.gameObject;
+            ////GameObject gameObject2 = CacheGameObject.Find("MenuBackGround");
+            ////string[] array = new string[]
+            ////{
+            ////    "head",
+            ////    "hand_L",
+            ////    "hand_R",
+            ////    "chest",
+            ////    "spine",
+            ////    "MenuBackGround"
+            ////};
+            ////foreach (Renderer renderer in gameObject2.GetComponentsInChildren<Renderer>())
+            ////{
+            ////    GameObject gameObject3;
+            ////    if (renderer != null && renderer.enabled && !(gameObject3 = renderer.transform.parent.gameObject).name.EqualTo(false, array) && gameObject3 != gameObject)
+            ////    {
+            ////        UnityEngine.Object.DestroyImmediate(gameObject3, false);
+            ////    }
+            ////}
+            //this.mainCameraT.position = new Vector3(10.9f, 5841.2f, 3338.3f);
+            //this.mainCameraT.rotation = new Quaternion(-0.4f, 0.3f, 0.1f, 0.9f);
+            //ThunderPos = this.mainCameraT.position;
+            //TitanDiePos = this.mainCameraT.position + Vector3.down * 15f + this.mainCameraT.right * 3.5f;
+            ////Camera.main.GetComponent<Skybox>().material = new Material(FengGameManagerMKII.skinCache[4]["NIGHT"]);
+            //return;
         }
-        UnityEngine.Object.Destroy(base.gameObject);
+        if (component.myCostume.sex == SEX.FEMALE)
+        {
+            base.animation.Play("stand");
+            base.animation["stand"].normalizedTime = UnityEngine.Random.Range((float)0f, (float)1f);
+        }
+        else
+        {
+            base.animation.Play("stand_levi");
+            base.animation["stand_levi"].normalizedTime = UnityEngine.Random.Range((float)0f, (float)1f);
+        }
+        float num = 0.5f;
+        base.animation["stand"].speed = num;
+        base.animation["stand_levi"].speed = num;
+       // UnityEngine.Object.Destroy(base.gameObject);
     }
 }
 

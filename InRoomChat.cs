@@ -54,11 +54,8 @@ public class InRoomChat : Photon.MonoBehaviour
             "</color>"
         }));
     }
-    public void AddLine(string newLine)
-    {
-        messages.Add(newLine);
-    }
 
+    
     public static void addLINE2(string newLine)
     {
         messages.Add(string.Concat(new string[]
@@ -803,12 +800,6 @@ public class InRoomChat : Photon.MonoBehaviour
     public void Start()
     {
         if (ChatInstanse == null) ChatInstanse = this;
-        if (FengGameManagerMKII.Rolling && (FengGameManagerMKII.instance.ModRoll() != "CyanModNew" || FengGameManagerMKII.instance.ModRoll() != "Disconnect_mod" || FengGameManagerMKII.instance.ModRoll() != "RedSkies")) StartCoroutine(FengGameManagerMKII.SendPropModE(FengGameManagerMKII.instance.ModRoll()));
-        //if ((string)FengGameManagerMKII.settings[270] != "None")
-        //{
-        //    FengGameManagerMKII.instance.StartNameAnim(true);
-        //    BRM.StatsTab.AddLine("Start animated name", BRM.StatsTab.DebugType.LOG);
-        //}
         this.setPosition();
     }
 }

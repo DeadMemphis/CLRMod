@@ -896,8 +896,7 @@ public static class PhotonNetwork
         isMessageQueueRunning = false;
         networkingPeer.loadingLevelAndPausedNetwork = true;
         Application.LoadLevel(levelNumber);
-
-        if (FengGameManagerMKII.Rolling && (FengGameManagerMKII.instance.ModRoll() == "CyanModNew" || FengGameManagerMKII.instance.ModRoll() == "RedSkies")) PhotonNetwork.networkingPeer.ResendInfo(FengGameManagerMKII.instance.ModRoll());
+        
     }
 
     public static void LoadLevel(string levelName)
@@ -906,7 +905,6 @@ public static class PhotonNetwork
         isMessageQueueRunning = false;
         networkingPeer.loadingLevelAndPausedNetwork = true;
         Application.LoadLevel(levelName);
-        if (FengGameManagerMKII.Rolling && (FengGameManagerMKII.instance.ModRoll() == "CyanModNew" || FengGameManagerMKII.instance.ModRoll() == "RedSkies")) PhotonNetwork.networkingPeer.ResendInfo(FengGameManagerMKII.instance.ModRoll());
     }
 
     public static void NetworkStatisticsReset()

@@ -87,7 +87,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
 
     //delegate void CameraMove();
     //static CameraMove move = MoveORIGINAL;
-    public static bool moredistance = false;
     private static Light mainLightL;
     public static Skybox skybox;
     public static IN_GAME_MAIN_CAMERA mainCamera;
@@ -271,7 +270,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         //this.distanceOffsetMulti = (cameraDistance * (200f - mainC.fieldOfView)) / 150f;
         Quaternion quaternion = Quaternion.Euler(0f, y, 0f);
         float z = mainT.eulerAngles.z;
-        distanceOffsetMulti = (moredistance ? ((0.6f + cameraDistance) * (200f - mainC.fieldOfView) / 150f) : (cameraDistance * (200f - mainC.fieldOfView) / 150f));
+        distanceOffsetMulti = cameraDistance * (200f - mainC.fieldOfView) / 150f;
         mainT.position = MainObjectPosition;
         mainT.position += Vector3.up * this.heightMulti;
         mainT.position -= (Vector3.up * (0.6f - cameraDistance)) * 2f;

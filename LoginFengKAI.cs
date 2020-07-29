@@ -373,28 +373,9 @@ public class LoginFengKAI : MonoBehaviour
         return false;
     }
 
-    public static List<string> LoadBanList()
-    {
-        List<string> names = new List<string>();
-        string text;
-        System.IO.StreamReader file = new System.IO.StreamReader(Application.dataPath + "/../banlist.conf");
-        while ((text = file.ReadLine()) != null)
-        {
-            names.Add(text);
-        }
-        file.Close();
-        return names;
-    }
+   
 
-    public static void AddToBanList(PhotonPlayer player)
-    {
-        using (System.IO.StreamWriter sw = System.IO.File.AppendText(Application.dataPath + "/../banlist.conf"))
-        {
-            sw.WriteLine(player.uiname);
-            sw.Flush();
-            sw.Close();
-        }
-    }
+
 
     public static bool LoadNameConfig(out string value, params string[] searches)
     {
@@ -464,76 +445,12 @@ public class LoginFengKAI : MonoBehaviour
             string key;
             switch (key = current.Key)
             {
-                case "name":
-                  
-                        LoginFengKAI.player.name = current.Value.FixHex();
-                        break;
-                 
-                    
-                case "guildname":
-                 
-                        LoginFengKAI.player.guildname = current.Value.FixHex();
-                        break;
-               
-                    
-                case "servername":
-                        if (current.Value != "" || current.Value != string.Empty)
-                        FengGameManagerMKII.ServerName = current.Value;
-                        break;
-
-
-                case "fadedanim":
-                    //PlayerPrefs.SetString("Faded", (FengGameManagerMKII.settings[95] = current.Value) as string);
-                    break;
-                case "linearanim":
-                    //PlayerPrefs.SetString("Linear", (FengGameManagerMKII.settings[96] = current.Value) as string);
-                    break;
-                case "reboundanim":
-                    //PlayerPrefs.SetString("Rebound", (FengGameManagerMKII.settings[97] = current.Value) as string);
-                    break;
-                //case "menu":
-                //    //FengGameManagerMKII.settings[98] = (current.Value == "normal");
-                //    break;
-                //case "hgamemode":
-                //case "hgamemodes":
-                //    FengGameManagerMKII.settings[101] = current.Value.ToLower();
-                //    break;
-                //case "tgamemode":
-                //case "tgamemodes":
-                //    FengGameManagerMKII.settings[102] = current.Value.ToLower();
-                //    break;
-                //case "targetfps":
-                //    {
-                //        int fPS;
-                //        if (int.TryParse(current.Value, out fPS))
-                //        {
-                //            Application.targetFrameRate = (FengGameManagerMKII.FPS = fPS);
-                //        }
-                //        else
-                //        {
-                //            FengGameManagerMKII.FPS = -100;
-                //        }
-                //        break;
-                //    }
                 case "chatname":
                 
                         FengGameManagerMKII.Chatname = current.Value.NullFix();
                         break;
                   
-                case "serverlist":
-
-                    {
-                        string value;
-                        if ((value = current.Value.ToLower()) != null)
-                        {
-                            if (value == "on" || value == "yes")
-                            {
-                                FengGameManagerMKII.serverList = true;
-                            }
-                            else FengGameManagerMKII.serverList = false;
-                        }
-                        break;
-                    }
+               
                    
                 case "chatcolor":
                     {
@@ -543,74 +460,7 @@ public class LoginFengKAI : MonoBehaviour
                         }
                         break;
                     }
-                case "moredistance":
-
-
-                    {
-                        string value;
-                        if ((value = current.Value) != null)
-                        {
-                            if (value == "on" || value == "yes")
-                            {
-                                IN_GAME_MAIN_CAMERA.moredistance = true;
-                                break;
-                            }                           
-                        }
-                        IN_GAME_MAIN_CAMERA.moredistance = false;
-                        break;
-                    }
-                case "modrolling":
-                    {
-                        string value;
-                        if ((value = current.Value.ToLower()) != null)
-                        {
-                            if (value == "on" || value == "yes")
-                            {
-                                FengGameManagerMKII.Rolling = true;
-                            }
-                            else FengGameManagerMKII.Rolling = false;
-                        }
-                        break;
-                    }
-                case "aimedbomb":
-                    {
-                        string value;
-                        if ((value = current.Value.ToLower()) != null)
-                        {
-                            if (value == "on" || value == "yes")
-                            {
-                                FengGameManagerMKII.AIMBotBomb = true;
-                            }
-                            else FengGameManagerMKII.AIMBotBomb = false;
-                        }
-                        break;
-                    }
-                case "autoexplodebomb":
-                    {
-                        string value;
-                        if ((value = current.Value.ToLower()) != null)
-                        {
-                            if (value == "on" || value == "yes")
-                            {
-                                FengGameManagerMKII.AutoExplodeBomb = true;
-                            }
-                            else FengGameManagerMKII.AutoExplodeBomb = false;
-                        }
-                        break;
-                    }
-                case "randomizecolorbomb":
-                    {
-                        string value;
-                        if ((value = current.Value.ToLower()) != null)
-                        {
-                            if (value == "on" || value == "yes")
-                            {
-                                FengGameManagerMKII.RandomizeBombColor = true;
-                            }
-                            else FengGameManagerMKII.RandomizeBombColor = false;
-                        }
-                        break;
-                    }
+               
                 case "protocol":
                     {
                         string value;
@@ -631,36 +481,6 @@ public class LoginFengKAI : MonoBehaviour
                         }
                         break;
                     }
-                case "agressive":
-                    {
-                        string value;
-                        if ((value = current.Value.ToLower()) != null)
-                        {
-                            if (value == "on" || value == "yes")
-                            {
-                                FengGameManagerMKII.Agressive = true;
-                            }
-                            else FengGameManagerMKII.Agressive = false;
-                        }
-                        break;
-                    }
-                    //case "chatidview":
-                    //    {
-                    //        //string value2;
-                    //        //if ((value2 = current.Value) != null)
-                    //        //{
-                    //        //    if (value2 == "on" || value2 == "yes")
-                    //        //    {
-                    //        //        FengGameManagerMKII.settings[30] = true;
-                    //        //        break;
-                    //        //    }
-                    //        //    if (!(value2 == "no") && !(value2 == "off"))
-                    //        //    {
-                    //        //    }
-                    //        //}
-                    //        //FengGameManagerMKII.settings[30] = false;
-                    //        break;
-                    //    }
             }
         }
         if (LoginFengKAI.playerName != string.Empty)

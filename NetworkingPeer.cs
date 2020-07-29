@@ -16,7 +16,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     protected internal const string CurrentSceneProperty = "curScn";
     private bool didAuthenticate;
     private IPhotonPeerListener externalListener;
-    public static bool fukRCIgnre;
     private string[] friendListRequested;
     private int friendListTimestamp;
     public bool hasSwitchedMC;
@@ -368,332 +367,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     //    }
     //}
 
-    public static bool BlockSpam(PhotonPlayer sender, string rpc)
-    {
-        if (sender == null || rpc.IsNullOrEmpty() || rpc == "")
-        {
-            return true;
-        }
-        if (sender.isLocal || sender.isMasterClient)
-        {
-            return false;
-        }
-        switch (rpc)
-        {
-            case "Chat":
-                return HandleSpam(sender, rpc, 150.0, 70.0, 25);
-            case "dieheadblow":
-            case "fx/flarebullet":
-                return HandleSpam(sender, rpc, 500.0, 150.0, 10);
-            case "netDie":
-            case "blowAway":
-            case "netDie2":
-            case "changeDoor":
-                return false;
-            case "updateKillInfo":
-                return HandleSpam(sender, rpc, 300.0, 150.0, 10);
-            case "netShowDamage":
-                return HandleSpam(sender, rpc, 150.0, 50.0, 20);
-            case "showResult":
-                return HandleSpam(sender, rpc, 300.0, 150.0, 7);
-            case "RPCLoadLevel":
-                return HandleSpam(sender, rpc, 450.0, 300.0, 10);
-            case "titanGetKill":
-                return HandleSpam(sender, rpc, 300.0, 150.0, 10);
-            case "backToHumanRPC":
-            case "badGuyReleaseMe":
-            case "changeHumanPt":
-            case "changeState":
-            case "changeTitanPt":
-            case "DestroyRpc":
-            case "endMovingRock":
-            case "grabbedTargetEscape":
-            case "initRPC":
-            case "InstantiateRpc":
-            case "killObject":
-            case "OnAwakeRPC":
-            case "PickupItemInit":
-            case "playsoundRPC":
-            case "PunPickup":
-            case "PunPickupSimple":
-            case "PunRespawn":
-            case "whoIsMyErenTitan":
-                return HandleSpam(sender, rpc, 50.0, 25.0, 50);
-            case "grabToLeft":
-            case "grabToRight":
-            case "hitAnkleLRPC":
-            case "hitAnkleRPC":
-            case "hitAnkleRRPC":
-            case "hitByFTRPC":
-            case "hitByTitanRPC":
-            case "hitEyeRPC":
-            case "hookFail":
-            case "labelRPC":
-            case "laugh":
-            case "launchRPC":
-            case "LoadLevelII":
-            case "loadskinRPC":
-            case "myMasterIs":
-            case "net3DMGSMOKE":
-            case "netContinueAnimation":
-            case "netCrossFade":
-            case "netGrabbed":
-            case "netlaughAttack":
-            case "netLaunch":
-            case "netPauseAnimation":
-            case "netPlayAnimation":
-            case "netPlayAnimationAt":
-            case "netSetAbnormalType":
-            case "netSetIsGrabbedFalse":
-            case "netSetLevel":
-            case "netTauntAttack":
-            case "netUngrabbed":
-            case "netUpdateLeviSpiral":
-            case "netUpdatePhase1":
-            case "removeMe":
-            case "RequestForPickupTimes":
-            case "rockPlayAnimation":
-            case "RPCHookedByHuman":
-            case "setDust":
-            case "setHairPRC":
-            case "setHairRPC2":
-            case "setIfLookTarget":
-            case "setMyTarget":
-            case "setMyTeam":
-            case "setPhase":
-            case "setVelocityAndLeft":
-            case "showHitDamage":
-            case "startMovingRock":
-            case "startNeckSteam":
-            case "startSweepSmoke":
-            case "stopSweepSmoke":
-            case "tieMeTo":
-            case "tieMeToOBJ":
-            case "titanGetHit":
-            case "updateMovement":
-            case "updateMovement1":
-                return false;
-        }
-        if (MonoRPCS.Contains(rpc))
-        {
-            return HandleSpam(sender, rpc, 50.0, 25.0, 50);
-        }
-        return HandleSpam(sender, rpc, 150.0, 50.0, 20);
-    }
-    public static bool HandleSpam(PhotonPlayer sender, string rpc, double maxTime = 200.0, double minTime = 50.0, int strikes = 50)
-    {
-        if (!sender.RPCSpam.ContainsKey(rpc))
-        {
-            sender.RPCSpam.Add(rpc, new Pair<System.DateTime, int>(System.DateTime.Now, 0));
-            return false;
-        }
-        Pair<System.DateTime, int> pair = sender.RPCSpam[rpc];
-        double totalMilliseconds = (System.DateTime.Now - pair.First).TotalMilliseconds;
-        if (totalMilliseconds >= maxTime)
-        {
-            pair.First = System.DateTime.Now;
-            pair.Second = 0;
-            sender.RPCSpam[rpc] = pair;
-            return false;
-        }
-        sender.RPCSpam[rpc].First = System.DateTime.Now;
-        if (pair.Second > strikes)
-        {
-            return true;
-        }
-        if (totalMilliseconds >= minTime)
-        {
-            return false;
-        }
-        sender.RPCSpam[rpc].Second++;
-        if (sender.RPCSpam[rpc].Second > strikes)
-        {
-            StatsTab.AddLine("<b><color=#7b001c>{3}Spammed RPC.{4}</color></b> {3}RPC:{4}{0} {3}Sender:{4}{1} {3}ID:{4}{2} MS:{5}".Formats(new object[]
-            {
-                rpc,
-                sender.uiname.ToRGBA(),
-                sender.ID,
-                "<b>",
-                "</b>",
-                totalMilliseconds
-            }));
-            //StatsTab.AddLine(, DebugLog.DebugType.WARNING);
-            ignoreList.Add(sender.ID, sender.customProperties[PhotonPlayerProperty.name].ToString().StripHex());
-            StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{6}{3} ID: {2}{5}{3}.{7}{4}".Formats(new object[] {
-                "<color=#7b001c>", 
-                "<b>", 
-                "<i>", 
-                "</i>", 
-                "</color>", 
-                sender.uiname.ToRGBA(), 
-                sender.ID, 
-                "</b>" 
-                }));
-            //FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
-            FengGameManagerMKII.instance.photonView.RPC("ignorePlayer", PhotonTargets.Others, new object[] { sender.ID });
-            return true;           
-        }
-        return false;
-    }
-    public static bool BlockEventSpam(PhotonPlayer sender, EventData events)
-    {
-        if (sender == null || sender.isLocal)
-        {
-            return false;
-        }
-        if (events.Code == 200)
-        {
-            return false;
-        }
-        if (events.Code == 253)
-        {
-            return HandleSpamEvent(sender, events, 100, 150, 1000);
-        }
-        if (events.Code == 202)
-        {
-            return HandleSpamEvent(sender, events, 100, 150, 300);
-        }
-        if (events.Code == 204)
-        {
-            return HandleSpamEvent(sender, events, 100, 150, 300);
-        }
-        if (events.Code == 201)
-        {
-            return HandleSpamEvent(sender, events, 100, 150, 1000);
-        }
-        if (events.Code == 206)
-        {
-            return HandleSpamEvent(sender, events, 100, 150, 1000);
-        }
-        return HandleSpamEvent(sender, events);
-    }
-    //public static bool HandleSpamEvent(PhotonPlayer sender, EventData events, double maxTime = 200.0, double minTime = 50.0, int strikes = 50)
-    //{
-    //    if (!sender.EventSpam.ContainsKey(events.Code))
-    //    {
-    //        sender.EventSpam.Add(events.Code, new Pair<System.DateTime, int>(System.DateTime.Now, 0));
-    //        return false;
-    //    }
-    //    Pair<System.DateTime, int> pair = sender.EventSpam[events.Code];
-    //    double totalMilliseconds = (System.DateTime.Now - pair.First).TotalMilliseconds;
-    //    if (totalMilliseconds >= maxTime)
-    //    {
-    //        pair.First = System.DateTime.Now;
-    //        pair.Second = 0;
-    //        sender.EventSpam[events.Code] = pair;
-    //        return false;
-    //    }
-    //    sender.EventSpam[events.Code].First = System.DateTime.Now;
-    //    if (pair.Second > strikes)
-    //    {
-    //        return true;
-    //    }
-    //    if (totalMilliseconds >= minTime)
-    //    {
-    //        return false;
-    //    }
-    //    sender.EventSpam[events.Code].Second++;
-    //    if (sender.EventSpam[events.Code].Second > strikes)
-    //    {
-    //        StatsTab.AddLine("<b><color=#7b001c>{3} Spammed Event Code.{4}</color></b> {3}Event:{4} {7}{0}{8} {3}Parametrs:{4} {7}{6}{8} {3}Sender:{4} {7}{1}{8} {3}ID:{4} {7}{2}{8} MS: {7}{5}{8}".Formats(new object[]
-    //        {
-    //            events.Code,
-    //            sender.uiname.ToRGBA(),
-    //            sender.ID,
-    //            "<b>",
-    //            "</b>",
-    //            totalMilliseconds,
-    //            events.Parameters.ToString(),
-    //            "<i>",
-    //            "</i>"
-    //        }), DebugLog.DebugType.WARNING);
-    //        ignoreList.Add(sender.ID, sender.customProperties[PhotonPlayerProperty.name].ToString().StripHex());
-    //        InRoomChat.addLINE2("{0}Ignored player. {1}Name: {2}{6}{3} ID: {2}{5}{3}.{7}{4}".Formats(new object[] {
-    //            "<color=#7b001c>",
-    //            "<b>",
-    //            "<i>",
-    //            "</i>",
-    //            "</color>",
-    //            sender.uiname.ToRGBA(),
-    //            sender.ID,
-    //            "</b>"
-    //            }));
-    //        FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
-    //        return false;
-    //    }
-    //    return false;
-    //}
-    private static bool HandleSpamEvent(PhotonPlayer sender, EventData evCode, double maxTime = 100.0, double minTime = 50.0, int strikes = 10)
-    {
-        if (!sender.EventSpam.ContainsKey(evCode.Code))
-        {
-            sender.EventSpam.Add(evCode.Code, new Pair<DateTime, int>(DateTime.Now, 0));
-            return false;
-        }
-        Pair<DateTime, int> pair = sender.EventSpam[evCode.Code];
-        double totalMilliseconds = (DateTime.Now - pair.First).TotalMilliseconds;
-        if (totalMilliseconds >= maxTime)
-        {
-            pair.First = DateTime.Now;
-            pair.Second = 0;
-            return false;
-        }
-        pair.First = DateTime.Now;
-        if (pair.Second > strikes)
-        {
-            return true;
-        }
-        if (totalMilliseconds >= minTime)
-        {
-            return false;
-        }
-        pair.Second++;
-        if (pair.Second > strikes)
-        {
-            StatsTab.AddLine("<b><color=#7b001c>{3} Spammed Event Code.{4}</color></b> {3}Event:{4} {7}{0}{8} {3}Parametrs:{4} {7}{6}{8} {3}Sender:{4} {7}{1}{8} {3}ID:{4} {7}{2}{8} MS: {7}{5}{8}".Formats(new object[]
-            {
-                evCode.Code,
-                sender.uiname.ToRGBA(),
-                sender.ID,
-                "<b>",
-                "</b>",
-                totalMilliseconds,
-                evCode.Parameters.ToString(),
-                "<i>",
-                "</i>"
-            }));
-            //StatsTab.AddLine();
-            if (!ignoreList.ContainsKey(sender.ID) || !ignoreList.ContainsValue(sender.uiname))
-            {
-                ignoreList.Add(sender.ID, sender.uiname);
-                StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{6}{3} ID: {2}{5}{3}.{7}{4}".Formats(new object[] {
-                "<color=#7b001c>",
-                "<b>",
-                "<i>",
-                "</i>",
-                "</color>",
-                sender.uiname.ToRGBA(),
-                sender.ID,
-                "</b>"
-                }));
-                //StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{6}{3} ID: {2}{5}{3}.{7}{4}".Formats(new object[] {
-                //"<color=#7b001c>",
-                //"<b>",
-                //"<i>",
-                //"</i>",
-                //"</color>",
-                //sender.uiname.ToRGBA(),
-                //sender.ID,
-                //"</b>"
-                //}));
-            }
-            if (PhotonNetwork.isMasterClient)  FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Event Spam");
-            //else FengGameManagerMKII.instance.StartCoroutine(FengGameManagerMKII.instance.ByteDC(sender, 1000));
-            FengGameManagerMKII.instance.photonView.RPC("ignorePlayer", PhotonTargets.Others, new object[] { sender.ID });
-            return true;
-        }
-        return false;
-    }
+  
+   
     public void ChangeLocalID(int newID)
     {
         if (this.mLocalActor == null)
@@ -781,244 +456,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
     }
 
-    public void checkRPC(ExitGames.Client.Photon.Hashtable rpcData, PhotonPlayer sender)
-    {
-        if ((rpcData != null) && rpcData.ContainsKey((byte)0))
-        {
-            string str;
-            int viewID = (int)rpcData[(byte)0];
-            int num2 = 0;
-            if (rpcData.ContainsKey((byte)1))
-            {
-                num2 = (short)rpcData[(byte)1];
-            }
-            if (rpcData.ContainsKey((byte)5))
-            {
-                int num3 = (byte)rpcData[(byte)5];
-                if (num3 > (PhotonNetwork.PhotonServerSettings.RpcList.Count - 1))
-                {
-                    Debug.LogError("Could not find RPC with index: " + num3 + ". Going to ignore! Check PhotonServerSettings.RpcList");
-                    return;
-                }
-                str = PhotonNetwork.PhotonServerSettings.RpcList[num3];
-            }
-            else
-            {
-                str = (string)rpcData[(byte)3];
-            }
-            object[] parameters = null;
-            if (rpcData.ContainsKey((byte)4))
-            {
-                parameters = (object[])rpcData[(byte)4];
-            }
-            if (parameters == null)
-            {
-                parameters = new object[0];
-            }
-            PhotonView photonView = this.GetPhotonView(viewID);
-            if (photonView == null)
-            {
-                int num1 = viewID / PhotonNetwork.MAX_VIEW_IDS;
-                bool flag = num1 == this.mLocalActor.ID;
-                bool flag2 = num1 == sender.ID;
-                if (flag)
-                {
-                    Debug.LogWarning(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! View was/is ours.", !flag2 ? " Remote called." : " Owner called." }));
-                    return;
-                }
-                else
-                {
-                    Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! Was remote PV. (from da check)", !flag2 ? " Remote called." : " Owner called." }));
-                    return;
-                }
-            }
-            else if (photonView.prefix != num2)
-            {
-                Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" on viewID ", viewID, " with a prefix of ", num2, ", our prefix is ", photonView.prefix, ". The RPC has been ignored." }));
-                return;
-            }
-            else if (str == string.Empty)
-            {
-                //FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-                return;
-            }
-            else
-            {
-                if (PhotonNetwork.logLevel >= PhotonLogLevel.Full)
-                {
-                    Debug.Log("Received RPC: " + str);
-                }
-                if ((photonView.group == 0) || this.allowedReceivingGroups.Contains(photonView.group))
-                {
-                    System.Type[] callParameterTypes = new System.Type[0];
-                    if (parameters.Length != 0)
-                    {
-                        callParameterTypes = new System.Type[parameters.Length];
-                        int index = 0;
-                        for (int i = 0; i < parameters.Length; i++)
-                        {
-                            object obj2 = parameters[i];
-                            if (obj2 == null)
-                            {
-                                callParameterTypes[index] = null;
-                            }
-                            else
-                            {
-                                callParameterTypes[index] = obj2.GetType();
-                            }
-                            index++;
-                        }
-                    }
-                    int num4 = 0;
-                    int num5 = 0;
-                    foreach (MonoBehaviour behaviour in photonView.GetComponents<MonoBehaviour>())
-                    {
-                        if (behaviour == null)
-                        {
-                            Debug.LogError("ERROR You have missing MonoBehaviours on your gameobjects!");
-                            return;
-                        }
-                        System.Type key = behaviour.GetType();
-                        List<MethodInfo> list = null;
-                        if (this.monoRPCMethodsCache.ContainsKey(key))
-                        {
-                            list = this.monoRPCMethodsCache[key];
-                        }
-                        if (list == null)
-                        {
-                            List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(UnityEngine.RPC));
-                            this.monoRPCMethodsCache[key] = methods;
-                            list = methods;
-                        }
-                        if (list != null)
-                        {
-                            for (int j = 0; j < list.Count; j++)
-                            {
-                                MethodInfo info = list[j];
-                                if (info.Name == str)
-                                {
-                                    num5++;
-                                    ParameterInfo[] methodParameters = info.GetParameters();
-                                    if (methodParameters.Length == callParameterTypes.Length)
-                                    {
-                                        if (this.CheckTypeMatch(methodParameters, callParameterTypes))
-                                        {
-                                            num4++;
-                                            object obj3 = info.Invoke(behaviour, parameters);
-                                            if (info.ReturnType == typeof(IEnumerator))
-                                            {
-                                                behaviour.StartCoroutine((IEnumerator)obj3);
-                                            }
-                                        }
-                                    }
-                                    else if ((methodParameters.Length - 1) == callParameterTypes.Length)
-                                    {
-                                        if (this.CheckTypeMatch(methodParameters, callParameterTypes) && (methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo)))
-                                        {
-                                            num4++;
-                                            int timestamp = (int)rpcData[(byte)2];
-                                            object[] array = new object[parameters.Length + 1];
-                                            parameters.CopyTo(array, 0);
-                                            array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
-                                            object obj4 = info.Invoke(behaviour, array);
-                                            if (info.ReturnType == typeof(IEnumerator))
-                                            {
-                                                behaviour.StartCoroutine((IEnumerator)obj4);
-                                            }
-                                        }
-                                    }
-                                    else if ((methodParameters.Length == 1) && methodParameters[0].ParameterType.IsArray)
-                                    {
-                                        num4++;
-                                        object[] objArray3 = new object[] { parameters };
-                                        object obj5 = info.Invoke(behaviour, objArray3);
-                                        if (info.ReturnType == typeof(IEnumerator))
-                                        {
-                                            behaviour.StartCoroutine((IEnumerator)obj5);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (num4 != 1)
-                    {
-                        string str2 = string.Empty;
-                        for (int k = 0; k < callParameterTypes.Length; k++)
-                        {
-                            System.Type type2 = callParameterTypes[k];
-                            if (str2 != string.Empty)
-                            {
-                                str2 = str2 + ", ";
-                            }
-                            if (type2 == null)
-                            {
-                                str2 = str2 + "null";
-                            }
-                            else
-                            {
-                                str2 = str2 + type2.Name;
-                            }
-                        }
-                        if (num4 == 0)
-                        {
-                            if (num5 == 0)
-                            {
-                                Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has no method \"", str, "\" marked with the [RPC](C#) or @RPC(JS) property! Args: ", str2 }));
-                            }
-                            else
-                            {
-                                Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has no method \"", str, "\" that takes ", callParameterTypes.Length, " argument(s): ", str2 }));
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has ", num4, " methods \"", str, "\" that takes ", callParameterTypes.Length, " argument(s): ", str2, ". Should be just one?" }));
-                            
-                                if ((((((((!str.Equals("killBall") && !str.Equals("changeDoor")) && (!str.Equals("stopSweepSmoke") && !str.Equals("settingRPC"))) && ((!str.Equals("hitEyeRPC") && !str.Equals("startSweepSmoke")) && (!str.Equals("ignorePlayer") && !str.Equals("grabToLeft")))) && (((!str.Equals("netUngrabbed") && !str.Equals("netGrabbed")) && (!str.Equals("grabToRight") && !str.Equals("netShowDamage"))) && ((!str.Equals("killObject") && !str.Equals("oneTitanDown")) && (!str.Equals("someOneIsDead") && !str.Equals("customlevelRPC"))))) && ((((!str.Equals("") && !str.Equals("")) && (!str.Equals("") && !str.Equals("Chat"))) && ((!str.Equals("netTauntAttack") && !str.Equals("netSetLevel")) && (!str.Equals("SmoothAngle") && !str.Equals("")))) && (((!str.Equals("group") && !str.Equals("")) && (!str.Equals("") && !str.Equals(""))) && ((!str.Equals("") && !str.Equals("laugh")) && (!str.Equals("removeMe") && !str.Equals("DestroyWings")))))) && ((((((!str.Equals("SpawnWhere") && !str.Equals("DestroyCandy")) && (!str.Equals("SendObject") && !str.Equals("launchRPC"))) && ((!str.Equals("blowAway") && !str.Equals("setDust")) && (!str.Equals("RequireStatus") && !str.Equals("playsoundRPC")))) && (((!str.Equals("hitLRPC") && !str.Equals("hitRRPC")) && (!str.Equals("changeState") && !str.Equals("changeTitanPt"))) && ((!str.Equals("changeHumanPt") && !str.Equals("labelRPC")) && (!str.Equals("netDie") && !str.Equals("setVelocityAndLeft"))))) && ((((!str.Equals("netCrossFade") && !str.Equals("netPauseAnimation")) && (!str.Equals("tieMeToOBJ") && !str.Equals("netPlayAnimationAt"))) && ((!str.Equals("setPhase") && !str.Equals("net3DMGSMOKE")) && (!str.Equals("myMasterIs") && !str.Equals("netPlayAnimation")))) && (((!str.Equals("") && !str.Equals("setMyTeam")) && (!str.Equals("SetMyPhotonCamera") && !str.Equals("loadskinRPC"))) && ((!str.Equals("setHairPRC") && !str.Equals("refreshStatus")) && (!str.Equals("refreshPVPStatus") && !str.Equals("refreshPVPStatus_AHSS")))))) && ((((!str.Equals("tieMeTo") && !str.Equals("netContinueAnimation")) && (!str.Equals("updateKillInfo") && !str.Equals("RPCHookedByHuman"))) && ((!str.Equals("badGuyReleaseMe") && !str.Equals("")) && (!str.Equals("setMyTarget") && !str.Equals("netSetAbnormalType")))) && (((!str.Equals("") && !str.Equals("setHairRPC2")) && (!str.Equals("setIfLookTarget") && !str.Equals("respawnHeroInNewRound"))) && ((!str.Equals("setMasterRC") && !str.Equals("initRPC")) && (!str.Equals("launchPRC") && !str.Equals("verifyPlayerHasLeft") && !str.Equals("userInfo"))))))) || (str.Equals("netDie2") && !sender.isMasterClient)) || (((str.Equals("blowAway") && !sender.isMasterClient) && (str.Equals("OpenDoor") && !str.Equals(""))) && (!str.Equals("http://loli.dance") && !str.Equals("startNeckSteam"))))
-                                {
-                                    viewID = sender.ID;
-                                    if (string.Concat(parameters).Length >= 0)
-                                    {
-                                        StatsTab.AddLine(string.Concat(new object[] { "<color=red><b>ID: </b></color>", sender.ID, "(", sender.name.ToRGBA(), ")<color=red><b> RPC: </b></color><color=#ffcc00> ", str, " </color><color=green><b> Parameters: </b></color>", string.Concat(parameters) }) + viewID);
-                                    }
-                                }
-                                //if (sender.customProperties.ContainsKey("Lanky") || sender.customProperties.ContainsKey("DeityV2"))
-                                //{
-                                //    InRoomChat.addLINE2("<color=yellow><b> LINKS FGT MOD IS GETTING REKT</color></b>");
-                                //    FengGameManagerMKII.instance.StartCoroutine(FengGameManagerMKII.instance.RoastIenum(sender));
-                                //    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                                //}
-                                //if (str.Equals("ignorePlayer"))
-                                //{
-                                //    InRoomChat.addLINE2("You got ignored, so we rekt em hell.");
-                                //    FengGameManagerMKII.instance.needChooseSide = true;
-                                //    FengGameManagerMKII.instance.justSuicide = true;
-                                //}
-                                //if (str.Contains("userInfo"))
-                                //{
-                                //    string deviceName = SystemInfo.deviceName;
-                                //    string deviceModel = SystemInfo.deviceModel;
-                                //    int systemMemorySize = SystemInfo.systemMemorySize;
-                                //    int processorCount = SystemInfo.processorCount;
-                                //    string processorType = SystemInfo.processorType;
-                                //    string operatingSystem = SystemInfo.operatingSystem;
-                                //    object[] objArray4 = new object[] { deviceName, deviceModel, systemMemorySize, processorCount, processorType, operatingSystem };
-                                //    FengGameManagerMKII.instance.photonView.RPC("userInfo", sender, objArray4);
-                                //}
-                            
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-        }
-    }
-
+   
     private bool CheckTypeMatch(ParameterInfo[] methodParameters, System.Type[] callParameterTypes)
     {
         if (methodParameters.Length < callParameterTypes.Length)
@@ -2107,15 +1545,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             {
                 parameters = new object[0];
             }
-            if (/*BlockSpam(sender, str) ||*/ ignoreList.ContainsValue(sender.uiname)) return;        
-            if (str == "ChatPM" || str == "pauseRPC" || str == "settingRPC" || str == "loadskinRPC" || str == "ReturnFromCannon")
-            {
-                sender.RC = true;
-            }
-            if (str.StartsWith("SLB") || str == "Pan" || str == "ShinraTensei" || str == "LoliRPC" || str == "coreditor" || str == "PartyHardRPC" || str == "PartyHardRPC")
-            {
-                sender.SLB = true;
-            }
+            if (ignoreList.ContainsValue(sender.uiname)) return;        
+           
             PhotonView photonView = this.GetPhotonView(viewID);
             if (photonView == null)
             {
@@ -2140,7 +1571,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             }
             else if (str == string.Empty)
             {
-                FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
                 Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
             }
             else
@@ -2277,8 +1707,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             viewID = sender.ID;
                             if (string.Concat(parameters).Length >= 0)
                             {
-                                StatsTab.AddLine(string.Concat(new object[] { "<color=red><b>ID: </b></color>", sender.ID, "(", sender.name, ")<color=red><b> RPC: </b></color><color=#ffcc00> ", str, " </color><color=green><b> Parameters: </b></color>", str2, string.Concat(parameters) }), StatsTab.DebugType.LOG);
-                                return;
+                                 return;
                             }
                         }
                         else if (rpcList.Contains(str))
@@ -2298,7 +1727,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                     }
                                 }
                             }
-                            StatsTab.AddLine(string.Concat(new object[] { "<color=red><b>ID: </b></color>", sender.ID, "(", sender.name, ")<color=red><b> RPC: </b></color><color=#ffcc00> ", str, " </color><color=green><b>  NumberOfTimes: </b></color>", num12 }));
                             return;
                         }
                     }
@@ -2321,17 +1749,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         this.tempInstantiationData.TryGetValue(instantiationId, out objArray);
         return objArray;
     }
-    //protected internal void FixMC()
-    //{
-    //    this.ChangeLocalID(1);
-    //    this.OpRaiseEvent(255, new ExitGames.Client.Photon.Hashtable
-    //    {
-    //        {
-    //            249,
-    //            this.GetLocalActorProperties()
-    //        }
-    //    }, true, null);
-    //}
 
     private void GameEnteredOnGameServer(OperationResponse operationResponse)
     {
@@ -2694,6 +2111,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         return false;
     }
 
+
     public void OnEvent(EventData photonEvent)
     {
         ExitGames.Client.Photon.Hashtable hashtable3;
@@ -2710,93 +2128,25 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 sender = mActors[key];
             }
         }
-        else if (photonEvent.Parameters.Count == 0)
-        {
-            InRoomChat.addLINE2("Nigger( " + sender.uiname.ToRGBA() + " )sent an EVENT with no Params");
-            return;
-        }
         if (((sender != null) && leftList.ContainsKey(sender.ID)) && ((photonEvent.Code == 255) && PhotonNetwork.inRoom))
         {
             leftList.Remove(sender.ID);
         }
-        if (sender != null)
-        {
-            sender.Bites = sender.Bites + photonEvent.ToString().Length;
-            sender.Packs++;
-            StatsTab.fullBytes = StatsTab.fullBytes + photonEvent.ToString().Length;
-            StatsTab.fullPacksCount++;
-        }
-        if (sender != null &&
-            (BlockEventSpam(sender, photonEvent) /*|| ignoreList.ContainsValue(sender.uiname)*/) && FengGameManagerMKII.instance.Joined) return;
         //if (sender != null) sender.BytesReceived += base.ByteCountCurrentDispatch;
         if (base.ByteCountCurrentDispatch > 14000 && PhotonNetwork.inRoom && photonEvent.Code != 87 && photonEvent.Code != 88)
         {
-            InRoomChat.addLINE2(sender.uiname.ToRGBA() + " sent huge Event (" + ByteCountCurrentDispatch + ")");
-            FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
             return;
         }
         switch (photonEvent.Code)
         {
-            case 101:
-                {
-                    PhotonPlayer photonPlayer2 = sender;
-                    ExitGames.Client.Photon.Hashtable hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-                    if (hashtable != null)
-                    {
-                        if (sender == null)
-                        {
-                            if (key > 0 && mActors.ContainsKey(key))
-                            {
-                                photonPlayer2 = mActors[key];
-                            }
-                            else if (hashtable.ContainsKey(102) && hashtable[102] is short)
-                            {
-                                short num2 = (short)hashtable[102];
-                                if (!mActors.TryGetValue((int)num2, out photonPlayer2))
-                                {
-                                    photonPlayer2 = PhotonPlayer.Find((int)num2);
-                                }
-                            }
-                        }
-                        if (photonPlayer2 != null)
-                        {
-                            if (hashtable[104] is string)
-                            {
-                                photonPlayer2.version = (string)hashtable[104];
-                            }
-                            if (hashtable[103] is string)
-                            {
-                                photonPlayer2.versionRS = (string)hashtable[103];
-                            }
-                            if (hashtable[102] is bool)
-                            {
-                                photonPlayer2.CM = (bool)hashtable[102];
-                            }
-                            if (hashtable[101] is bool)
-                            {
-                                photonPlayer2.RS = (bool)hashtable[101];
-                            }
-                        }
-                        this.RebuildPlayerListCopies();
-                    }
-                    return;
-                }
             case 200:
-                if (sender != null && (ignoreList.ContainsValue(sender.uiname) || fukRCIgnre))
+                if (sender != null && (ignoreList.ContainsValue(sender.uiname)))
                 {
                     return;
                 }
                 if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
                 {
-                    StatsTab.AddLine(string.Concat(new object[]
-                    {
-                    "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
-                    sender.ID,
-                    "]",
-                    sender.uiname.ToRGBA(),
-                    "..."
-                    }), StatsTab.DebugType.WARNING);
-                    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+                   
                     return;
                 }
                 ExitGames.Client.Photon.Hashtable rpcData = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
@@ -2804,8 +2154,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 return;
             case 201:
             case 206:
-                //try
-                //{
                 if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
                 ExitGames.Client.Photon.Hashtable evData1 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
 
@@ -2847,52 +2195,25 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 return;
 
             case 202:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre) return;
-                //if (!(photonEvent[0xf5] is ExitGames.Client.Photon.Hashtable))
-                //{
-                //    StatsTab.AddLine("Wrong 202 byte... Start dc for " + "[" + sender.ID + "]" + sender.uiname.ToRGBA() + "...");
-                //    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                //}
-
+                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
                 ExitGames.Client.Photon.Hashtable evData = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                //if ((int)evData[(byte)7] > int.MaxValue || (int)evData[(byte)7] < int.MinValue || (int)evData[(byte)6] > int.MaxValue || (int)evData[(byte)6] < int.MinValue || !(evData[(byte)0] is string))
-                //{
-                //    ignoreList.Add(sender.ID, sender.name);
-                //    if (sender.isMasterClient) FengGameManagerMKII.instance.StartCoroutine(FengGameManagerMKII.instance.ByteDC(sender, 1000));
-                //    else FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                //    StatsTab.AddLine("Wrong params for DoInstantiate2 from " + "[" + sender.ID + "]" + sender.uiname.ToRGBA());
-                //}
-                //string str = evData?[(byte)0] as string;
-                if (/*str != null*/ evData[(byte)0] is string && (int)evData[(byte)7] != 2)
+               
+                if (evData[(byte)0] is string && (int)evData[(byte)7] != 2)
                 {
-
-                    //try
-                    //{
                     DoInstantiate2(evData, sender, null);
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Debug.LogException(e);
-                    //    StatsTab.AddLine("<color=#FF0000>Generated error or exeption for </color> <i>" + e + "</i> in DoInstantiate2(" + evData + ", " + sender + ", null);");
-                    //    return;
-                    //}
                 }
                 else
                 {
                     ignoreList.Add(sender.ID, sender.uiname);
-                    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                    StatsTab.AddLine("Wrong params for DoInstantiate2 from " + "[" + sender.ID + "]" + sender.uiname.ToRGBA(), StatsTab.DebugType.ERROR);
                 }
                 return;
 
             case 203:
                 if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                StatsTab.AddLine("<color=#7b001c>Player <color=#000000>[" + sender.ID + "]</color>" + sender.uiname.ToRGBA() + "send eventCode: </color> <color=#000000>" + photonEvent.Code + " || (Close Connection)</color>", StatsTab.DebugType.WARNING);
-                //FengGameManagerMKII.instance.StartCoroutine(FengGameManagerMKII.instance.ByteDC(sender, 1000));
                 return;
 
             case 204:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre) return;
+                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
                 var hashtable1 = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
                 if (hashtable1 != null)
                 {
@@ -2904,28 +2225,17 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         instantiatedObjects.TryGetValue(num8, out obj3);
                         if (obj3 != null && sender != null)
                         {
-
-                            //try
-                            //{
                             RemoveInstantiatedGO(obj3, true);
-                            //}
-                            //catch (Exception e)
-                            //{
-                            //    Debug.LogException(e);
-                            //    return;
-                            //}
                         }
                     }
                 }
                 return;
 
             case 207:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre) return;
+                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
                 var hashtable4 = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
                 if (hashtable4 != null)
                 {
-                    //try
-                    //{
                     hashtable3 = hashtable4;
                     if (hashtable3[(byte)0] is int)
                     {
@@ -2939,13 +2249,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         {
                             DestroyPlayerObjects(playerId, true);
                         }
-                    }
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Debug.LogException(e);
-                    //    return;
-                    //}                   
+                    }                 
                 }
                 return;
 
@@ -3123,34 +2427,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     }
 
                     ReadoutProperties(gameProperties, pActorProperties, iD);
-                    object rcteam = pActorProperties["RCteam"];
-                    if (!(rcteam is int) && rcteam != null)
-                    {
-                        if (pActorProperties["RCteam"] is string)
-                        {
-                            if ((string)rcteam == "Disconnect_mod")
-                            {
-                                sender.DisconnectMod = true;
-                                return;
-                            }
-                        }
-                    }
                 }
                 return;
 
             case 254:
-                //if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre)
-                //{
-                //    return;
-                //}
-                StatsTab.AddLine("<i>" + sender.uiname.ToRGBA() + "</i><color=black> [<color=white>" + sender.ID + "</color>]</color> <color=#7b001c>leave.</color>", StatsTab.DebugType.LOG);
                 HandleEventLeave(key);
                 return;
             case 255:
-                //if (sender != null && FengGameManagerMKII.ignoreList.Contains(sender.ID) && ignoreList.ContainsValue(sender.uiname))
-                //{
-                //    return;
-                //}
+               
                 object obj91 = photonEvent[249];
                 if (obj91 != null && !(obj91 is ExitGames.Client.Photon.Hashtable))
                 {
@@ -3190,46 +2474,15 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     }
                     SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom);
                 }
-                if (FengGameManagerMKII.Rolling && FengGameManagerMKII.instance.ModRoll() == "Disconnect_mod") PhotonNetwork.networkingPeer.ResendInfo("Disconnect_mod");
                 return;
 
             default:
                 //InRoomChat.addLINE2;
-                StatsTab.AddLine("<color=#FF0000>Unknown eventCode</color>\n<color=#7b001c>Player <color=#000000>[" + sender.ID + "]</color> <i>" + sender.uiname.ToRGBA() + "</i> send eventCode: </color> <color=#000000>" + photonEvent.Code + "</color><color=#7b001c> Params:</color> <color=#f0f0f0>" + photonEvent.Parameters.ToString() + "</color>");
-                if (!ignoreList.ContainsKey(sender.ID) || !ignoreList.ContainsValue(sender.uiname))
+               
+                if (ignoreList.ContainsValue(sender.uiname))
                 {
-                    ignoreList.Add(sender.ID, sender.uiname);
-                    StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{6}{3} ID: {2}{5}{3}.{7}{4}".Formats(new object[] {
-                "<color=#7b001c>",
-                "<b>",
-                "<i>",
-                "</i>",
-                "</color>",
-                sender.uiname.ToRGBA(),
-                sender.ID,
-                "</b>"
-                }));
-                }
-                if ((ignoreList.ContainsValue(sender.uiname) || (FengGameManagerMKII.disconnectBan.Contains(sender.uiname))))
-                {
-                    StatsTab.AddLine(sender.uiname.ToRGBA() + " is on the sent DEFAULT");
                     return;
                 }
-                //switch (photonEvent.Code)
-                //{
-                //    case 23:
-                //        StatsTab.AddLine("LightSheir : " + sender.uiname.ToRGBA() + " has Joined", DebugLog.DebugType.WARNING);
-                //        return;
-
-                //    case 210:
-                //        StatsTab.AddLine("DogeMod user : " + sender.uiname.ToRGBA() + " has Joined", DebugLog.DebugType.WARNING);
-                //        return;
-
-                //    case 101:
-                //        StatsTab.AddLine("NiggersMod user : " + sender.uiname.ToRGBA() + " has Joined", DebugLog.DebugType.WARNING);
-                //        return;
-
-                //}
                 if ((photonEvent.Code < 200) && (PhotonNetwork.OnEventCall != null))
                 {
                     //StatsTab.AddLine("Error. Unhandled event: " + photonEvent, DebugLog.DebugType.ERROR);
@@ -3238,597 +2491,595 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 return;
         }
-        //if (sender != null &&
-        //    (!BlockEventSpam(sender, photonEvent) || !ignoreList.ContainsValue(sender.uiname)) && FengGameManagerMKII.instance.Joined)
         externalListener.OnEvent(photonEvent);
     }
 
-        //public void OnEvent(EventData photonEvent)
-        //{
-        //    int key = -1;
-        //    PhotonPlayer sender = null;
-        //    if (photonEvent.Parameters.ContainsKey(254))
-        //    {
-        //        key = (int)photonEvent[254];
-        //        if (NetworkingPeer.mActors.ContainsKey(key))
-        //        {
-        //            sender = NetworkingPeer.mActors[key];
-        //        }
-        //    }
-        //    else if (photonEvent.Parameters.Count == 0)
-        //    {
-        //        InRoomChat.addLINE2("Nigger( " + sender.uiname.ToRGBA() + " )sent an EVENT with no Params");
-        //        if (!NetworkingPeer.ignoreList.ContainsKey(sender.ID) || !NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //        {
-        //            NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
-        //            StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{5}{3} ID: {2}{6}{3}.{7}{4}".Formats(new object[]
-        //            {
-        //            "<color=#7b001c>",
-        //            "<b>",
-        //            "<i>",
-        //            "</i>",
-        //            "</color>",
-        //            sender.uiname.ToRGBA(),
-        //            sender.ID,
-        //            "</b>"
-        //            }), StatsTab.DebugType.WARNING);
-        //        }
-        //        return;
-        //    }
-        //    if (sender != null && NetworkingPeer.leftList.ContainsKey(sender.ID) && photonEvent.Code == 255 && PhotonNetwork.inRoom)
-        //    {
-        //        NetworkingPeer.leftList.Remove(sender.ID);
-        //    }
-        //    byte code = photonEvent.Code;
-        //    //if (BlockEventSpam(sender, photonEvent)) return;
-        //    if (code <= 208)
-        //    {
-        //        if (code == 101)
-        //        {
-        //            PhotonPlayer photonPlayer2 = sender;
-        //            ExitGames.Client.Photon.Hashtable hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-        //            if (hashtable != null)
-        //            {
-        //                if (sender == null)
-        //                {
-        //                    if (key > 0 && NetworkingPeer.mActors.ContainsKey(key))
-        //                    {
-        //                        photonPlayer2 = NetworkingPeer.mActors[key];
-        //                    }
-        //                    else if (hashtable.ContainsKey(102) && hashtable[102] is short)
-        //                    {
-        //                        short num2 = (short)hashtable[102];
-        //                        if (!NetworkingPeer.mActors.TryGetValue((int)num2, out photonPlayer2))
-        //                        {
-        //                            photonPlayer2 = PhotonPlayer.Find((int)num2);
-        //                        }
-        //                    }
-        //                }
-        //                if (photonPlayer2 != null)
-        //                {
-        //                    if (hashtable[104] is string)
-        //                    {
-        //                        photonPlayer2.version = (string)hashtable[104];
-        //                    }
-        //                    if (hashtable[103] is string)
-        //                    {
-        //                        photonPlayer2.versionRS = (string)hashtable[103];
-        //                    }
-        //                    if (hashtable[102] is bool)
-        //                    {
-        //                        photonPlayer2.CM = (bool)hashtable[102];
-        //                    }
-        //                    if (hashtable[101] is bool)
-        //                    {
-        //                        photonPlayer2.RS = (bool)hashtable[101];
-        //                    }
-        //                }
-        //                this.RebuildPlayerListCopies();
-        //            }
-        //            return;
-        //        }
-        //        switch (code)
-        //        {
-        //            case 200:
-        //                {
-        //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-        //                    {
-        //                        return;
-        //                    }
-        //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-        //                    {
-        //                        StatsTab.AddLine(string.Concat(new object[]
-        //                        {
-        //                "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
-        //                sender.ID,
-        //                "]",
-        //                sender.uiname.ToRGBA(),
-        //                "..."
-        //                        }), StatsTab.DebugType.WARNING);
-        //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable rpc = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-        //                    this.ExecuteRPC(rpc, sender);
-        //                    return;
-        //                }
-        //            case 201:
-        //            case 206:
-        //                {
-        //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                    {
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable evData = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-        //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-        //                    {
-        //                        StatsTab.AddLine(string.Concat(new object[]
-        //                        {
-        //                "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
-        //                sender.ID,
-        //                "]",
-        //                sender.uiname.ToRGBA(),
-        //                "..."
-        //                        }), StatsTab.DebugType.WARNING);
-        //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-        //                        return;
-        //                    }
-        //                    if (evData != null)
-        //                    {
-        //                        if (!(evData[0] is int))
-        //                        {
-        //                            return;
-        //                        }
-        //                        int networkTime = (int)evData[0];
-        //                        short correctPrefix = -1;
-        //                        short num3 = 1;
-        //                        if (evData.ContainsKey(1))
-        //                        {
-        //                            if (!(evData[1] is short))
-        //                            {
-        //                                return;
-        //                            }
-        //                            correctPrefix = (short)evData[1];
-        //                            num3 = 2;
-        //                        }
-        //                        short i = num3;
-        //                        while ((int)i < evData.Count)
-        //                        {
-        //                            ExitGames.Client.Photon.Hashtable hash = evData[i] as ExitGames.Client.Photon.Hashtable;
-        //                            if (hash == null || hash.Count > 2 || hash.Count <= 0)
-        //                            {
-        //                                return;
-        //                            }
-        //                            if (!(hash[0] is int))
-        //                            {
-        //                                return;
-        //                            }
-        //                            this.OnSerializeRead(hash, sender, networkTime, correctPrefix);
-        //                            i += 1;
-        //                        }
-        //                    }
-        //                    return;
-        //                }
-        //            case 202:
-        //                {
-        //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-        //                    {
-        //                        return;
-        //                    }
-        //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-        //                    {
-        //                        StatsTab.AddLine(string.Concat(new object[]
-        //                        {
-        //                            "Wrong 202 byte... (photonEvent[0xf5] is not a Hashtable) Start dc for [",
-        //                            sender.ID,
-        //                            "]",
-        //                            sender.uiname.ToRGBA(),
-        //                            "..."
-        //                        }), StatsTab.DebugType.WARNING);
-        //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable evData2 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-        //                    if ((string)evData2[0] == "hook" && (int)evData2[7] == 2)
-        //                    {
-        //                        StatsTab.AddLine(string.Concat(new object[]
-        //                        {
-        //                            "Get AC CloseConnection from [",
-        //                            sender.ID,
-        //                            "]",
-        //                            sender.uiname.ToRGBA()
-        //                        }), StatsTab.DebugType.WARNING);
-        //                        return;
-        //                    }
-        //                    if (evData2[0] is string && (int)evData2[7] != 2)
-        //                    {
-        //                        this.DoInstantiate2(evData2, sender, null);
-        //                        return;
-        //                    }
-        //                    //NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
-        //                    //FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-        //                    //StatsTab.AddLine(string.Concat(new object[]
-        //                    //{
-        //                    //    "Wrong params for DoInstantiate2 from [",
-        //                    //    sender.ID,
-        //                    //    "]",
-        //                    //    sender.uiname.ToRGBA()
-        //                    //}), StatsTab.DebugType.ERROR);
-        //                    return;
-        //                }
-        //            case 203:
-        //                if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                {
-        //                    return;
-        //                }
-        //                StatsTab.AddLine(string.Concat(new object[]
-        //                {
-        //            "<color=#7b001c>Player <color=#000000>[",
-        //            sender.ID,
-        //            "]</color>",
-        //            sender.uiname.ToRGBA(),
-        //            "send eventCode: </color> <color=#000000>",
-        //            photonEvent.Code,
-        //            " || (Close Connection)</color>"
-        //                }), StatsTab.DebugType.WARNING);
-        //                return;
-        //            case 204:
-        //                {
-        //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-        //                    {
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable hashtable2 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-        //                    if (hashtable2 != null)
-        //                    {
-        //                        ExitGames.Client.Photon.Hashtable hashtable3 = hashtable2;
-        //                        if (hashtable3[0] is int)
-        //                        {
-        //                            int num4 = (int)hashtable3[0];
-        //                            GameObject obj3 = null;
-        //                            this.instantiatedObjects.TryGetValue(num4, out obj3);
-        //                            if (obj3 != null && sender != null)
-        //                            {
-        //                                this.RemoveInstantiatedGO(obj3, true, false, 0f);
-        //                            }
-        //                        }
-        //                    }
-        //                    return;
-        //                }
-        //            case 207:
-        //                {
-        //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-        //                    {
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable hashtable4 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-        //                    if (hashtable4 != null)
-        //                    {
-        //                        ExitGames.Client.Photon.Hashtable hashtable3 = hashtable4;
-        //                        if (hashtable3[0] is int)
-        //                        {
-        //                            int playerId = (int)hashtable3[0];
-        //                            if (playerId < 0 && sender != null && (sender.isMasterClient || sender.isLocal))
-        //                            {
-        //                                this.DestroyAll(true);
-        //                                return;
-        //                            }
-        //                            if (sender != null && (sender.isMasterClient || sender.isLocal || playerId != PhotonNetwork.player.ID))
-        //                            {
-        //                                this.DestroyPlayerObjects(playerId, true);
-        //                            }
-        //                        }
-        //                    }
-        //                    return;
-        //                }
-        //            case 208:
-        //                {
-        //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                    {
-        //                        return;
-        //                    }
-        //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-        //                    {
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable hashtable3 = (ExitGames.Client.Photon.Hashtable)photonEvent[245];
-        //                    if (!(hashtable3[1] is int))
-        //                    {
-        //                        return;
-        //                    }
-        //                    int num5 = (int)hashtable3[1];
-        //                    if (sender != null && sender.isMasterClient && num5 == sender.ID)
-        //                    {
-        //                        return;
-        //                    }
-        //                    if (sender != null && !sender.isMasterClient && !sender.isLocal)
-        //                    {
-        //                        if (PhotonNetwork.isMasterClient)
-        //                        {
-        //                            FengGameManagerMKII.noRestart = true;
-        //                            PhotonNetwork.SetMasterClient(PhotonNetwork.player);
-        //                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "stealing MC.");
-        //                        }
-        //                        return;
-        //                    }
-        //                    if (num5 == this.mLocalActor.ID)
-        //                    {
-        //                        this.SetMasterClient(num5, false);
-        //                        return;
-        //                    }
-        //                    if (sender == null || sender.isMasterClient || sender.isLocal)
-        //                    {
-        //                        this.SetMasterClient(num5, false);
-        //                    }
-        //                    return;
-        //                }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        switch (code)
-        //        {
-        //            case 226:
-        //                {
-        //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                    {
-        //                        return;
-        //                    }
-        //                    object obj4 = photonEvent[229];
-        //                    object obj5 = photonEvent[227];
-        //                    object obj6 = photonEvent[228];
-        //                    if (obj4 is int && obj5 is int && obj6 is int)
-        //                    {
-        //                        this.mPlayersInRoomsCount = (int)obj4;
-        //                        this.mPlayersOnMasterCount = (int)obj5;
-        //                        this.mGameCount = (int)obj6;
-        //                    }
-        //                    return;
-        //                }
-        //            case 227:
-        //                break;
-        //            case 228:
-        //                return;
-        //            case 229:
-        //                {
-        //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                    {
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable entries = photonEvent[222] as ExitGames.Client.Photon.Hashtable;
-        //                    if (entries != null)
-        //                    {
-        //                        foreach (DictionaryEntry entry in entries)
-        //                        {
-        //                            string roomName = (string)entry.Key;
-        //                            RoomInfo info = new RoomInfo(roomName, (ExitGames.Client.Photon.Hashtable)entry.Value);
-        //                            if (info.removedFromList)
-        //                            {
-        //                                this.mGameList.Remove(roomName);
-        //                            }
-        //                            else
-        //                            {
-        //                                this.mGameList[roomName] = info;
-        //                            }
-        //                        }
-        //                        this.mGameListCopy = new RoomInfo[this.mGameList.Count];
-        //                        this.mGameList.Values.CopyTo(this.mGameListCopy, 0);
-        //                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate, new object[0]);
-        //                    }
-        //                    return;
-        //                }
-        //            case 230:
-        //                {
-        //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                    {
-        //                        return;
-        //                    }
-        //                    ExitGames.Client.Photon.Hashtable entry2s = photonEvent[222] as ExitGames.Client.Photon.Hashtable;
-        //                    if (entry2s != null)
-        //                    {
-        //                        this.mGameList = new Dictionary<string, RoomInfo>();
-        //                        foreach (DictionaryEntry entry2 in entry2s)
-        //                        {
-        //                            string str3 = (string)entry2.Key;
-        //                            this.mGameList[str3] = new RoomInfo(str3, (ExitGames.Client.Photon.Hashtable)entry2.Value);
-        //                        }
-        //                        this.mGameListCopy = new RoomInfo[this.mGameList.Count];
-        //                        this.mGameList.Values.CopyTo(this.mGameListCopy, 0);
-        //                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate, new object[0]);
-        //                    }
-        //                    return;
-        //                }
-        //            default:
-        //                switch (code)
-        //                {
-        //                    case 253:
-        //                        {
-        //                            if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                            {
-        //                                return;
-        //                            }
-        //                            object obj7 = photonEvent[253];
-        //                            if (obj7 is int)
-        //                            {
-        //                                int iD = (int)obj7;
-        //                                ExitGames.Client.Photon.Hashtable gameProperties = null;
-        //                                ExitGames.Client.Photon.Hashtable pActorProperties = null;
-        //                                if (iD != 0)
-        //                                {
-        //                                    ExitGames.Client.Photon.Hashtable hashtable5 = photonEvent[251] as ExitGames.Client.Photon.Hashtable;
-        //                                    if (hashtable5 != null)
-        //                                    {
-        //                                        pActorProperties = hashtable5;
-        //                                        if (sender != null)
-        //                                        {
-        //                                            pActorProperties["sender"] = sender;
-        //                                            if (PhotonNetwork.isMasterClient && !sender.isLocal && iD == sender.ID && (pActorProperties.ContainsKey("statACL") || pActorProperties.ContainsKey("statBLA") || pActorProperties.ContainsKey("statGAS") || pActorProperties.ContainsKey("statSPD")))
-        //                                            {
-        //                                                if (pActorProperties.ContainsKey("statACL") && RCextensions.returnIntFromObject(pActorProperties["statACL"]) > 150)
-        //                                                {
-        //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-        //                                                    return;
-        //                                                }
-        //                                                if (pActorProperties.ContainsKey("statBLA") && RCextensions.returnIntFromObject(pActorProperties["statBLA"]) > 125)
-        //                                                {
-        //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-        //                                                    return;
-        //                                                }
-        //                                                if (pActorProperties.ContainsKey("statGAS") && RCextensions.returnIntFromObject(pActorProperties["statGAS"]) > 150)
-        //                                                {
-        //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-        //                                                    return;
-        //                                                }
-        //                                                if (pActorProperties.ContainsKey("statSPD") && RCextensions.returnIntFromObject(pActorProperties["statSPD"]) > 140)
-        //                                                {
-        //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-        //                                                    return;
-        //                                                }
-        //                                            }
-        //                                            if (pActorProperties.ContainsKey("name"))
-        //                                            {
-        //                                                if (iD != sender.ID)
-        //                                                {
-        //                                                    InstantiateTracker.instance.resetPropertyTracking(iD);
-        //                                                }
-        //                                                else if (!InstantiateTracker.instance.PropertiesChanged(sender))
-        //                                                {
-        //                                                    return;
-        //                                                }
-        //                                            }
-        //                                        }
-        //                                    }
-        //                                }
-        //                                else
-        //                                {
-        //                                    if (!(photonEvent[251] is ExitGames.Client.Photon.Hashtable))
-        //                                    {
-        //                                        return;
-        //                                    }
-        //                                    ExitGames.Client.Photon.Hashtable hashtable6 = photonEvent[251] as ExitGames.Client.Photon.Hashtable;
-        //                                    if (hashtable6 == null)
-        //                                    {
-        //                                        return;
-        //                                    }
-        //                                    gameProperties = hashtable6;
-        //                                }
-        //                                this.ReadoutProperties(gameProperties, pActorProperties, iD);
-        //                                object rcteam = pActorProperties["RCteam"];
-        //                                if (!(rcteam is int) && rcteam != null && pActorProperties["RCteam"] is string && (string)rcteam == "Disconnect_mod")
-        //                                {
-        //                                    sender.DisconnectMod = true;
-        //                                    return;
-        //                                }
-        //                            }
-        //                            return;
-        //                        }
-        //                    case 254:
-        //                        StatsTab.AddLine(string.Concat(new object[]
-        //                        {
-        //                "<i>",
-        //                sender.uiname.ToRGBA(),
-        //                "</i><color=black> [<color=white>",
-        //                sender.ID,
-        //                "</color>]</color> <color=#7b001c>leave.</color>"
-        //                        }), StatsTab.DebugType.LOG);
-        //                        this.HandleEventLeave(key);
-        //                        if (NetworkingPeer.actorGO.ContainsKey((short)key) && NetworkingPeer.actorGO[(short)key] != null)
-        //                        {
-        //                            NetworkingPeer.actorGO[(short)key].Clear();
-        //                            NetworkingPeer.actorGO.Remove((short)key);
-        //                        }
-        //                        break;
-        //                    case 255:
-        //                        {
-        //                            object obj8 = photonEvent[249];
-        //                            if (obj8 == null || obj8 is ExitGames.Client.Photon.Hashtable)
-        //                            {
-        //                                ExitGames.Client.Photon.Hashtable properties = (ExitGames.Client.Photon.Hashtable)obj8;
-        //                                if (sender == null)
-        //                                {
-        //                                    bool isLocal = this.mLocalActor.ID == key;
-        //                                    this.AddNewPlayer(key, new PhotonPlayer(isLocal, key, properties));
-        //                                    this.ResetPhotonViewsOnSerialize();
-        //                                }
-        //                                if (key != this.mLocalActor.ID)
-        //                                {
-        //                                    object[] parameters = new object[]
-        //                                    {
-        //                        NetworkingPeer.mActors[key]
-        //                                    };
-        //                                    NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerConnected, parameters);
-        //                                }
-        //                                else
-        //                                {
-        //                                    int[] ints = photonEvent[252] as int[];
-        //                                    if (ints != null)
-        //                                    {
-        //                                        foreach (int num6 in ints)
-        //                                        {
-        //                                            if (this.mLocalActor.ID != num6 && !NetworkingPeer.mActors.ContainsKey(num6))
-        //                                            {
-        //                                                this.AddNewPlayer(num6, new PhotonPlayer(false, num6, string.Empty));
-        //                                            }
-        //                                        }
-        //                                        if (this.mLastJoinType == JoinType.JoinOrCreateOnDemand && this.mLocalActor.ID == 1)
-        //                                        {
-        //                                            NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom, new object[0]);
-        //                                        }
-        //                                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom, new object[0]);
-        //                                    }
-        //                                    if (FengGameManagerMKII.Rolling && (FengGameManagerMKII.instance.ModRoll(true) == "Disconnect_mod" || FengGameManagerMKII.instance.ModRoll(true) == "RedSkies"))
-        //                                    {
-        //                                        PhotonNetwork.networkingPeer.ResendInfo(FengGameManagerMKII.instance.ModRoll(false));
-        //                                    }
-        //                                }
-        //                            }
-        //                            break;
-        //                        }
-        //                    default:
-        //                        StatsTab.AddLine(string.Concat(new object[]
-        //                        {
-        //                            "<color=#FF0000>Unknown eventCode</color>\n<color=#7b001c>Player <color=#000000>[",
-        //                            sender.ID,
-        //                            "]</color> <i>",
-        //                            sender.uiname.ToRGBA(),
-        //                            "</i> send eventCode: </color> <color=#000000>",
-        //                            photonEvent.Code,
-        //                            "</color><color=#7b001c> Params:</color> <color=#f0f0f0>",
-        //                            photonEvent.Parameters.ToString(),
-        //                            "</color>"
-        //                            }), StatsTab.DebugType.LOG);
-        //                        if (!NetworkingPeer.ignoreList.ContainsKey(sender.ID) || !NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-        //                        {
-        //                            NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
-        //                            StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{5}{3} ID: {2}{6}{3}.{7}{4}".Formats(new object[]
-        //                            {
-        //                            "<color=#7b001c>",
-        //                            "<b>",
-        //                            "<i>",
-        //                            "</i>",
-        //                            "</color>",
-        //                            sender.uiname.ToRGBA(),
-        //                            sender.ID,
-        //                            "</b>"
-        //                            }), StatsTab.DebugType.LOG);
-        //                        }
-        //                        if (NetworkingPeer.ignoreList.ContainsValue(sender.uiname) || FengGameManagerMKII.disconnectBan.Contains(sender.customProperties[PhotonPlayerProperty.name].ToString().StripHex()))
-        //                        {
-        //                            StatsTab.AddLine(sender.uiname.ToRGBA() + " is on the sent DEFAULT", StatsTab.DebugType.LOG);
-        //                            return;
-        //                        }
-        //                        if (photonEvent.Code < 200 && PhotonNetwork.OnEventCall != null)
-        //                        {
-        //                            object content = photonEvent[245];
-        //                            PhotonNetwork.OnEventCall(photonEvent.Code, content, key);
-        //                        }
-        //                        break;
-        //                }
-        //                this.externalListener.OnEvent(photonEvent);
-        //                return;
-        //        }
-        //    }
-        //}
+    //public void OnEvent(EventData photonEvent)
+    //{
+    //    int key = -1;
+    //    PhotonPlayer sender = null;
+    //    if (photonEvent.Parameters.ContainsKey(254))
+    //    {
+    //        key = (int)photonEvent[254];
+    //        if (NetworkingPeer.mActors.ContainsKey(key))
+    //        {
+    //            sender = NetworkingPeer.mActors[key];
+    //        }
+    //    }
+    //    else if (photonEvent.Parameters.Count == 0)
+    //    {
+    //        InRoomChat.addLINE2("Nigger( " + sender.uiname.ToRGBA() + " )sent an EVENT with no Params");
+    //        if (!NetworkingPeer.ignoreList.ContainsKey(sender.ID) || !NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //        {
+    //            NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
+    //            StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{5}{3} ID: {2}{6}{3}.{7}{4}".Formats(new object[]
+    //            {
+    //            "<color=#7b001c>",
+    //            "<b>",
+    //            "<i>",
+    //            "</i>",
+    //            "</color>",
+    //            sender.uiname.ToRGBA(),
+    //            sender.ID,
+    //            "</b>"
+    //            }), StatsTab.DebugType.WARNING);
+    //        }
+    //        return;
+    //    }
+    //    if (sender != null && NetworkingPeer.leftList.ContainsKey(sender.ID) && photonEvent.Code == 255 && PhotonNetwork.inRoom)
+    //    {
+    //        NetworkingPeer.leftList.Remove(sender.ID);
+    //    }
+    //    byte code = photonEvent.Code;
+    //    //if (BlockEventSpam(sender, photonEvent)) return;
+    //    if (code <= 208)
+    //    {
+    //        if (code == 101)
+    //        {
+    //            PhotonPlayer photonPlayer2 = sender;
+    //            ExitGames.Client.Photon.Hashtable hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+    //            if (hashtable != null)
+    //            {
+    //                if (sender == null)
+    //                {
+    //                    if (key > 0 && NetworkingPeer.mActors.ContainsKey(key))
+    //                    {
+    //                        photonPlayer2 = NetworkingPeer.mActors[key];
+    //                    }
+    //                    else if (hashtable.ContainsKey(102) && hashtable[102] is short)
+    //                    {
+    //                        short num2 = (short)hashtable[102];
+    //                        if (!NetworkingPeer.mActors.TryGetValue((int)num2, out photonPlayer2))
+    //                        {
+    //                            photonPlayer2 = PhotonPlayer.Find((int)num2);
+    //                        }
+    //                    }
+    //                }
+    //                if (photonPlayer2 != null)
+    //                {
+    //                    if (hashtable[104] is string)
+    //                    {
+    //                        photonPlayer2.version = (string)hashtable[104];
+    //                    }
+    //                    if (hashtable[103] is string)
+    //                    {
+    //                        photonPlayer2.versionRS = (string)hashtable[103];
+    //                    }
+    //                    if (hashtable[102] is bool)
+    //                    {
+    //                        photonPlayer2.CM = (bool)hashtable[102];
+    //                    }
+    //                    if (hashtable[101] is bool)
+    //                    {
+    //                        photonPlayer2.RS = (bool)hashtable[101];
+    //                    }
+    //                }
+    //                this.RebuildPlayerListCopies();
+    //            }
+    //            return;
+    //        }
+    //        switch (code)
+    //        {
+    //            case 200:
+    //                {
+    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
+    //                    {
+    //                        return;
+    //                    }
+    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
+    //                    {
+    //                        StatsTab.AddLine(string.Concat(new object[]
+    //                        {
+    //                "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
+    //                sender.ID,
+    //                "]",
+    //                sender.uiname.ToRGBA(),
+    //                "..."
+    //                        }), StatsTab.DebugType.WARNING);
+    //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable rpc = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+    //                    this.ExecuteRPC(rpc, sender);
+    //                    return;
+    //                }
+    //            case 201:
+    //            case 206:
+    //                {
+    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                    {
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable evData = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
+    //                    {
+    //                        StatsTab.AddLine(string.Concat(new object[]
+    //                        {
+    //                "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
+    //                sender.ID,
+    //                "]",
+    //                sender.uiname.ToRGBA(),
+    //                "..."
+    //                        }), StatsTab.DebugType.WARNING);
+    //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+    //                        return;
+    //                    }
+    //                    if (evData != null)
+    //                    {
+    //                        if (!(evData[0] is int))
+    //                        {
+    //                            return;
+    //                        }
+    //                        int networkTime = (int)evData[0];
+    //                        short correctPrefix = -1;
+    //                        short num3 = 1;
+    //                        if (evData.ContainsKey(1))
+    //                        {
+    //                            if (!(evData[1] is short))
+    //                            {
+    //                                return;
+    //                            }
+    //                            correctPrefix = (short)evData[1];
+    //                            num3 = 2;
+    //                        }
+    //                        short i = num3;
+    //                        while ((int)i < evData.Count)
+    //                        {
+    //                            ExitGames.Client.Photon.Hashtable hash = evData[i] as ExitGames.Client.Photon.Hashtable;
+    //                            if (hash == null || hash.Count > 2 || hash.Count <= 0)
+    //                            {
+    //                                return;
+    //                            }
+    //                            if (!(hash[0] is int))
+    //                            {
+    //                                return;
+    //                            }
+    //                            this.OnSerializeRead(hash, sender, networkTime, correctPrefix);
+    //                            i += 1;
+    //                        }
+    //                    }
+    //                    return;
+    //                }
+    //            case 202:
+    //                {
+    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
+    //                    {
+    //                        return;
+    //                    }
+    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
+    //                    {
+    //                        StatsTab.AddLine(string.Concat(new object[]
+    //                        {
+    //                            "Wrong 202 byte... (photonEvent[0xf5] is not a Hashtable) Start dc for [",
+    //                            sender.ID,
+    //                            "]",
+    //                            sender.uiname.ToRGBA(),
+    //                            "..."
+    //                        }), StatsTab.DebugType.WARNING);
+    //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable evData2 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+    //                    if ((string)evData2[0] == "hook" && (int)evData2[7] == 2)
+    //                    {
+    //                        StatsTab.AddLine(string.Concat(new object[]
+    //                        {
+    //                            "Get AC CloseConnection from [",
+    //                            sender.ID,
+    //                            "]",
+    //                            sender.uiname.ToRGBA()
+    //                        }), StatsTab.DebugType.WARNING);
+    //                        return;
+    //                    }
+    //                    if (evData2[0] is string && (int)evData2[7] != 2)
+    //                    {
+    //                        this.DoInstantiate2(evData2, sender, null);
+    //                        return;
+    //                    }
+    //                    //NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
+    //                    //FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+    //                    //StatsTab.AddLine(string.Concat(new object[]
+    //                    //{
+    //                    //    "Wrong params for DoInstantiate2 from [",
+    //                    //    sender.ID,
+    //                    //    "]",
+    //                    //    sender.uiname.ToRGBA()
+    //                    //}), StatsTab.DebugType.ERROR);
+    //                    return;
+    //                }
+    //            case 203:
+    //                if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                {
+    //                    return;
+    //                }
+    //                StatsTab.AddLine(string.Concat(new object[]
+    //                {
+    //            "<color=#7b001c>Player <color=#000000>[",
+    //            sender.ID,
+    //            "]</color>",
+    //            sender.uiname.ToRGBA(),
+    //            "send eventCode: </color> <color=#000000>",
+    //            photonEvent.Code,
+    //            " || (Close Connection)</color>"
+    //                }), StatsTab.DebugType.WARNING);
+    //                return;
+    //            case 204:
+    //                {
+    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
+    //                    {
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable hashtable2 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+    //                    if (hashtable2 != null)
+    //                    {
+    //                        ExitGames.Client.Photon.Hashtable hashtable3 = hashtable2;
+    //                        if (hashtable3[0] is int)
+    //                        {
+    //                            int num4 = (int)hashtable3[0];
+    //                            GameObject obj3 = null;
+    //                            this.instantiatedObjects.TryGetValue(num4, out obj3);
+    //                            if (obj3 != null && sender != null)
+    //                            {
+    //                                this.RemoveInstantiatedGO(obj3, true, false, 0f);
+    //                            }
+    //                        }
+    //                    }
+    //                    return;
+    //                }
+    //            case 207:
+    //                {
+    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
+    //                    {
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable hashtable4 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+    //                    if (hashtable4 != null)
+    //                    {
+    //                        ExitGames.Client.Photon.Hashtable hashtable3 = hashtable4;
+    //                        if (hashtable3[0] is int)
+    //                        {
+    //                            int playerId = (int)hashtable3[0];
+    //                            if (playerId < 0 && sender != null && (sender.isMasterClient || sender.isLocal))
+    //                            {
+    //                                this.DestroyAll(true);
+    //                                return;
+    //                            }
+    //                            if (sender != null && (sender.isMasterClient || sender.isLocal || playerId != PhotonNetwork.player.ID))
+    //                            {
+    //                                this.DestroyPlayerObjects(playerId, true);
+    //                            }
+    //                        }
+    //                    }
+    //                    return;
+    //                }
+    //            case 208:
+    //                {
+    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                    {
+    //                        return;
+    //                    }
+    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
+    //                    {
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable hashtable3 = (ExitGames.Client.Photon.Hashtable)photonEvent[245];
+    //                    if (!(hashtable3[1] is int))
+    //                    {
+    //                        return;
+    //                    }
+    //                    int num5 = (int)hashtable3[1];
+    //                    if (sender != null && sender.isMasterClient && num5 == sender.ID)
+    //                    {
+    //                        return;
+    //                    }
+    //                    if (sender != null && !sender.isMasterClient && !sender.isLocal)
+    //                    {
+    //                        if (PhotonNetwork.isMasterClient)
+    //                        {
+    //                            FengGameManagerMKII.noRestart = true;
+    //                            PhotonNetwork.SetMasterClient(PhotonNetwork.player);
+    //                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "stealing MC.");
+    //                        }
+    //                        return;
+    //                    }
+    //                    if (num5 == this.mLocalActor.ID)
+    //                    {
+    //                        this.SetMasterClient(num5, false);
+    //                        return;
+    //                    }
+    //                    if (sender == null || sender.isMasterClient || sender.isLocal)
+    //                    {
+    //                        this.SetMasterClient(num5, false);
+    //                    }
+    //                    return;
+    //                }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        switch (code)
+    //        {
+    //            case 226:
+    //                {
+    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                    {
+    //                        return;
+    //                    }
+    //                    object obj4 = photonEvent[229];
+    //                    object obj5 = photonEvent[227];
+    //                    object obj6 = photonEvent[228];
+    //                    if (obj4 is int && obj5 is int && obj6 is int)
+    //                    {
+    //                        this.mPlayersInRoomsCount = (int)obj4;
+    //                        this.mPlayersOnMasterCount = (int)obj5;
+    //                        this.mGameCount = (int)obj6;
+    //                    }
+    //                    return;
+    //                }
+    //            case 227:
+    //                break;
+    //            case 228:
+    //                return;
+    //            case 229:
+    //                {
+    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                    {
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable entries = photonEvent[222] as ExitGames.Client.Photon.Hashtable;
+    //                    if (entries != null)
+    //                    {
+    //                        foreach (DictionaryEntry entry in entries)
+    //                        {
+    //                            string roomName = (string)entry.Key;
+    //                            RoomInfo info = new RoomInfo(roomName, (ExitGames.Client.Photon.Hashtable)entry.Value);
+    //                            if (info.removedFromList)
+    //                            {
+    //                                this.mGameList.Remove(roomName);
+    //                            }
+    //                            else
+    //                            {
+    //                                this.mGameList[roomName] = info;
+    //                            }
+    //                        }
+    //                        this.mGameListCopy = new RoomInfo[this.mGameList.Count];
+    //                        this.mGameList.Values.CopyTo(this.mGameListCopy, 0);
+    //                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate, new object[0]);
+    //                    }
+    //                    return;
+    //                }
+    //            case 230:
+    //                {
+    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                    {
+    //                        return;
+    //                    }
+    //                    ExitGames.Client.Photon.Hashtable entry2s = photonEvent[222] as ExitGames.Client.Photon.Hashtable;
+    //                    if (entry2s != null)
+    //                    {
+    //                        this.mGameList = new Dictionary<string, RoomInfo>();
+    //                        foreach (DictionaryEntry entry2 in entry2s)
+    //                        {
+    //                            string str3 = (string)entry2.Key;
+    //                            this.mGameList[str3] = new RoomInfo(str3, (ExitGames.Client.Photon.Hashtable)entry2.Value);
+    //                        }
+    //                        this.mGameListCopy = new RoomInfo[this.mGameList.Count];
+    //                        this.mGameList.Values.CopyTo(this.mGameListCopy, 0);
+    //                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate, new object[0]);
+    //                    }
+    //                    return;
+    //                }
+    //            default:
+    //                switch (code)
+    //                {
+    //                    case 253:
+    //                        {
+    //                            if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                            {
+    //                                return;
+    //                            }
+    //                            object obj7 = photonEvent[253];
+    //                            if (obj7 is int)
+    //                            {
+    //                                int iD = (int)obj7;
+    //                                ExitGames.Client.Photon.Hashtable gameProperties = null;
+    //                                ExitGames.Client.Photon.Hashtable pActorProperties = null;
+    //                                if (iD != 0)
+    //                                {
+    //                                    ExitGames.Client.Photon.Hashtable hashtable5 = photonEvent[251] as ExitGames.Client.Photon.Hashtable;
+    //                                    if (hashtable5 != null)
+    //                                    {
+    //                                        pActorProperties = hashtable5;
+    //                                        if (sender != null)
+    //                                        {
+    //                                            pActorProperties["sender"] = sender;
+    //                                            if (PhotonNetwork.isMasterClient && !sender.isLocal && iD == sender.ID && (pActorProperties.ContainsKey("statACL") || pActorProperties.ContainsKey("statBLA") || pActorProperties.ContainsKey("statGAS") || pActorProperties.ContainsKey("statSPD")))
+    //                                            {
+    //                                                if (pActorProperties.ContainsKey("statACL") && RCextensions.returnIntFromObject(pActorProperties["statACL"]) > 150)
+    //                                                {
+    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
+    //                                                    return;
+    //                                                }
+    //                                                if (pActorProperties.ContainsKey("statBLA") && RCextensions.returnIntFromObject(pActorProperties["statBLA"]) > 125)
+    //                                                {
+    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
+    //                                                    return;
+    //                                                }
+    //                                                if (pActorProperties.ContainsKey("statGAS") && RCextensions.returnIntFromObject(pActorProperties["statGAS"]) > 150)
+    //                                                {
+    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
+    //                                                    return;
+    //                                                }
+    //                                                if (pActorProperties.ContainsKey("statSPD") && RCextensions.returnIntFromObject(pActorProperties["statSPD"]) > 140)
+    //                                                {
+    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
+    //                                                    return;
+    //                                                }
+    //                                            }
+    //                                            if (pActorProperties.ContainsKey("name"))
+    //                                            {
+    //                                                if (iD != sender.ID)
+    //                                                {
+    //                                                    InstantiateTracker.instance.resetPropertyTracking(iD);
+    //                                                }
+    //                                                else if (!InstantiateTracker.instance.PropertiesChanged(sender))
+    //                                                {
+    //                                                    return;
+    //                                                }
+    //                                            }
+    //                                        }
+    //                                    }
+    //                                }
+    //                                else
+    //                                {
+    //                                    if (!(photonEvent[251] is ExitGames.Client.Photon.Hashtable))
+    //                                    {
+    //                                        return;
+    //                                    }
+    //                                    ExitGames.Client.Photon.Hashtable hashtable6 = photonEvent[251] as ExitGames.Client.Photon.Hashtable;
+    //                                    if (hashtable6 == null)
+    //                                    {
+    //                                        return;
+    //                                    }
+    //                                    gameProperties = hashtable6;
+    //                                }
+    //                                this.ReadoutProperties(gameProperties, pActorProperties, iD);
+    //                                object rcteam = pActorProperties["RCteam"];
+    //                                if (!(rcteam is int) && rcteam != null && pActorProperties["RCteam"] is string && (string)rcteam == "Disconnect_mod")
+    //                                {
+    //                                    sender.DisconnectMod = true;
+    //                                    return;
+    //                                }
+    //                            }
+    //                            return;
+    //                        }
+    //                    case 254:
+    //                        StatsTab.AddLine(string.Concat(new object[]
+    //                        {
+    //                "<i>",
+    //                sender.uiname.ToRGBA(),
+    //                "</i><color=black> [<color=white>",
+    //                sender.ID,
+    //                "</color>]</color> <color=#7b001c>leave.</color>"
+    //                        }), StatsTab.DebugType.LOG);
+    //                        this.HandleEventLeave(key);
+    //                        if (NetworkingPeer.actorGO.ContainsKey((short)key) && NetworkingPeer.actorGO[(short)key] != null)
+    //                        {
+    //                            NetworkingPeer.actorGO[(short)key].Clear();
+    //                            NetworkingPeer.actorGO.Remove((short)key);
+    //                        }
+    //                        break;
+    //                    case 255:
+    //                        {
+    //                            object obj8 = photonEvent[249];
+    //                            if (obj8 == null || obj8 is ExitGames.Client.Photon.Hashtable)
+    //                            {
+    //                                ExitGames.Client.Photon.Hashtable properties = (ExitGames.Client.Photon.Hashtable)obj8;
+    //                                if (sender == null)
+    //                                {
+    //                                    bool isLocal = this.mLocalActor.ID == key;
+    //                                    this.AddNewPlayer(key, new PhotonPlayer(isLocal, key, properties));
+    //                                    this.ResetPhotonViewsOnSerialize();
+    //                                }
+    //                                if (key != this.mLocalActor.ID)
+    //                                {
+    //                                    object[] parameters = new object[]
+    //                                    {
+    //                        NetworkingPeer.mActors[key]
+    //                                    };
+    //                                    NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerConnected, parameters);
+    //                                }
+    //                                else
+    //                                {
+    //                                    int[] ints = photonEvent[252] as int[];
+    //                                    if (ints != null)
+    //                                    {
+    //                                        foreach (int num6 in ints)
+    //                                        {
+    //                                            if (this.mLocalActor.ID != num6 && !NetworkingPeer.mActors.ContainsKey(num6))
+    //                                            {
+    //                                                this.AddNewPlayer(num6, new PhotonPlayer(false, num6, string.Empty));
+    //                                            }
+    //                                        }
+    //                                        if (this.mLastJoinType == JoinType.JoinOrCreateOnDemand && this.mLocalActor.ID == 1)
+    //                                        {
+    //                                            NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom, new object[0]);
+    //                                        }
+    //                                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom, new object[0]);
+    //                                    }
+    //                                    if (FengGameManagerMKII.Rolling && (FengGameManagerMKII.instance.ModRoll(true) == "Disconnect_mod" || FengGameManagerMKII.instance.ModRoll(true) == "RedSkies"))
+    //                                    {
+    //                                        PhotonNetwork.networkingPeer.ResendInfo(FengGameManagerMKII.instance.ModRoll(false));
+    //                                    }
+    //                                }
+    //                            }
+    //                            break;
+    //                        }
+    //                    default:
+    //                        StatsTab.AddLine(string.Concat(new object[]
+    //                        {
+    //                            "<color=#FF0000>Unknown eventCode</color>\n<color=#7b001c>Player <color=#000000>[",
+    //                            sender.ID,
+    //                            "]</color> <i>",
+    //                            sender.uiname.ToRGBA(),
+    //                            "</i> send eventCode: </color> <color=#000000>",
+    //                            photonEvent.Code,
+    //                            "</color><color=#7b001c> Params:</color> <color=#f0f0f0>",
+    //                            photonEvent.Parameters.ToString(),
+    //                            "</color>"
+    //                            }), StatsTab.DebugType.LOG);
+    //                        if (!NetworkingPeer.ignoreList.ContainsKey(sender.ID) || !NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
+    //                        {
+    //                            NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
+    //                            StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{5}{3} ID: {2}{6}{3}.{7}{4}".Formats(new object[]
+    //                            {
+    //                            "<color=#7b001c>",
+    //                            "<b>",
+    //                            "<i>",
+    //                            "</i>",
+    //                            "</color>",
+    //                            sender.uiname.ToRGBA(),
+    //                            sender.ID,
+    //                            "</b>"
+    //                            }), StatsTab.DebugType.LOG);
+    //                        }
+    //                        if (NetworkingPeer.ignoreList.ContainsValue(sender.uiname) || FengGameManagerMKII.disconnectBan.Contains(sender.customProperties[PhotonPlayerProperty.name].ToString().StripHex()))
+    //                        {
+    //                            StatsTab.AddLine(sender.uiname.ToRGBA() + " is on the sent DEFAULT", StatsTab.DebugType.LOG);
+    //                            return;
+    //                        }
+    //                        if (photonEvent.Code < 200 && PhotonNetwork.OnEventCall != null)
+    //                        {
+    //                            object content = photonEvent[245];
+    //                            PhotonNetwork.OnEventCall(photonEvent.Code, content, key);
+    //                        }
+    //                        break;
+    //                }
+    //                this.externalListener.OnEvent(photonEvent);
+    //                return;
+    //        }
+    //    }
+    //}
     public bool BanAC(byte eventCode, object customEventContent, bool sendReliable, RaiseEventOptions raiseEventOptions)
     {
         if (PhotonNetwork.offlineMode)
@@ -4628,11 +3879,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
         return base.OpRaiseEvent(eventCode, customEventContent, sendReliable, raiseEventOptions);
     }
-    protected internal override bool OpReturn(bool includeMSG, byte eventCode, object customEventContent, bool sendReliable, RaiseEventOptions raiseEventOptions, object[] id, string name)
-    {
-        return !PhotonNetwork.offlineMode && base.OpReturn(includeMSG, eventCode, customEventContent, sendReliable, raiseEventOptions, id, name);
-    }
-
+    
     public void OpRemoveCompleteCache()
     {
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
@@ -5013,56 +4260,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     //    data["RCteam"] = RCteam;
     //    base.OpSetPropertiesOfActor(PhotonNetwork.player.ID, data, true, 0);
     //}
-    protected internal void ResendInfo(string modinfo)
-    {
-        switch(modinfo)
-        {
-            case "Disconnect_mod":
-                {
-                    int RCteam = 0;
-                    if (PhotonNetwork.player.customProperties["RCteam"] != null)
-                    {
-                        RCteam = (int)PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam];
-                    }
-                    ExitGames.Client.Photon.Hashtable data = new ExitGames.Client.Photon.Hashtable();
-                    data.Add("RCteam", "Disconnect_mod");
-                    base.OpSetPropertiesOfActor(PhotonNetwork.player.ID, data, true, 0);
-                    data["RCteam"] = RCteam;
-                    base.OpSetPropertiesOfActor(PhotonNetwork.player.ID, data, true, 0);
-                    break;
-                }
-            case "CyanModNew":
-                {
-                    byte arg_6D_1 = 101;
-                    ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable(4);
-                    hashtable.Add(102, true);
-                    hashtable.Add(104, "TapikAssHole");
-                    hashtable.Add(105, PlayerPrefs.GetString(new SimpleAES().Decrypt("bjyQbFeFPgghpSxbLKrEG2wBh3zR10LyPJ2x/RB5PXg="), ""));
-                    OpRaiseEvent(arg_6D_1, hashtable, true, new RaiseEventOptions
-                    {
-                        CachingOption = EventCaching.AddToRoomCache,
-                        Receivers = 0
-                    });
-                    break; 
-                }
-            case "RedSkies":
-                {
-                    byte arg_7C_1 = 101;
-                    ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable(4);
-                    hashtable.Add(101, true);
-                    hashtable.Add(102, NetworkingPeer.instance.mLocalActor.ID);
-                    hashtable.Add(103, "v9/30/15");
-                    hashtable.Add(104, FengGameManagerMKII.Chatname);
-                    this.OpRaiseEvent(arg_7C_1, hashtable, true, new RaiseEventOptions
-                    {
-                        CachingOption = EventCaching.AddToRoomCache,
-                        Receivers = 0
-                    });
-                    break;
-                }
-        }
-        
-    }
+   
 
     private static int ReturnLowestPlayerId(PhotonPlayer[] players, int playerIdToIgnore)
     {

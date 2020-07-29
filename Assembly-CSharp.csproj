@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\AOTTG 1.4\AoTTG_data\Managed\</OutputPath>
+    <OutputPath>..\Reaper\RCFinal_Data\Managed\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\N%28ame%29L%28ess%29Mod clear build\RCFinal_Data\Managed\</OutputPath>
+    <OutputPath>..\Reaper\RCFinal_Data\Managed\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -46,9 +46,6 @@
     <Compile Include="CLEARSKIES\Triplet.cs" />
     <Compile Include="Photon\CustomYieldInstruction.cs" />
     <Compile Include="Photon\EventCaching.cs" />
-    <Compile Include="CLEARSKIES\ExtraGUI.cs" />
-    <Compile Include="F1GUI\F1GUI.cs" />
-    <Compile Include="CLEARSKIES\F2GUI.cs" />
     <Compile Include="FunctionComparer.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="AHSSShotGunCollider.cs" />
@@ -75,10 +72,7 @@
     <Compile Include="CLEARSKIES\Pool.cs" />
     <Compile Include="Photon\ReceiverGroup.cs" />
     <Compile Include="RoomData.cs" />
-    <Compile Include="ServerListGUI.cs" />
     <Compile Include="CLEARSKIES\SPECIES.cs" />
-    <Compile Include="StatsTabUI\DC\DC.cs" />
-    <Compile Include="StatsTabUI\StatsTab.cs" />
     <Compile Include="TextColor.cs" />
     <Compile Include="TITAN_EREN.cs" />
     <Compile Include="TITAN.cs" />

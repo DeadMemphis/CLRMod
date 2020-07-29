@@ -12,58 +12,20 @@ public class PhotonPlayer
 
     private string nameField;
     public object TagObject;
-    private bool SLBFiled;
-    private bool CMFiled;
-    private bool DisconnectFiled;
-    private Hashtable MyCurrPlayerProps;
-    private bool RCFiled;
-    private bool RSFiled;
-    private string versionRSFiled;
-    private string versionFiled;
-    public int Bites;
-    public int Packs;
-    protected internal Dictionary<string, Pair<DateTime, int>> RPCSpam = new Dictionary<string, Pair<DateTime, int>>();
-    protected internal Dictionary<byte, Pair<DateTime, int>> EventSpam = new Dictionary<byte, Pair<DateTime, int>>();
+  
 
-    protected internal bool isDCMarked
-    {
-        get
-        {
-            object obj = this.customProperties["marked"];
-            if (obj != null)
-            {
-                return true;
-            }
-            return false;
-        }
-        set
-        {
-            this.SetCustomProperties(new Hashtable
-            {
-                {
-                    "marked",
-                    value
-                }
-            });
-        }
-    }
+
+   
 
     protected internal string chatname
     {
         get;
         set;
     }
+
+
     protected internal PhotonPlayer(bool isLocal, int actorID, Hashtable properties)
     {
-        //this.MYBRM = false;
-        DisconnectFiled = false;
-        this.SLBFiled = false;
-        this.CMFiled = false;
-        this.versionFiled = string.Empty;
-        this.RSFiled = false;
-        this.RCFiled = false;
-        this.versionRSFiled = string.Empty;
-        //this.NEWBRM = false;
         this.actorID = -1;
         this.nameField = string.Empty;
         this.customProperties = new Hashtable();
@@ -74,15 +36,6 @@ public class PhotonPlayer
 
     public PhotonPlayer(bool isLocal, int actorID, string name)
     {
-        //this.MYBRM = false;
-        DisconnectFiled = false;
-        this.SLBFiled = false;
-        this.CMFiled = false;
-        this.versionFiled = string.Empty;
-        this.RSFiled = false;
-        this.RCFiled = false;
-        this.versionRSFiled = string.Empty;
-        //this.NEWBRM = false;
         this.actorID = -1;
         this.nameField = string.Empty;
         this.customProperties = new Hashtable();
@@ -194,87 +147,7 @@ public class PhotonPlayer
         });
         }
     }
-
-    #region MODES
-    public bool DisconnectMod
-    {
-        get
-        {
-            return this.DisconnectFiled;
-        }
-        set
-        {
-            this.DisconnectFiled = value;
-        }
-    }
-    public bool RC
-    {
-        get
-        {
-            return this.RCFiled;
-        }
-        set
-        {
-            this.RCFiled = value;
-        }
-    }
-    public string versionRS
-    {
-        get
-        {
-            return this.versionRSFiled;
-        }
-        set
-        {
-            this.versionRSFiled = value;
-        }
-    }
-    public bool RS
-    {
-        get
-        {
-            return this.RSFiled;
-        }
-        set
-        {
-            this.RSFiled = value;
-        }
-    }
     
-    public bool CM
-    {
-        get
-        {
-            return this.CMFiled;
-        }
-        set
-        {
-            this.CMFiled = value;
-        }
-    }
-    public bool SLB
-    {
-        get
-        {
-            return this.SLBFiled;
-        }
-        set
-        {
-            this.SLBFiled = value;
-        }
-    }
-    public string version
-    {
-        get
-        {
-            return this.versionFiled;
-        }
-        set
-        {
-            this.versionFiled = value;
-        }
-    }
-    #endregion
     
     public static bool IsInPlayerList(int ID)
     {
@@ -405,10 +278,6 @@ public class PhotonPlayer
             this.customProperties.MergeStringKeys(propertiesToSet);
             this.customProperties.StripKeysWithNullValues();
             Hashtable actorProperties = propertiesToSet.StripToStringKeys();
-            //if (this.isLocal)
-            //{
-            //    this.MyCurrPlayerProps = actorProperties;
-            //}
             if ((this.actorID > 0) && !PhotonNetwork.offlineMode)
             {
                 PhotonNetwork.networkingPeer.OpSetCustomPropertiesOfActor(this.actorID, actorProperties, true, 0);
