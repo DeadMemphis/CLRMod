@@ -51,7 +51,7 @@
     <Compile Include="CLEARSKIES\F2GUI.cs" />
     <Compile Include="FunctionComparer.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="AHSSShotGunCollider.cs" />
+    <Compile Include="TriggerColliders\AHSSShotGunCollider.cs" />
     <Compile Include="GAMETYPE.cs" />
     <Compile Include="GUITexture.cs" />
     <Compile Include="Hexadecimal.cs" />
@@ -131,7 +131,7 @@
     <Compile Include="PhotonPlayerProperty.cs" />
     <Compile Include="UNIFORM_TYPE.cs" />
     <Compile Include="SEX.cs" />
-    <Compile Include="TriggerColliderWeapon.cs" />
+    <Compile Include="TriggerColliders\TriggerColliderWeapon.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="GameObjectExtensions.cs" />
     <Compile Include="FlareMovement.cs" />

@@ -2729,12 +2729,12 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         if (sender != null &&
             (BlockEventSpam(sender, photonEvent) /*|| ignoreList.ContainsValue(sender.uiname)*/) && FengGameManagerMKII.instance.Joined) return;
         //if (sender != null) sender.BytesReceived += base.ByteCountCurrentDispatch;
-        if (base.ByteCountCurrentDispatch > 14000 && PhotonNetwork.inRoom && photonEvent.Code != 87 && photonEvent.Code != 88)
-        {
-            InRoomChat.addLINE2(sender.uiname.ToRGBA() + " sent huge Event (" + ByteCountCurrentDispatch + ")");
-            FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-            return;
-        }
+        //if (base.ByteCountCurrentDispatch > 14000 && PhotonNetwork.inRoom && photonEvent.Code != 87 && photonEvent.Code != 88)
+        //{
+        //    InRoomChat.addLINE2(sender.uiname.ToRGBA() + " sent huge Event (" + ByteCountCurrentDispatch + ")");
+        //    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+        //    return;
+        //}
         switch (photonEvent.Code)
         {
             case 101:

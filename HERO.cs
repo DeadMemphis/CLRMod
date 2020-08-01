@@ -1049,16 +1049,16 @@ public class HERO : MONO
             }
             else
             {
-                launchDashRopes();
+                //launchDashRopes();
                 //PhotonNetwork.Instantiate("Character_parts/AOTTG_HERO_body", baseT.position, baseT.rotation, 0, null);
                 //PhotonNetwork.Instantiate("Character_parts/character_blade_l", hand_L.position, hand_L.rotation, 0, null);
                 //PhotonNetwork.Instantiate("Character_parts/character_blade_r", hand_R.position, hand_R.rotation, 0, null);
                 //PhotonNetwork.Instantiate("Character_parts/character_3dmg", baseT.position, baseT.rotation, 0, null);
                 //PhotonNetwork.Instantiate("Character_parts/character_3dmg_gas_l", baseT.position, baseT.rotation, 0, null);
                 //PhotonNetwork.Instantiate("Character_parts/character_3dmg_gas_r", baseT.position, baseT.rotation, 0, null);
-                //PhotonNetwork.Instantiate("redCross", baseT.position, Quaternion.Euler(90f, 0f, 0f), 0, null);
-                //PhotonNetwork.Instantiate("redCross", baseT.position, Quaternion.Euler(270f, 0f, 0f), 0, null);
-                //PhotonNetwork.Instantiate("redCross", baseT.position, Quaternion.Euler(270f, 0f, 0f), 0, null);
+                PhotonNetwork.Instantiate("redCross", baseT.position, Quaternion.Euler(90f, 0f, 0f), 0, null);
+                PhotonNetwork.Instantiate("redCross", baseT.position, Quaternion.Euler(270f, 0f, 0f), 0, null);
+                PhotonNetwork.Instantiate("redCross", baseT.position, Quaternion.Euler(270f, 0f, 0f), 0, null);
             }
             this.dashTime = 0.5f;
             this.crossFade("dash", 0.1f);

@@ -320,12 +320,8 @@ public class TriggerColliderWeapon : MonoBehaviour
                                             }
                                             else if (!PhotonNetwork.isMasterClient)
                                             {
-                                                PhotonView pview = female_titan.GetComponent<PhotonView>();
-                                                if (pview != null)
-                                                {
-                                                    object[] objArray5 = new object[] { this.basePV.viewID };
-                                                    pview.photonView.RPC("hitAnkleLRPC", PhotonTargets.MasterClient, objArray5);
-                                                }
+                                                object[] objArray5 = new object[] { this.basePV.viewID };
+                                                female_titan.photonView.RPC("hitAnkleLRPC", PhotonTargets.MasterClient, objArray5);
                                             }
                                             else
                                                 female_titan.hitAnkleLRPC(this.basePV.viewID, num2);
