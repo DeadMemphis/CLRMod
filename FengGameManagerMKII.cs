@@ -4443,6 +4443,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         {
             //this.customlevelclientE(this.levelCache[i], false);
             base.StartCoroutine(this.customlevelclientE(this.levelCache[i], false));
+            BRM.StatsTab.AddLine("Call customlevelcache() for load this.levelCache[" + this.levelCache[i] + "in customlevelclientE()", StatsTab.DebugType.LOG);
         }
         yield return new WaitForEndOfFrame();
         yield break;
@@ -4613,6 +4614,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                         if ((Convert.ToSingle(strArray[10]) != 1f) || (Convert.ToSingle(strArray[11]) != 1f))
                                         {
                                             renderer.material.mainTextureScale = new Vector2(renderer.material.mainTextureScale.x * Convert.ToSingle(strArray[10]), renderer.material.mainTextureScale.y * Convert.ToSingle(strArray[11]));
+                                            renderer.material.color = new Color(1f, 0f, 0f);
                                         }
                                     }
                                 }
@@ -4899,40 +4901,43 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     {
         if (info.sender.isMasterClient)
         {
-            if (content.Length == 1 && content[0] == "loadcached")
+            if (content.Length == 1)
             {
-                //base.StartCoroutine(this.customlevelcache());
-                BRM.StatsTab.AddLine("customlevelRPC = loadcached");
-                logicLoaded = true;
-                customLevelLoaded = true;
-                scriptcache = string.Empty;
-                this.spawnPlayerCustomMap();
-                return;
-            }
-            else if (content.Length == 1 && content[0] == "loadempty")
-            {
-                BRM.StatsTab.AddLine("customlevelRPC = loadempty");
-                currentLevel = string.Empty;
-                scriptcache = string.Empty;
-                this.levelCache.Clear();
-                this.titanSpawns.Clear();
-                this.playerSpawnsC.Clear();
-                this.playerSpawnsM.Clear();
-                ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
-                propertiesToSet.Add(PhotonPlayerProperty.currentLevel, currentLevel);
-                PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-                logicLoaded = true;
-                customLevelLoaded = true;
-                this.spawnPlayerCustomMap();
-                while (customObjects.Count > 0)
+                if (content[0] == "loadcached")
                 {
-                    GameObject gameObject = customObjects.Dequeue();
-                    if (gameObject != null)
-                    {
-                        UnityEngine.Object.Destroy(gameObject);
-                    }
+                    //base.StartCoroutine(this.customlevelcache());
+                    BRM.StatsTab.AddLine("customlevelRPC = loadcached");
+                    logicLoaded = true;
+                    customLevelLoaded = true;
+                    scriptcache = string.Empty;
+                    this.spawnPlayerCustomMap();
+                    return;
                 }
-                return;
+                if (content[0] == "loadempty")
+                {
+                    BRM.StatsTab.AddLine("customlevelRPC = loadempty");
+                    currentLevel = string.Empty;
+                    scriptcache = string.Empty;
+                    this.levelCache.Clear();
+                    this.titanSpawns.Clear();
+                    this.playerSpawnsC.Clear();
+                    this.playerSpawnsM.Clear();
+                    ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
+                    propertiesToSet.Add(PhotonPlayerProperty.currentLevel, currentLevel);
+                    PhotonNetwork.player.SetCustomProperties(propertiesToSet);
+                    logicLoaded = true;
+                    customLevelLoaded = true;
+                    this.spawnPlayerCustomMap();
+                    while (customObjects.Count > 0)
+                    {
+                        GameObject gameObject = customObjects.Dequeue();
+                        if (gameObject != null)
+                        {
+                            UnityEngine.Object.Destroy(gameObject);
+                        }
+                    }
+                    return;
+                }
             }
             else
             {
@@ -4944,10 +4949,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     base.StartCoroutine(this.customlevelclientE(content, true));
                 }
             }
-
-
-
-
         }
     }
 
@@ -6584,8 +6585,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     GameSettings.titanCap = Math.Min(50, GameSettings.titanCap);
                     PView.RPC("clearlevel", PhotonTargets.AllBuffered, new object[] { strArray3, GameSettings.gameType });
                     RCRegions.Clear();
-                    bool needLoad = (oldScript != currentScript);
-                    if (needLoad)
+                    bool needLoad;
+                    if (needLoad = (oldScript != currentScript))
                     {
                         while (customObjects.Count > 0)
                         {
@@ -16837,7 +16838,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         }
         usernameField = string.Empty;
         passwordField = string.Empty;
-        this.resetGameSettings();
+        //this.resetGameSettings();
         banHash = new ExitGames.Client.Photon.Hashtable();
         imatitan = new ExitGames.Client.Photon.Hashtable();
         oldScript = string.Empty;

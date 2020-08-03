@@ -160,7 +160,7 @@ namespace BRM
                 Choose = 5;
                 //BRM.Console.ConsoleCall = true; 
             }
-            if (GUILayout.Button("Region"))
+            if (GUILayout.Button("Custom"))
             {
                 Choose = 6;
                 //BRM.Console.ConsoleCall = true; 
@@ -655,12 +655,26 @@ namespace BRM
                         break;
                     }
                 case 6:
-                    GUILayout.BeginHorizontal();
-                    if (GUILayout.Button(FengGameManagerMKII.Colr("Fuck region")))
-                    {
-                        base.StartCoroutine(CacheDC());
-                    }
-                    GUILayout.EndHorizontal();
+                    GUILayout.BeginVertical();
+                    GUILayout.Label(FengGameManagerMKII.Colr("currient Script:"));
+                    GUI.Box(new Rect(5, 35, 400, 250), " ");
+                    GUI.backgroundColor = Color.black;
+                    GUILayout.BeginArea(new Rect(5, 30, 400, 250));
+                    scroll = GUILayout.BeginScrollView(scroll, false, false);
+                    GUILayout.Label(FengGameManagerMKII.currentScript == null ? "Empty" : FengGameManagerMKII.currentScript);
+                    GUILayout.EndScrollView();
+                    GUILayout.EndArea();
+
+                    GUILayout.Label(FengGameManagerMKII.Colr("currient Level:"));
+                    GUI.Box(new Rect(5, 285, 400, 250), " ");
+                    GUI.backgroundColor = Color.black;
+                    GUILayout.BeginArea(new Rect(5, 280, 400, 250));
+                    scroll2 = GUILayout.BeginScrollView(scroll2, false, false);
+                    GUILayout.Label(FengGameManagerMKII.currentLevel == null ? "Empty" : FengGameManagerMKII.currentLevel);
+                    GUILayout.EndScrollView();
+                    GUILayout.EndArea();
+
+                    GUILayout.EndVertical();
                     break;
                 default:
                     break;
