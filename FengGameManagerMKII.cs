@@ -13,9 +13,11 @@ using System.Linq;
 //using ExitGames.Client.Photon.Lite;
 using BRM;
 using System.Threading;
+//using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using UnityEditor.VersionControl;
 
 public class FengGameManagerMKII : Photon.MonoBehaviour
 {
@@ -4443,7 +4445,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         {
             //this.customlevelclientE(this.levelCache[i], false);
             base.StartCoroutine(this.customlevelclientE(this.levelCache[i], false));
-            BRM.StatsTab.AddLine("Call customlevelcache() for load this.levelCache[" + this.levelCache[i] + "in customlevelclientE()", StatsTab.DebugType.LOG);
+            //BRM.StatsTab.AddLine("Call customlevelcache() for load this.levelCache[" + this.levelCache[i] + "in customlevelclientE()", StatsTab.DebugType.LOG);
         }
         yield return new WaitForEndOfFrame();
         yield break;

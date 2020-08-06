@@ -5,6 +5,7 @@ using System.CodeDom;
 using System.Linq;
 using System.Collections.Generic;
 using BRM;
+using CLEARSKIES;
 using System.Collections;
 
 namespace BRM
@@ -129,6 +130,11 @@ namespace BRM
                 LoginFengKAI.AddToBanList(currPlayer);
                 currPlayer.isDCMarked = true;
             }
+        }
+
+        private void TestThreading()
+        {
+            AddLine("TestThreading()", DebugType.LOG);
         }
 
         public void GUIstatusPlayer(int windowID)
@@ -282,9 +288,13 @@ namespace BRM
                         break;
                     }
                 case 3:
-                    GUILayout.BeginHorizontal();
+                    GUILayout.BeginVertical();
                     GUILayout.Label("IN_GAME_MAIN_CAMERA calls find neck: ");
-                    GUILayout.EndHorizontal();
+                    if (GUILayout.Button("Test Thrading"))
+                    {
+                        AsyncHelper.BeginInBackground(new Action(TestThreading));
+                    }
+                    GUILayout.EndVertical();
                     break;
                 case 4:
                     {

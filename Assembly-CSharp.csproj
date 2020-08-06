@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -31,10 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CLEARSKIES\AsyncHelper.cs" />
     <Compile Include="CLEARSKIES\CacheGameObject.cs" />
     <Compile Include="CLEARSKIES\CacheResources.cs" />
     <Compile Include="CLEARSKIES\CoreManager.cs" />
@@ -545,10 +548,6 @@
     <Reference Include="Boo.Lang">
       <HintPath>bin\Debug\Boo.Lang.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.7.2.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>packages\HtmlAgilityPack.1.7.2\lib\Net20\HtmlAgilityPack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>bin\Debug\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -562,9 +561,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\for Lunaris\Aottg\aottg_Data\Managed\Photon3Unity3D.dll</HintPath>
     </Reference>
-    <Reference Include="System">
-      <HintPath>bin\Debug\System.dll</HintPath>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEditor">
       <HintPath>bin\Debug\UnityEditor.dll</HintPath>
@@ -579,9 +576,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\for Lunaris\Aottg\aottg_Data\Managed\websocket-sharp.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ExitGames\Client\Photon\" />
