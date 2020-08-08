@@ -268,7 +268,7 @@ public class Cannon : Photon.MonoBehaviour
                     this.myHero.isCannon = false;
                     this.myHero.myCannonRegion = null;
                     IN_GAME_MAIN_CAMERA.mainCamera.setMainObject(this.myHero.gameObject, true, false);
-                    this.myHero.baseRigidBody.velocity = Vector3.zero;
+                    this.myHero.baseR.velocity = Vector3.zero;
                     this.myHero.photonView.RPC("ReturnFromCannon", PhotonTargets.Others, new object[0]);
                     this.myHero.skillCDLast = this.myHero.skillCDLastCannon;
                     this.myHero.skillCDDuration = this.myHero.skillCDLast;

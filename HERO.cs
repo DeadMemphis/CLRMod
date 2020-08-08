@@ -21,9 +21,6 @@ public class HERO : MONO
     public AudioSource audio_ally;
     public AudioSource audio_hitwall;
     private GameObject badGuy;
-    public Animation baseAnimation;
-    public Rigidbody baseRigidBody;
-    public Transform baseTransform;
     private bool bigLean;
     public float bombCD;
     public bool bombImmune;
@@ -82,7 +79,6 @@ public class HERO : MONO
 
     private bool hookSomeOne;
     private GameObject hookTarget;
-    public FengCustomInputs inputManager;
     private float invincible = 3f;
     public bool isCannon;
     private bool isLaunchLeft;
@@ -5471,8 +5467,6 @@ public class HERO : MONO
         }
         else
         {
-            //this.currentCamera = BRM.CacheGameObject.Find("MainCamera").GetComponent<Camera>();
-            this.inputManager = BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
             this.triggerLeft = this.checkBoxLeft.GetComponent<TriggerColliderWeapon>();
             this.triggerRight = this.checkBoxRight.GetComponent<TriggerColliderWeapon>();
             this.loadskin();

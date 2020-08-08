@@ -142,7 +142,7 @@ namespace BRM
                 {
                     Time.timeScale = 1f;
                 }
-                if (FengGameManagerMKII.instance != null && FengGameManagerMKII.instance.gameStart)
+                if (FengGameManagerMKII.instance != null && FengGameManagerMKII.gameStart)
                 {
                     Screen.showCursor = false;
                     Screen.lockCursor = (IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.TPS);

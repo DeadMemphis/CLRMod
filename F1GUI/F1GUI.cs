@@ -112,8 +112,8 @@ namespace BRM
                             Screen.lockCursor = false;
                             Screen.showCursor = true;
                             IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-                            FengGameManagerMKII.instance.gameStart = false;
-                            GameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = false;
+                            FengGameManagerMKII.gameStart = false;
+                            CacheGameObject.Find<FengCustomInputs>("InputManagerController").menuOn = false;
                             FengGameManagerMKII.instance.DestroyAllExistingCloths();
                             UnityEngine.Object.Destroy(GameObject.Find("MultiplayerManager"));
                             Application.LoadLevel("menu");

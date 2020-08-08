@@ -18,6 +18,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using UnityEditor.VersionControl;
+using System.Diagnostics.PerformanceData;
 
 public class FengGameManagerMKII : Photon.MonoBehaviour
 {
@@ -59,7 +60,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     private ArrayList fT;
     private float gameEndCD;
     private float gameEndTotalCDtime = 9f;
-    public bool gameStart;
+    public static bool gameStart = false;
     private bool gameTimesUp;
     public static ExitGames.Client.Photon.Hashtable globalVariables;
     public List<GameObject> groundList;
@@ -1261,8 +1262,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     private void Awake()
     {
         this.isBackground = true;
-        (FengGameManagerMKII.PView = base.photonView).isBackground = true;
-        FengGameManagerMKII.instance = this;
+        (PView = base.photonView).isBackground = true;
+        instance = this;
     }
 
     internal void AutoDisconnect(PhotonPlayer player, bool isBytes, bool includeMSG, long loop, params int[] ids)
@@ -1603,7 +1604,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         FengCustomInputs.Inputs = CacheGameObject.Find<FengCustomInputs>("InputManagerController");
         LabelScoreT = (LabelScoreUI = (LabelScore = CacheGameObject.Find("LabelScore")).GetComponent<UILabel>()).transform;
         Time.timeScale = 1f;
-        Camera.main.farClipPlane = 1500f;
+        //Camera.main.farClipPlane = 1500f;
         this.pauseWaitTime = 0f;
         this.spectateSprites = new List<GameObject>();
         this.isRestarting = false;
@@ -1635,8 +1636,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             }
         }
         this.isFirstLoad = false;
-        this.RecompilePlayerList(0.5f);
-        FengGameManagerMKII.instance = this;
+        //this.RecompilePlayerList(0.5f);
+        if (instance == null || (instance != this && this != null)) instance = this;
     }
 
     [RPC]
@@ -3305,7 +3306,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             if (((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && PhotonNetwork.isMasterClient) && (this.timeTotalServer > this.time))
             {
                 IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-                Screen.lockCursor = (this.gameStart = !(Screen.showCursor = true));
+                Screen.lockCursor = (gameStart = !(Screen.showCursor = true));
                 string text3 = string.Empty;
                 string text4 = string.Empty;
                 string text5 = string.Empty;
@@ -4475,14 +4476,15 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             if (flag)
             {
                 currentLevel = string.Empty;
-                while (customObjects.Count > 0)
-                {
-                    GameObject gameObject;
-                    if (gameObject = customObjects.Dequeue())
-                    {
-                        UnityEngine.Object.Destroy(gameObject);
-                    }
-                }
+                //while (customObjects.Count > 0)
+                //{
+                //    GameObject gameObject;
+                //    if (gameObject = customObjects.Dequeue())
+                //    {
+                //        UnityEngine.Object.Destroy(gameObject);
+                //    }
+                //}
+                ClearCustomObjects();
                 this.levelCache.Clear();
                 this.titanSpawns.Clear();
                 this.playerSpawnsC.Clear();
@@ -4930,14 +4932,15 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     logicLoaded = true;
                     customLevelLoaded = true;
                     this.spawnPlayerCustomMap();
-                    while (customObjects.Count > 0)
-                    {
-                        GameObject gameObject = customObjects.Dequeue();
-                        if (gameObject != null)
-                        {
-                            UnityEngine.Object.Destroy(gameObject);
-                        }
-                    }
+                    //while (customObjects.Count > 0)
+                    //{
+                    //    GameObject gameObject = customObjects.Dequeue();
+                    //    if (gameObject != null)
+                    //    {
+                    //        UnityEngine.Object.Destroy(gameObject);
+                    //    }
+                    //}
+                    ClearCustomObjects();
                     return;
                 }
             }
@@ -6041,7 +6044,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void LateUpdate()
     {
-        if (this.gameStart)
+        if (gameStart)
         {
             foreach (HERO hERO in heroes)
             {
@@ -6590,14 +6593,15 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     bool needLoad;
                     if (needLoad = (oldScript != currentScript))
                     {
-                        while (customObjects.Count > 0)
-                        {
-                            GameObject gameObject5 = customObjects.Dequeue();
-                            if (gameObject5 != null)
-                            {
-                                UnityEngine.Object.Destroy(gameObject5);
-                            }
-                        }
+                        //while (customObjects.Count > 0)
+                        //{
+                        //    GameObject gameObject5 = customObjects.Dequeue();
+                        //    if (gameObject5 != null)
+                        //    {
+                        //        UnityEngine.Object.Destroy(gameObject5);
+                        //    }
+                        //}
+                        ClearCustomObjects();
                         ExitGames.Client.Photon.Hashtable hashtable;
                         this.levelCache.Clear();
                         this.titanSpawns.Clear();
@@ -7434,7 +7438,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         Screen.lockCursor = false;
         Screen.showCursor = true;
         IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-        this.gameStart = false;
+        gameStart = false;
 
         if (cause == DisconnectCause.DisconnectByClientTimeout)
         {
@@ -8255,8 +8259,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 if (GUILayout.Button(FengGameManagerMKII.Colr("Options"), GUILayout.MaxWidth(100f)))
                 {
                     NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelOption, true);
-                    BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().showKeyMap();
-                    BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = true;
+                    FengCustomInputs.Inputs.showKeyMap();
+                    FengCustomInputs.Inputs.menuOn = true;
                     ShowMenuButtonGUI = false;
                 }
                 if (GUILayout.Button(FengGameManagerMKII.Colr("Credits"), GUILayout.MaxWidth(100f)))
@@ -11552,7 +11556,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     else if (GUI.Button(new Rect(num7 + 500f, num8 + 465f, 60f, 25f), "Default"))
                     {
-                        BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().setToDefault();
+                        FengCustomInputs.Inputs.setToDefault();
                     }
                     else if (GUI.Button(new Rect(num7 + 565f, num8 + 465f, 75f, 25f), "Continue"))
                     {
@@ -11564,9 +11568,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         {
                             Screen.showCursor = true;
                             Screen.lockCursor = true;
-                            BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = false;
-                            Camera.main.GetComponent<SpectatorMovement>().disable = false;
-                            Camera.main.GetComponent<MouseLook>().disable = false;
+                            FengCustomInputs.Inputs.menuOn = false;
+                            IN_GAME_MAIN_CAMERA.spectate.disable = false;
+                            IN_GAME_MAIN_CAMERA.mouselook.disable = false;
                         }
                         else
                         {
@@ -11581,8 +11585,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 Screen.showCursor = false;
                                 Screen.lockCursor = false;
                             }
-                            BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = false;
-                            BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().justUPDATEME();
+                            FengCustomInputs.Inputs.menuOn = false;
+                            FengCustomInputs.Inputs.justUPDATEME();
                         }
                     }
                     else if (GUI.Button(new Rect(num7 + 645f, num8 + 465f, 40f, 25f), "Quit"))
@@ -11598,7 +11602,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         Screen.lockCursor = false;
                         Screen.showCursor = true;
                         IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-                        this.gameStart = false;
+                        gameStart = false;
                         BRM.CacheGameObject.Find<FengCustomInputs>("InputManagerController").menuOn = false;
                         this.DestroyAllExistingCloths();
                         UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("MultiplayerManager"));
@@ -11645,8 +11649,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         Screen.lockCursor = false;
                         Screen.showCursor = true;
                         IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-                        BRM.CacheGameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().gameStart = false;
-                        BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = false;
+                        FengGameManagerMKII.gameStart = false;
+                        CacheGameObject.Find<FengCustomInputs>("InputManagerController").menuOn = false;
                         this.DestroyAllExistingCloths();
                         UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("MultiplayerManager"));
                         Application.LoadLevel("menu");
@@ -11784,6 +11788,18 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         /*if (Rolling)*/ /*StartCoroutine(ModRoll(Rollingmodlist));*/
 
     }
+    public void ClearCustomObjects(bool destroyImmediate = false)
+    {
+        while (customObjects.Count > 0)
+        {
+            GameObject gameObject = customObjects.Dequeue();
+            if (gameObject != null)
+            {
+                if (destroyImmediate) UnityEngine.Object.DestroyImmediate(gameObject, false);
+                else UnityEngine.Object.Destroy(gameObject);
+            }
+        }
+    }
 
     public IEnumerator ClearList()
     {
@@ -11816,7 +11832,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             this.loadconfig();
             //this.StartNameAnim(false);
             IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-            this.gameStart = false;
+            gameStart = false;
             Screen.lockCursor = false;
             Screen.showCursor = true;
             FengCustomInputs.Inputs.menuOn = false;
@@ -11842,7 +11858,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
             }
             this.isWinning = false;
-            this.gameStart = true;
+            gameStart = true;
             this.ShowHUDInfoCenter(string.Empty);
             GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("MainCamera_mono"), BRM.CacheGameObject.Find("cameraDefaultPosition").transform.position, BRM.CacheGameObject.Find("cameraDefaultPosition").transform.rotation);
             UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("cameraDefaultPosition"));
@@ -12329,16 +12345,17 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         base.StopAllCoroutines();
         //FengGameManagerMKII.customPhoton.Clear();
         //FengGameManagerMKII.titanSpawnersCopy.Clear();
-        FengGameManagerMKII.PView = null;
-        FengGameManagerMKII.instance = null;
-        while (customObjects.Count > 0)
-        {
-            GameObject gameObject = customObjects.Dequeue();
-            if (gameObject != null)
-            {
-                UnityEngine.Object.DestroyImmediate(gameObject, false);
-            }
-        }
+        //while (customObjects.Count > 0)
+        //{
+        //    GameObject gameObject = customObjects.Dequeue();
+        //    if (gameObject != null)
+        //    {
+        //        UnityEngine.Object.DestroyImmediate(gameObject, false);
+        //    }
+        //}
+        ClearCustomObjects(true);
+        PView = null;
+        instance = null;
     }
     private IEnumerator OnDelayJoinedPlayer(PhotonPlayer player)
     {
@@ -13698,14 +13715,15 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             this.restartingHorse = false;
             this.restartingEren = false;
             this.restartingBomb = false;
-            while (customObjects.Count > 0)
-            {
-                GameObject gameObject = customObjects.Dequeue();
-                if (gameObject != null)
-                {
-                    UnityEngine.Object.Destroy(gameObject);
-                }
-            }
+            //while (customObjects.Count > 0)
+            //{
+            //    GameObject gameObject = customObjects.Dequeue();
+            //    if (gameObject != null)
+            //    {
+            //        UnityEngine.Object.Destroy(gameObject);
+            //    }
+            //}
+            ClearCustomObjects();
         }
         PhotonNetwork.player.SetCustomProperties(propertiesToSet);
         this.resetGameSettings();
@@ -15783,7 +15801,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             Screen.lockCursor = false;
             Screen.showCursor = true;
             IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-            this.gameStart = false;
+            gameStart = false;
         }
         else
         {
@@ -16818,7 +16836,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void Start()
     {
-        base.gameObject.name = "MultiplayerManager";
+        base.name = "MultiplayerManager";
         HeroCostume.init2();
         CharacterMaterials.init();
         DontDestroyOnLoad(base.gameObject);
@@ -16980,7 +16998,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         }
 
         //this.setBackground();
-        FengGameManagerMKII.PView = base.photonView;
+        PView = base.photonView;
         instance = this;
         ChangeQuality.setCurrentQuality();
         gameObject.AddComponent<StatsTab>();
@@ -17084,7 +17102,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         //        //BRM.CacheGameObject.Find("LabelNetworkStatus").GetComponent<UILabel>()
         //    }
         //}
-        if (this.gameStart)
+        if (gameStart)
         {
             foreach (HERO hERO in heroes)
             {

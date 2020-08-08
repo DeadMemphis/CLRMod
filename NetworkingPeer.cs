@@ -1710,6 +1710,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             //}
         }
         PhotonView[] photonViewsInChildren = resourceGameObject.GetPhotonViewsInChildren();
+        if (FengGameManagerMKII.instance != null)
+        {
+            PhotonView pview = FengGameManagerMKII.PView;
+            if (pview.viewID == instantiationId || pview.viewID == photonViewsInChildren[0].viewID)
+            {
+                return null;
+            }
+        }
         if (photonViewsInChildren.Length != numArray.Length)
         {
             throw new Exception("Error in Instantiation! The resource's PhotonView count is not the same as in incoming data.");
@@ -1748,6 +1756,15 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             this.RemoveInstantiatedGO(go, true);
         }
         this.instantiatedObjects.Add(instantiationId, obj2);
+        PhotonView photonView = obj2.GetComponent<PhotonView>();
+        if (photonView != null)
+        {
+            int viewID = photonView.viewID;
+            if (!this.photonViewList.ContainsKey(viewID))
+            {
+                this.photonViewList.Add(viewID, photonView);
+            }
+        }
         obj2.SendMessage(PhotonNetworkingMessage.OnPhotonInstantiate.ToString(), new PhotonMessageInfo(photonPlayer, timestamp, null), SendMessageOptions.DontRequireReceiver);
         return obj2;
     }
@@ -4727,25 +4744,26 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     {
         if (!Application.isPlaying)
         {
-            this.photonViewList = new Dictionary<int, PhotonView>();
+            photonViewList = new Dictionary<int, PhotonView>();
             return;
         }
-        else if (netView.subId != 0)
+        if (netView.subId != 0)
         {
-            if (this.photonViewList.ContainsKey(netView.viewID))
+            int viewID = netView.viewID;
+            if (photonViewList.ContainsKey(viewID))
             {
-                if (netView != this.photonViewList[netView.viewID])
+                if (netView != this.photonViewList[viewID])
                 {
                     Debug.LogError(
                         String.Format(
                             "PhotonView ID duplicate found: {0}. New: {1} old: {2}. Maybe one wasn't destroyed on scene load?! Check for 'DontDestroyOnLoad'. Destroying old entry, adding new.",
                             netView.viewID, netView, this.photonViewList[netView.viewID]));
                     this.RemoveInstantiatedGO(this.photonViewList[netView.viewID].gameObject, true);
+                    this.photonViewList[viewID] = netView;
                     return;
                 }
-                
             }
-            this.photonViewList.Add(netView.viewID, netView);
+            else this.photonViewList.Add(viewID, netView);
             if (PhotonNetwork.logLevel >= PhotonLogLevel.Full)
             {
                 Debug.Log("Registered PhotonView: " + netView.viewID);
