@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using CLEARSKIES;
 
 public class Bomb : Photon.MonoBehaviour
 {
@@ -18,19 +19,19 @@ public class Bomb : Photon.MonoBehaviour
     private Transform baseT;
     private Rigidbody baseR;
     private PhotonView basePV;
+    
     private bool isMine
     {
         get
         {
             if (this.basePV == null)
             {
-                this.basePV = base.GetComponent<PhotonView>();
+                this.basePV = base.photonView;
+                //this.basePV = base.GetComponent<PhotonView>(); //wutahell
             }
             return this.basePV != null && this.basePV.isMine;
         }
     }
-
-
 
     public void Awake()
     {
@@ -126,12 +127,19 @@ public class Bomb : Photon.MonoBehaviour
                         hero.markDie();
                         pview.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
                         FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
+                        PhotonNetwork.Instantiate("FX/FXtitanDie", hero.transform.position, Quaternion.Euler(-90f, 0f, 0f), 0);
                         //PhotonNetwork.Instantiate("FX/boom6", gameObject.GetComponent<HERO>().transform.position, gameObject.GetComponent<HERO>().transform.rotation, 0);
                     }
                 }
             }
         }
-        base.StartCoroutine(this.WaitAndFade(1.5f));
+        //base.StartCoroutine(this.WaitAndFade(1.5f));
+        Yield.Begin(new WaitForSeconds(1.5f), new Action (() => 
+        {
+            UnityEngine.MonoBehaviour.print("==> test yield instructions");
+            PhotonNetwork.Destroy(this.myExplosion);
+            PhotonNetwork.Destroy(this.gameObject);
+        }));
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

@@ -533,7 +533,7 @@
     <Compile Include="RCStatic.cs" />
     <Compile Include="titanTypes.cs" />
     <Compile Include="EventCallback.cs" />
-    <Compile Include="Yield.cs" />
+    <Compile Include="CLEARSKIES\Yield.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp-firstpass">

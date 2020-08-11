@@ -2,9 +2,9 @@
 using System.Collections;
 using UnityEngine;
 
-namespace BRM
+namespace CLEARSKIES
 {
-    internal class Yield : MonoBehaviour
+    internal class Yield : MonoBehaviour // rly blyat ya ne ebu otkuda u menya that class, but it bolshe chem v DM
     {
         private void Awake()
         {

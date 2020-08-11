@@ -1040,8 +1040,9 @@ public class HERO : MONO
                 //}
                 //this.launchLeftRope(hit4, true, 0);
                 //UnityEngine.Object.Instantiate(CacheResources.Load("rope"), baseT.position, baseT.rotation);
-                //UnityEngine.Object.Instantiate(CacheResources.Load("redCross1"), baseT.position, baseT.rotation);
-                //UnityEngine.Object.Instantiate(CacheResources.Load("redCross1"), baseT.position, baseT.rotation);
+                UnityEngine.Object.Instantiate(CacheResources.Load("redCross1"), baseT.position, baseT.rotation);
+                UnityEngine.Object.Instantiate(CacheResources.Load("redCross1"), baseT.position, baseT.rotation);
+                UnityEngine.Object.Instantiate(CacheResources.Load("redCross1"), baseT.position, baseT.rotation);
             }
             else
             {
