@@ -3012,13 +3012,13 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 HandleEventLeave(key);
                 break;
             case 255:
-                hash = photonEvent[249];
-                if (hash != null && !(hash is ExitGames.Client.Photon.Hashtable)) break;
-                ExitGames.Client.Photon.Hashtable properties = hash as ExitGames.Client.Photon.Hashtable;
+                //hash = photonEvent[249];
+                //if (hash != null && !(hash is ExitGames.Client.Photon.Hashtable)) break;
+                //ExitGames.Client.Photon.Hashtable properties = hash as ExitGames.Client.Photon.Hashtable;
                 if (sender == null)
                 {
                     bool isLocal = mLocalActor.ID == key;
-                    AddNewPlayer(key, new PhotonPlayer(isLocal, key, properties));
+                    AddNewPlayer(key, new PhotonPlayer(isLocal, key, photonEvent[249] as ExitGames.Client.Photon.Hashtable));
                     ResetPhotonViewsOnSerialize();
                 }
                 if (key != mLocalActor.ID)
@@ -3030,25 +3030,27 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerConnected, parameters);
                     break;
                 }
-                object hash1 = photonEvent[252];
-                var ints = hash1 as int[];
-                if (ints != null)
+                //object hash1 = photonEvent[252];
+                //var ints = hash1 as int[];
+                //if (ints != null)
+                //{
+                //    int[] array = ints;
+
+                //}
+                foreach (int num7 in (int[])photonEvent[252])
                 {
-                    int[] array = ints;
-                    foreach (int num7 in array)
+                    if (mLocalActor.ID != num7 && !mActors.ContainsKey(num7))
                     {
-                        if (mLocalActor.ID != num7 && !mActors.ContainsKey(num7))
-                        {
-                            AddNewPlayer(num7, new PhotonPlayer(false, num7, string.Empty));
-                        }
+                        AddNewPlayer(num7, new PhotonPlayer(false, num7, string.Empty));
                     }
-                    if (mLastJoinType == JoinType.JoinOrCreateOnDemand && mLocalActor.ID == 1)
-                    {
-                        SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom);
-                    }
-                    SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom);
                 }
-                if (FengGameManagerMKII.Rolling && FengGameManagerMKII.instance.ModRoll() == "Disconnect_mod") PhotonNetwork.networkingPeer.ResendInfo("Disconnect_mod");
+                if (mLastJoinType == JoinType.JoinOrCreateOnDemand && mLocalActor.ID == 1)
+                {
+                    SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom);
+                }
+                SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom);
+                if (FengGameManagerMKII.Rolling && FengGameManagerMKII.instance.ModRoll() == "Disconnect_mod") 
+                    PhotonNetwork.networkingPeer.ResendInfo("Disconnect_mod");
                 break;
             default:
                 StatsTab.AddLine("<color=#FF0000>Unknown eventCode</color>\n<color=#7b001c>Player <color=#000000>[" + sender.ID + "]</color> <i>" + sender.uiname.ToRGBA() + "</i> send eventCode: </color> <color=#000000>" + photonEvent.Code + "</color><color=#7b001c> Params:</color> <color=#f0f0f0>" + photonEvent.Parameters.ToString() + "</color>");
