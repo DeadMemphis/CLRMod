@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections;
 using UnityEngine;
 
@@ -6,6 +7,11 @@ namespace CLEARSKIES
 {
     internal class Yield : MonoBehaviour // rly blyat ya ne ebu otkuda u menya that class, but it bolshe chem v DM
     {
+        internal static Yield yield = new GameObject("yield").AddComponent<Yield>();
+        internal delegate void Create();
+        internal delegate T Create<out T>();
+        internal delegate void CreateParams(params object[] parameters);
+        internal delegate T CreateParams<out T>(params object[] parameters);
         private void Awake()
         {
             UnityEngine.Object.DontDestroyOnLoad(base.gameObject);
@@ -190,10 +196,49 @@ namespace CLEARSKIES
             method(var, var2, var3, var4);
             yield break;
         }
-        internal static Yield yield = new GameObject("yield").AddComponent<Yield>();
-        internal delegate void Create();
-        internal delegate T Create<out T>();
-        internal delegate void CreateParams(params object[] parameters);
-        internal delegate T CreateParams<out T>(params object[] parameters);
+
+        public static void BeginInBackground(Action method)
+        {
+            Action threadAction = () =>
+            {
+                BRM.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), BRM.StatsTab.DebugType.LOG);
+                method();
+                BRM.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", BRM.StatsTab.DebugType.LOG);
+                return;
+            };
+            Execute(threadAction);
+        }
+        public static void BeginInBackground<T>(Action<T> method, T val)
+        {
+            Action threadAction = () =>
+            {
+                BRM.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), BRM.StatsTab.DebugType.LOG);
+                method(val);
+                BRM.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", BRM.StatsTab.DebugType.LOG);//BRM.StatsTab.AddLine("State thread: " + _thread.ThreadState.ToString(), BRM.StatsTab.DebugType.LOG);
+                return;
+            };
+            Execute(threadAction);
+        }
+        public static void BeginInBackground<T, T2>(Action<T, T2> method, T val, T2 val2)
+        {
+            Action threadAction = () =>
+            {
+                BRM.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), BRM.StatsTab.DebugType.LOG);
+                method(val, val2);
+                BRM.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", BRM.StatsTab.DebugType.LOG);
+                return;
+            };
+            Execute(threadAction);
+        }
+        private static void Execute(Action method)
+        {
+            Thread _thread = new Thread(new ThreadStart(method))
+            {
+                IsBackground = true
+            };
+            _thread.Start();
+        }
+
+       
     }
 }

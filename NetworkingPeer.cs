@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using BRM;
+using CLEARSKIES;
 using System.Linq;
 
 internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
@@ -55,9 +56,12 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     internal static System.Collections.Generic.Dictionary<PhotonPlayer, int> banlist;
     public static List<string> ipAddr = new List<string>();
     public static string LocalIP;
+    
+    
+    
     internal static Yield yield;
 
-    //private static DateTime lastViewUpdate = DateTime.Now;
+    private static DateTime lastViewUpdate = DateTime.Now;
 
     static NetworkingPeer()
     {
@@ -1819,281 +1823,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             }
         }
     }
-    //public void ExecuteRPC(ExitGames.Client.Photon.Hashtable rpcData, PhotonPlayer sender)
-    //{
-    //    if (rpcData == null || !rpcData.ContainsKey(0))
-    //    {
-    //        Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-    //        return;
-    //    }
-    //    int viewID = (int)rpcData[0];
-    //    int num2 = 0;
-    //    if (rpcData.ContainsKey(1))
-    //    {
-    //        num2 = (int)((short)rpcData[1]);
-    //    }
-    //    string str;
-    //    if (rpcData.ContainsKey(5))
-    //    {
-    //        int num3 = (int)((byte)rpcData[5]);
-    //        if (num3 > PhotonNetwork.PhotonServerSettings.RpcList.Count - 1)
-    //        {
-    //            Debug.LogError("Could not find RPC with index: " + num3 + ". Going to ignore! Check PhotonServerSettings.RpcList");
-    //            return;
-    //        }
-    //        str = PhotonNetwork.PhotonServerSettings.RpcList[num3];
-    //    }
-    //    else
-    //    {
-    //        str = (string)rpcData[3];
-    //    }
-    //    object[] parameters = null;
-    //    if (rpcData.ContainsKey(4))
-    //    {
-    //        parameters = (object[])rpcData[4];
-    //    }
-    //    if (parameters == null)
-    //    {
-    //        parameters = new object[0];
-    //    }
-    //    if (NetworkingPeer.BlockSpam(sender, str))
-    //    {
-    //        return;
-    //    }
-    //    if (str == "ChatPM" || str == "pauseRPC" || str == "settingRPC" || str == "loadskinRPC" || str == "ReturnFromCannon")
-    //    {
-    //        sender.RC = true;
-    //    }
-    //    if (str.StartsWith("SLB") || str == "Pan" || str == "ShinraTensei" || str == "LoliRPC" || str == "coreditor" || str == "PartyHardRPC" || str == "PartyHardRPC")
-    //    {
-    //        sender.SLB = true;
-    //    }
-    //    PhotonView photonView = this.GetPhotonView(viewID);
-    //    if (photonView == null)
-    //    {
-    //        int num6 = viewID / PhotonNetwork.MAX_VIEW_IDS;
-    //        bool flag = num6 == this.mLocalActor.ID;
-    //        bool flag2 = num6 == sender.ID;
-    //        if (flag)
-    //        {
-    //            Debug.LogWarning(string.Concat(new object[]
-    //            {
-    //            "Received RPC \"",
-    //            str,
-    //            "\" for viewID ",
-    //            viewID,
-    //            " but this PhotonView does not exist! View was/is ours.",
-    //            (!flag2) ? " Remote called." : " Owner called."
-    //            }));
-    //            return;
-    //        }
-    //        Debug.LogError(string.Concat(new object[]
-    //        {
-    //        "Received RPC \"",
-    //        str,
-    //        "\" for viewID ",
-    //        viewID,
-    //        " but this PhotonView does not exist! Was remote PV.",
-    //        (!flag2) ? " Remote called." : " Owner called."
-    //        }));
-    //        return;
-    //    }
-    //    else
-    //    {
-    //        if (photonView.prefix != num2)
-    //        {
-    //            Debug.LogError(string.Concat(new object[]
-    //            {
-    //            "Received RPC \"",
-    //            str,
-    //            "\" on viewID ",
-    //            viewID,
-    //            " with a prefix of ",
-    //            num2,
-    //            ", our prefix is ",
-    //            photonView.prefix,
-    //            ". The RPC has been ignored."
-    //            }));
-    //            return;
-    //        }
-    //        if (str == string.Empty)
-    //        {
-    //            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-    //            return;
-    //        }
-    //        if (PhotonNetwork.logLevel >= PhotonLogLevel.Full)
-    //        {
-    //            Debug.Log("Received RPC: " + str);
-    //        }
-    //        if (photonView.group == 0 || this.allowedReceivingGroups.Contains(photonView.group))
-    //        {
-    //            Type[] callParameterTypes = new Type[0];
-    //            if (parameters.Length != 0)
-    //            {
-    //                callParameterTypes = new Type[parameters.Length];
-    //                int index = 0;
-    //                foreach (object obj2 in parameters)
-    //                {
-    //                    if (obj2 == null)
-    //                    {
-    //                        callParameterTypes[index] = null;
-    //                    }
-    //                    else
-    //                    {
-    //                        callParameterTypes[index] = obj2.GetType();
-    //                    }
-    //                    index++;
-    //                }
-    //            }
-    //            int num4 = 0;
-    //            int num5 = 0;
-    //            foreach (MonoBehaviour behaviour in photonView.GetComponents<MonoBehaviour>())
-    //            {
-    //                if (behaviour == null)
-    //                {
-    //                    Debug.LogError("ERROR You have missing MonoBehaviours on your gameobjects!");
-    //                }
-    //                else
-    //                {
-    //                    Type key = behaviour.GetType();
-    //                    List<MethodInfo> list = null;
-    //                    if (this.monoRPCMethodsCache.ContainsKey(key))
-    //                    {
-    //                        list = this.monoRPCMethodsCache[key];
-    //                    }
-    //                    if (list == null)
-    //                    {
-    //                        List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(RPC));
-    //                        this.monoRPCMethodsCache[key] = methods;
-    //                        list = methods;
-    //                    }
-    //                    if (list != null)
-    //                    {
-    //                        for (int j = 0; j < list.Count; j++)
-    //                        {
-    //                            MethodInfo info = list[j];
-    //                            if (info.Name == str)
-    //                            {
-    //                                num5++;
-    //                                ParameterInfo[] methodParameters = info.GetParameters();
-    //                                if (methodParameters.Length == callParameterTypes.Length)
-    //                                {
-    //                                    if (this.CheckTypeMatch(methodParameters, callParameterTypes))
-    //                                    {
-    //                                        num4++;
-    //                                        object obj3 = info.Invoke(behaviour, parameters);
-    //                                        if (info.ReturnType == typeof(IEnumerator))
-    //                                        {
-    //                                            behaviour.StartCoroutine((IEnumerator)obj3);
-    //                                        }
-    //                                    }
-    //                                }
-    //                                else if (methodParameters.Length - 1 == callParameterTypes.Length)
-    //                                {
-    //                                    if (this.CheckTypeMatch(methodParameters, callParameterTypes) && methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo))
-    //                                    {
-    //                                        num4++;
-    //                                        int timestamp = (int)rpcData[2];
-    //                                        object[] array = new object[parameters.Length + 1];
-    //                                        parameters.CopyTo(array, 0);
-    //                                        array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
-    //                                        object obj4 = info.Invoke(behaviour, array);
-    //                                        if (info.ReturnType == typeof(IEnumerator))
-    //                                        {
-    //                                            behaviour.StartCoroutine((IEnumerator)obj4);
-    //                                        }
-    //                                    }
-    //                                }
-    //                                else if (methodParameters.Length == 1 && methodParameters[0].ParameterType.IsArray)
-    //                                {
-    //                                    num4++;
-    //                                    object[] objArray5 = new object[]
-    //                                    {
-    //                                    parameters
-    //                                    };
-    //                                    object obj5 = info.Invoke(behaviour, objArray5);
-    //                                    if (info.ReturnType == typeof(IEnumerator))
-    //                                    {
-    //                                        behaviour.StartCoroutine((IEnumerator)obj5);
-    //                                    }
-    //                                }
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //            if (num4 != 1)
-    //            {
-    //                string str2 = string.Empty;
-    //                foreach (Type type2 in callParameterTypes)
-    //                {
-    //                    if (str2 != string.Empty)
-    //                    {
-    //                        str2 += ", ";
-    //                    }
-    //                    if (type2 == null)
-    //                    {
-    //                        str2 += "null";
-    //                    }
-    //                    else
-    //                    {
-    //                        str2 += type2.Name;
-    //                    }
-    //                }
-    //                if (num4 == 0)
-    //                {
-    //                    if (num5 == 0)
-    //                    {
-    //                        Debug.LogError(string.Concat(new object[]
-    //                        {
-    //                        "PhotonView with ID ",
-    //                        viewID,
-    //                        " has no method \"",
-    //                        str,
-    //                        "\" marked with the [RPC](C#) or @RPC(JS) property! Args: ",
-    //                        str2
-    //                        }));
-    //                        return;
-    //                    }
-    //                    Debug.LogError(string.Concat(new object[]
-    //                    {
-    //                    "PhotonView with ID ",
-    //                    viewID,
-    //                    " has no method \"",
-    //                    str,
-    //                    "\" that takes ",
-    //                    callParameterTypes.Length,
-    //                    " argument(s): ",
-    //                    str2
-    //                    }));
-    //                    return;
-    //                }
-    //                else
-    //                {
-    //                    Debug.LogError(string.Concat(new object[]
-    //                    {
-    //                    "PhotonView with ID ",
-    //                    viewID,
-    //                    " has ",
-    //                    num4,
-    //                    " methods \"",
-    //                    str,
-    //                    "\" that takes ",
-    //                    callParameterTypes.Length,
-    //                    " argument(s): ",
-    //                    str2,
-    //                    ". Should be just one?"
-    //                    }));
-    //                }
-    //            }
-    //        }
-    //        return;
-    //    }
-    //}
 
     public void ExecuteRPC(ExitGames.Client.Photon.Hashtable rpcData, PhotonPlayer sender)
     {
-        if ((rpcData != null) && rpcData.ContainsKey((byte)0))
+        if ((rpcData == null) || !rpcData.ContainsKey((byte)0))
+        {
+            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
+        }
+        else
         {
             string str;
             int viewID = (int)rpcData[(byte)0];
@@ -2108,6 +1845,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 if (num3 > (PhotonNetwork.PhotonServerSettings.RpcList.Count - 1))
                 {
                     Debug.LogError("Could not find RPC with index: " + num3 + ". Going to ignore! Check PhotonServerSettings.RpcList");
+                    return;
                 }
                 str = PhotonNetwork.PhotonServerSettings.RpcList[num3];
             }
@@ -2124,21 +1862,12 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             {
                 parameters = new object[0];
             }
-            if (/*BlockSpam(sender, str) ||*/ ignoreList.ContainsValue(sender.uiname)) return;        
-            if (str == "ChatPM" || str == "pauseRPC" || str == "settingRPC" || str == "loadskinRPC" || str == "ReturnFromCannon")
-            {
-                sender.RC = true;
-            }
-            if (str.StartsWith("SLB") || str == "Pan" || str == "ShinraTensei" || str == "LoliRPC" || str == "coreditor" || str == "PartyHardRPC" || str == "PartyHardRPC")
-            {
-                sender.SLB = true;
-            }
             PhotonView photonView = this.GetPhotonView(viewID);
             if (photonView == null)
             {
-                int num1 = viewID / PhotonNetwork.MAX_VIEW_IDS;
-                bool flag = num1 == this.mLocalActor.ID;
-                bool flag2 = num1 == sender.ID;
+                int num4 = viewID / PhotonNetwork.MAX_VIEW_IDS;
+                bool flag = num4 == this.mLocalActor.ID;
+                bool flag2 = num4 == sender.ID;
                 if (flag)
                 {
                     Debug.LogWarning(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! View was/is ours.", !flag2 ? " Remote called." : " Owner called." }));
@@ -2153,11 +1882,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             else if (photonView.prefix != num2)
             {
                 Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" on viewID ", viewID, " with a prefix of ", num2, ", our prefix is ", photonView.prefix, ". The RPC has been ignored." }));
-                return;
             }
             else if (str == string.Empty)
             {
-                FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
                 Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
             }
             else
@@ -2169,7 +1896,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 if ((photonView.group == 0) || this.allowedReceivingGroups.Contains(photonView.group))
                 {
                     System.Type[] callParameterTypes = new System.Type[0];
-                    if (parameters.Length != 0)
+                    if (parameters.Length > 0)
                     {
                         callParameterTypes = new System.Type[parameters.Length];
                         int index = 0;
@@ -2187,80 +1914,82 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             index++;
                         }
                     }
-                    int num4 = 0;
-                    int num5 = 0;
+                    int num7 = 0;
+                    int num8 = 0;
                     foreach (MonoBehaviour behaviour in photonView.GetComponents<MonoBehaviour>())
                     {
                         if (behaviour == null)
                         {
-                            InRoomChat.addLINE2("ERROR You have missing MonoBehaviours on your gameobjects!");
-                            return;
+                            Debug.LogError("ERROR You have missing MonoBehaviours on your gameobjects!");
                         }
-                        System.Type key = behaviour.GetType();
-                        List<MethodInfo> list = null;
-                        if (this.monoRPCMethodsCache.ContainsKey(key))
+                        else
                         {
-                            list = this.monoRPCMethodsCache[key];
-                        }
-                        if (list == null)
-                        {
-                            List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(UnityEngine.RPC));
-                            this.monoRPCMethodsCache[key] = methods;
-                            list = methods;
-                        }
-                        if (list != null)
-                        {
-                            for (int j = 0; j < list.Count; j++)
+                            System.Type key = behaviour.GetType();
+                            List<MethodInfo> list = null;
+                            if (this.monoRPCMethodsCache.ContainsKey(key))
                             {
-                                MethodInfo info = list[j];
-                                if (info.Name == str)
+                                list = this.monoRPCMethodsCache[key];
+                            }
+                            if (list == null)
+                            {
+                                List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(UnityEngine.RPC));
+                                this.monoRPCMethodsCache[key] = methods;
+                                list = methods;
+                            }
+                            if (list != null)
+                            {
+                                for (int j = 0; j < list.Count; j++)
                                 {
-                                    rpcList.Add(str);
-                                    num5++;
-                                    ParameterInfo[] methodParameters = info.GetParameters();
-                                    if (methodParameters.Length == callParameterTypes.Length)
+                                    MethodInfo info = list[j];
+                                    if (info.Name == str)
                                     {
-                                        if (this.CheckTypeMatch(methodParameters, callParameterTypes))
+                                        rpcList.Add(str);
+                                        num8++;
+                                        ParameterInfo[] methodParameters = info.GetParameters();
+                                        if (methodParameters.Length == callParameterTypes.Length)
                                         {
-                                            num4++;
-                                            object obj3 = info.Invoke(behaviour, parameters);
-                                            if (info.ReturnType == typeof(IEnumerator))
+                                            if (this.CheckTypeMatch(methodParameters, callParameterTypes))
                                             {
-                                                behaviour.StartCoroutine((IEnumerator)obj3);
+                                                num7++;
+                                                object obj3 = info.Invoke(behaviour, parameters);
+                                                if (info.ReturnType == typeof(IEnumerator))
+                                                {
+                                                    behaviour.StartCoroutine((IEnumerator)obj3);
+                                                }
                                             }
                                         }
-                                    }
-                                    else if ((methodParameters.Length - 1) == callParameterTypes.Length)
-                                    {
-                                        if (this.CheckTypeMatch(methodParameters, callParameterTypes) && (methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo)))
+                                        else if ((methodParameters.Length - 1) == callParameterTypes.Length)
                                         {
-                                            num4++;
-                                            int timestamp = (int)rpcData[(byte)2];
-                                            object[] array = new object[parameters.Length + 1];
-                                            parameters.CopyTo(array, 0);
-                                            array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
-                                            object obj4 = info.Invoke(behaviour, array);
-                                            if (info.ReturnType == typeof(IEnumerator))
+                                            if (this.CheckTypeMatch(methodParameters, callParameterTypes) && (methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo)))
                                             {
-                                                behaviour.StartCoroutine((IEnumerator)obj4);
+                                                num7++;
+                                                int timestamp = (int)rpcData[(byte)2];
+                                                object[] array = new object[parameters.Length + 1];
+                                                parameters.CopyTo(array, 0);
+                                                array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
+                                                object obj4 = info.Invoke(behaviour, array);
+                                                if (info.ReturnType == typeof(IEnumerator))
+                                                {
+                                                    behaviour.StartCoroutine((IEnumerator)obj4);
+                                                }
                                             }
                                         }
-                                    }
-                                    else if ((methodParameters.Length == 1) && methodParameters[0].ParameterType.IsArray)
-                                    {
-                                        num4++;
-                                        object[] objArray3 = new object[] { parameters };
-                                        object obj5 = info.Invoke(behaviour, objArray3);
-                                        if (info.ReturnType == typeof(IEnumerator))
+                                        else if ((methodParameters.Length == 1) && methodParameters[0].ParameterType.IsArray)
                                         {
-                                            behaviour.StartCoroutine((IEnumerator)obj5);
+                                            num7++;
+                                            object[] objArray5 = new object[] { parameters };
+                                            object obj5 = info.Invoke(behaviour, objArray5);
+                                            if (info.ReturnType == typeof(IEnumerator))
+                                            {
+                                                behaviour.StartCoroutine((IEnumerator)obj5);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    if (num4 != 1)
+                    if (num7 != 1)
                     {
                         string str2 = string.Empty;
                         for (int k = 0; k < callParameterTypes.Length; k++)
@@ -2279,16 +2008,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                 str2 = str2 + type2.Name;
                             }
                         }
-                        if (viewID == 2)
-                        {
-                            viewID = 0;
-                        }
-                        if (viewID > 0x3e8)
-                        {
-                            viewID /= 0x3e8;
-                        }
-
-
                         if (!rpcList.Contains(str))
                         {
                             viewID = sender.ID;
@@ -2318,15 +2037,265 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             StatsTab.AddLine(string.Concat(new object[] { "<color=red><b>ID: </b></color>", sender.ID, "(", sender.name, ")<color=red><b> RPC: </b></color><color=#ffcc00> ", str, " </color><color=green><b>  NumberOfTimes: </b></color>", num12 }));
                             return;
                         }
+                        if (num7 == 0)
+                        {
+                            if (num8 == 0)
+                            {
+                                Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has no method \"", str, "\" marked with the [RPC](C#) or @RPC(JS) property! Args: ", str2 }));
+                            }
+                            else
+                            {
+                                Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has no method \"", str, "\" that takes ", callParameterTypes.Length, " argument(s): ", str2 }));
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has ", num7, " methods \"", str, "\" that takes ", callParameterTypes.Length, " argument(s): ", str2, ". Should be just one?" }));   
+                        }
                     }
                 }
             }
         }
-        else
-        {
-            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-        }
     }
+
+
+    //public void ExecuteRPC(ExitGames.Client.Photon.Hashtable rpcData, PhotonPlayer sender)
+    //{
+    //    if ((rpcData != null) && rpcData.ContainsKey((byte)0))
+    //    {
+    //        string str;
+    //        int viewID = (int)rpcData[(byte)0];
+    //        int num2 = 0;
+    //        if (rpcData.ContainsKey((byte)1))
+    //        {
+    //            num2 = (short)rpcData[(byte)1];
+    //        }
+    //        if (rpcData.ContainsKey((byte)5))
+    //        {
+    //            int num3 = (byte)rpcData[(byte)5];
+    //            if (num3 > (PhotonNetwork.PhotonServerSettings.RpcList.Count - 1))
+    //            {
+    //                Debug.LogError("Could not find RPC with index: " + num3 + ". Going to ignore! Check PhotonServerSettings.RpcList");
+    //            }
+    //            str = PhotonNetwork.PhotonServerSettings.RpcList[num3];
+    //        }
+    //        else
+    //        {
+    //            str = (string)rpcData[(byte)3];
+    //        }
+    //        object[] parameters = null;
+    //        if (rpcData.ContainsKey((byte)4))
+    //        {
+    //            parameters = (object[])rpcData[(byte)4];
+    //        }
+    //        if (parameters == null)
+    //        {
+    //            parameters = new object[0];
+    //        }
+    //        if (/*BlockSpam(sender, str) ||*/ ignoreList.ContainsValue(sender.uiname)) return;        
+    //        if (str == "ChatPM" || str == "pauseRPC" || str == "settingRPC" || str == "loadskinRPC" || str == "ReturnFromCannon")
+    //        {
+    //            sender.RC = true;
+    //        }
+    //        if (str.StartsWith("SLB") || str == "Pan" || str == "ShinraTensei" || str == "LoliRPC" || str == "coreditor" || str == "PartyHardRPC" || str == "PartyHardRPC")
+    //        {
+    //            sender.SLB = true;
+    //        }
+    //        PhotonView photonView = this.GetPhotonView(viewID);
+    //        if (photonView.name == "MultiplayerManager") BRM.StatsTab.AddLine("ExecuteRPC get MultiplayerManager viewID (" + viewID + ") from " + sender.uiname, StatsTab.DebugType.WARNING);
+    //        if (photonView == null)
+    //        {
+    //            int num1 = viewID / PhotonNetwork.MAX_VIEW_IDS;
+    //            bool flag = num1 == this.mLocalActor.ID;
+    //            bool flag2 = num1 == sender.ID;
+    //            if (flag)
+    //            {
+    //                Debug.LogWarning(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! View was/is ours.", !flag2 ? " Remote called." : " Owner called." }));
+    //                return;
+    //            }
+    //            else
+    //            {
+    //                Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! Was remote PV.", !flag2 ? " Remote called." : " Owner called." }));
+    //                return;
+    //            }
+    //        }
+    //        else if (photonView.prefix != num2)
+    //        {
+    //            Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" on viewID ", viewID, " with a prefix of ", num2, ", our prefix is ", photonView.prefix, ". The RPC has been ignored." }));
+    //            return;
+    //        }
+    //        else if (str == string.Empty)
+    //        {
+    //            FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+    //            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
+    //        }
+    //        else
+    //        {
+    //            if (PhotonNetwork.logLevel >= PhotonLogLevel.Full)
+    //            {
+    //                Debug.Log("Received RPC: " + str);
+    //            }
+    //            if ((photonView.group == 0) || this.allowedReceivingGroups.Contains(photonView.group))
+    //            {
+    //                System.Type[] callParameterTypes = new System.Type[0];
+    //                if (parameters.Length != 0)
+    //                {
+    //                    callParameterTypes = new System.Type[parameters.Length];
+    //                    int index = 0;
+    //                    for (int i = 0; i < parameters.Length; i++)
+    //                    {
+    //                        object obj2 = parameters[i];
+    //                        if (obj2 == null)
+    //                        {
+    //                            callParameterTypes[index] = null;
+    //                        }
+    //                        else
+    //                        {
+    //                            callParameterTypes[index] = obj2.GetType();
+    //                        }
+    //                        index++;
+    //                    }
+    //                }
+    //                int num4 = 0;
+    //                int num5 = 0;
+    //                foreach (MonoBehaviour behaviour in photonView.GetComponents<MonoBehaviour>())
+    //                {
+    //                    if (behaviour == null)
+    //                    {
+    //                        InRoomChat.addLINE2("ERROR You have missing MonoBehaviours on your gameobjects!");
+    //                        return;
+    //                    }
+    //                    System.Type key = behaviour.GetType();
+    //                    List<MethodInfo> list = null;
+    //                    if (this.monoRPCMethodsCache.ContainsKey(key))
+    //                    {
+    //                        list = this.monoRPCMethodsCache[key];
+    //                    }
+    //                    if (list == null)
+    //                    {
+    //                        List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(UnityEngine.RPC));
+    //                        this.monoRPCMethodsCache[key] = methods;
+    //                        list = methods;
+    //                    }
+    //                    if (list != null)
+    //                    {
+    //                        for (int j = 0; j < list.Count; j++)
+    //                        {
+    //                            MethodInfo info = list[j];
+    //                            if (info.Name == str)
+    //                            {
+    //                                rpcList.Add(str);
+    //                                num5++;
+    //                                ParameterInfo[] methodParameters = info.GetParameters();
+    //                                if (methodParameters.Length == callParameterTypes.Length)
+    //                                {
+    //                                    if (this.CheckTypeMatch(methodParameters, callParameterTypes))
+    //                                    {
+    //                                        num4++;
+    //                                        object obj3 = info.Invoke(behaviour, parameters);
+    //                                        if (info.ReturnType == typeof(IEnumerator))
+    //                                        {
+    //                                            behaviour.StartCoroutine((IEnumerator)obj3);
+    //                                        }
+    //                                    }
+    //                                }
+    //                                else if ((methodParameters.Length - 1) == callParameterTypes.Length)
+    //                                {
+    //                                    if (this.CheckTypeMatch(methodParameters, callParameterTypes) && (methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo)))
+    //                                    {
+    //                                        num4++;
+    //                                        int timestamp = (int)rpcData[(byte)2];
+    //                                        object[] array = new object[parameters.Length + 1];
+    //                                        parameters.CopyTo(array, 0);
+    //                                        array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
+    //                                        object obj4 = info.Invoke(behaviour, array);
+    //                                        if (info.ReturnType == typeof(IEnumerator))
+    //                                        {
+    //                                            behaviour.StartCoroutine((IEnumerator)obj4);
+    //                                        }
+    //                                    }
+    //                                }
+    //                                else if ((methodParameters.Length == 1) && methodParameters[0].ParameterType.IsArray)
+    //                                {
+    //                                    num4++;
+    //                                    object[] objArray3 = new object[] { parameters };
+    //                                    object obj5 = info.Invoke(behaviour, objArray3);
+    //                                    if (info.ReturnType == typeof(IEnumerator))
+    //                                    {
+    //                                        behaviour.StartCoroutine((IEnumerator)obj5);
+    //                                    }
+    //                                }
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                if (num4 != 1)
+    //                {
+    //                    string str2 = string.Empty;
+    //                    for (int k = 0; k < callParameterTypes.Length; k++)
+    //                    {
+    //                        System.Type type2 = callParameterTypes[k];
+    //                        if (str2 != string.Empty)
+    //                        {
+    //                            str2 = str2 + ", ";
+    //                        }
+    //                        if (type2 == null)
+    //                        {
+    //                            str2 = str2 + "null";
+    //                        }
+    //                        else
+    //                        {
+    //                            str2 = str2 + type2.Name;
+    //                        }
+    //                    }
+    //                    if (viewID == 2)
+    //                    {
+    //                        viewID = 0;
+    //                    }
+    //                    if (viewID > 0x3e8)
+    //                    {
+    //                        viewID /= 0x3e8;
+    //                    }
+
+
+    //                    if (!rpcList.Contains(str))
+    //                    {
+    //                        viewID = sender.ID;
+    //                        if (string.Concat(parameters).Length >= 0)
+    //                        {
+    //                            StatsTab.AddLine(string.Concat(new object[] { "<color=red><b>ID: </b></color>", sender.ID, "(", sender.name, ")<color=red><b> RPC: </b></color><color=#ffcc00> ", str, " </color><color=green><b> Parameters: </b></color>", str2, string.Concat(parameters) }), StatsTab.DebugType.LOG);
+    //                            return;
+    //                        }
+    //                    }
+    //                    else if (rpcList.Contains(str))
+    //                    {
+    //                        int num12 = 0;
+    //                        using (List<string>.Enumerator enumerator = rpcList.GetEnumerator())
+    //                        {
+    //                            while (enumerator.MoveNext())
+    //                            {
+    //                                if (enumerator.Current == str)
+    //                                {
+    //                                    num12++;
+    //                                }
+    //                                else
+    //                                {
+    //                                    num12++;
+    //                                }
+    //                            }
+    //                        }
+    //                        StatsTab.AddLine(string.Concat(new object[] { "<color=red><b>ID: </b></color>", sender.ID, "(", sender.name, ")<color=red><b> RPC: </b></color><color=#ffcc00> ", str, " </color><color=green><b>  NumberOfTimes: </b></color>", num12 }));
+    //                        return;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
+    //    }
+    //}
 
     public object[] FetchInstantiationData(int instantiationId)
     {
@@ -2480,7 +2449,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     public PhotonView GetPhotonView(int viewID)
     {
         PhotonView view = null;
-        if (!this.photonViewList.TryGetValue(viewID, out view) /*&& (NetworkingPeer.lastViewUpdate - DateTime.Now).TotalSeconds > 2.5*/)
+        if (!this.photonViewList.TryGetValue(viewID, out view) /*&& (NetworkingPeer.lastViewUpdate - DateTime.Now).TotalMilliseconds > 5.0*/)
         {
             foreach (PhotonView view2 in UnityEngine.Object.FindObjectsOfType<PhotonView>())
             {
@@ -2489,12 +2458,21 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     if (view2.didAwake)
                     {
                         Debug.LogWarning("Had to lookup view that wasn't in dict: " + view2);
+                        string content = "id:{0}, tag:{1}, owner:{2}, name:{3}, local:{4}, go.name:{5}".Formats(new object[] {
+                            view2.viewID,
+                            view2.tag,
+                            view2.owner,
+                            view2.name,
+                            view2.isLocal.ToString(),
+                            view2.gameObject.name
+                        });
+                        BRM.StatsTab.AddLine("==> had to lookup view that wasn't in dict: " + content, StatsTab.DebugType.WARNING);
                         this.photonViewList[view2.viewID] = view2;
                     }
                     return view2;
                 }
             }
-            //NetworkingPeer.lastViewUpdate = DateTime.Now;
+            /*NetworkingPeer.lastViewUpdate = DateTime.Now*/;
         }
         return view;
     }
@@ -2567,7 +2545,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         bool flag2 = (this.mRoomToGetInto == null) ? PhotonNetwork.autoCleanUpPlayerObjects : this.mRoomToGetInto.autoCleanUp;
         this.hasSwitchedMC = false;
         this.mRoomToGetInto = null;
-        NetworkingPeer.mActors = new Dictionary<int, PhotonPlayer>();
+        mActors.Clear();
         this.mPlayerListCopy = new PhotonPlayer[0];
         this.mOtherPlayerListCopy = new PhotonPlayer[0];
         this.mMasterClient = null;
@@ -2711,53 +2689,16 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         return false;
     }
 
-    public void OnEvent(EventData photonEvent)
+    private void EventHandler(byte code, PhotonPlayer sender, EventData photonEvent, int key)
     {
-        ExitGames.Client.Photon.Hashtable hashtable3;
-        object obj7;
-        object obj8;
-        object obj9;
-        int key = -1;
-        PhotonPlayer sender = null;
-        if (photonEvent.Parameters.ContainsKey(0xfe))
-        {
-            key = (int)photonEvent[0xfe];
-            if (mActors.ContainsKey(key))
-            {
-                sender = mActors[key];
-            }
-        }
-        else if (photonEvent.Parameters.Count == 0)
-        {
-            InRoomChat.addLINE2("Nigger( " + sender.uiname.ToRGBA() + " )sent an EVENT with no Params");
-            return;
-        }
-        if (((sender != null) && leftList.ContainsKey(sender.ID)) && ((photonEvent.Code == 255) && PhotonNetwork.inRoom))
-        {
-            leftList.Remove(sender.ID);
-        }
-        if (sender != null)
-        {
-            sender.Bites = sender.Bites + photonEvent.ToString().Length;
-            sender.Packs++;
-            StatsTab.fullBytes = StatsTab.fullBytes + photonEvent.ToString().Length;
-            StatsTab.fullPacksCount++;
-        }
-        if (sender != null &&
-            (BlockEventSpam(sender, photonEvent) /*|| ignoreList.ContainsValue(sender.uiname)*/) && FengGameManagerMKII.instance.Joined) return;
-        //if (sender != null) sender.BytesReceived += base.ByteCountCurrentDispatch;
-        //if (base.ByteCountCurrentDispatch > 14000 && PhotonNetwork.inRoom && photonEvent.Code != 87 && photonEvent.Code != 88)
-        //{
-        //    InRoomChat.addLINE2(sender.uiname.ToRGBA() + " sent huge Event (" + ByteCountCurrentDispatch + ")");
-        //    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-        //    return;
-        //}
-        switch (photonEvent.Code)
+        ExitGames.Client.Photon.Hashtable hashtable;
+        object hash;
+        switch (code)
         {
             case 101:
                 {
                     PhotonPlayer photonPlayer2 = sender;
-                    ExitGames.Client.Photon.Hashtable hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+                    hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
                     if (hashtable != null)
                     {
                         if (sender == null)
@@ -2796,13 +2737,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         }
                         this.RebuildPlayerListCopies();
                     }
-                    return;
+                    break;
                 }
             case 200:
-                if (sender != null && (ignoreList.ContainsValue(sender.uiname) || fukRCIgnre))
-                {
-                    return;
-                }
                 if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
                 {
                     StatsTab.AddLine(string.Concat(new object[]
@@ -2813,140 +2750,89 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     sender.uiname.ToRGBA(),
                     "..."
                     }), StatsTab.DebugType.WARNING);
-                    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                    return;
+                    //FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+                    break;
                 }
-                ExitGames.Client.Photon.Hashtable rpcData = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-                ExecuteRPC(rpcData, sender);
-                return;
+                ExecuteRPC(photonEvent[245] as ExitGames.Client.Photon.Hashtable, sender);
+                break;
             case 201:
             case 206:
-                //try
-                //{
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                ExitGames.Client.Photon.Hashtable evData1 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-
-                if (evData1 != null)
+                hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    if (!(evData1[(byte)0] is int))
+                    if (!(hashtable[(byte)0] is int))
                     {
-                        return;
+                        break;
                     }
-                    int networkTime = (int)evData1[(byte)0];
+                    int networkTime = (int)hashtable[(byte)0];
                     short correctPrefix = -1;
                     short num6 = 1;
-                    if (evData1.ContainsKey((byte)1))
+                    if (hashtable.ContainsKey((byte)1))
                     {
-                        if (!(evData1[(byte)1] is short))
+                        if (!(hashtable[(byte)1] is short))
                         {
-                            return;
+                            break;
                         }
-                        correctPrefix = (short)evData1[(byte)1];
+                        correctPrefix = (short)hashtable[(byte)1];
                         num6 = 2;
                     }
-                    for (short i = num6; i < evData1.Count; i++)
+                    for (short i = num6; i < hashtable.Count; i++)
                     {
-                        ExitGames.Client.Photon.Hashtable hash = evData1[i] as ExitGames.Client.Photon.Hashtable;
-                        if (hash != null && hash.Count <= 2 && hash.Count > 0)
+                        ExitGames.Client.Photon.Hashtable hashE = hashtable[i] as ExitGames.Client.Photon.Hashtable;
+                        if (hashE != null && hashE.Count <= 2 && hashE.Count > 0)
                         {
-                            if (!(hash[(byte)0] is int))
+                            if (!(hashE[(byte)0] is int))
                             {
-                                return;
+                                break;
                             }
-                            OnSerializeRead(hash, sender, networkTime, correctPrefix);
+                            OnSerializeRead(hashE, sender, networkTime, correctPrefix);
                         }
                         else
                         {
-                            return;
+                            break;
                         }
                     }
                 }
-                return;
-
+                break;
             case 202:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre) return;
-                //if (!(photonEvent[0xf5] is ExitGames.Client.Photon.Hashtable))
-                //{
-                //    StatsTab.AddLine("Wrong 202 byte... Start dc for " + "[" + sender.ID + "]" + sender.uiname.ToRGBA() + "...");
-                //    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                //}
-
-                ExitGames.Client.Photon.Hashtable evData = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                //if ((int)evData[(byte)7] > int.MaxValue || (int)evData[(byte)7] < int.MinValue || (int)evData[(byte)6] > int.MaxValue || (int)evData[(byte)6] < int.MinValue || !(evData[(byte)0] is string))
-                //{
-                //    ignoreList.Add(sender.ID, sender.name);
-                //    if (sender.isMasterClient) FengGameManagerMKII.instance.StartCoroutine(FengGameManagerMKII.instance.ByteDC(sender, 1000));
-                //    else FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-                //    StatsTab.AddLine("Wrong params for DoInstantiate2 from " + "[" + sender.ID + "]" + sender.uiname.ToRGBA());
-                //}
-                //string str = evData?[(byte)0] as string;
-                if (/*str != null*/ evData[(byte)0] is string && (int)evData[(byte)7] != 2)
+                hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable[(byte)0] is string && (int)hashtable[(byte)7] != 2)
                 {
-
-                    //try
-                    //{
-                    DoInstantiate2(evData, sender, null);
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Debug.LogException(e);
-                    //    StatsTab.AddLine("<color=#FF0000>Generated error or exeption for </color> <i>" + e + "</i> in DoInstantiate2(" + evData + ", " + sender + ", null);");
-                    //    return;
-                    //}
+                    DoInstantiate2(hashtable, sender, null);
                 }
                 else
                 {
                     ignoreList.Add(sender.ID, sender.uiname);
-                    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+                    //FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
                     StatsTab.AddLine("Wrong params for DoInstantiate2 from " + "[" + sender.ID + "]" + sender.uiname.ToRGBA(), StatsTab.DebugType.ERROR);
                 }
-                return;
-
+                break;
             case 203:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
                 StatsTab.AddLine("<color=#7b001c>Player <color=#000000>[" + sender.ID + "]</color>" + sender.uiname.ToRGBA() + "send eventCode: </color> <color=#000000>" + photonEvent.Code + " || (Close Connection)</color>", StatsTab.DebugType.WARNING);
-                //FengGameManagerMKII.instance.StartCoroutine(FengGameManagerMKII.instance.ByteDC(sender, 1000));
-                return;
-
+                break;
             case 204:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre) return;
-                var hashtable1 = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                if (hashtable1 != null)
+                hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    hashtable3 = hashtable1;
-                    if (hashtable3[(byte)0] is int)
+                    if (hashtable[(byte)0] is int)
                     {
-                        int num8 = (int)hashtable3[(byte)0];
+                        int num8 = (int)hashtable[(byte)0];
                         GameObject obj3 = null;
                         instantiatedObjects.TryGetValue(num8, out obj3);
                         if (obj3 != null && sender != null)
                         {
-
-                            //try
-                            //{
                             RemoveInstantiatedGO(obj3, true);
-                            //}
-                            //catch (Exception e)
-                            //{
-                            //    Debug.LogException(e);
-                            //    return;
-                            //}
                         }
                     }
                 }
-                return;
-
+                break;
             case 207:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre) return;
-                var hashtable4 = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                if (hashtable4 != null)
+                hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    //try
-                    //{
-                    hashtable3 = hashtable4;
-                    if (hashtable3[(byte)0] is int)
+                    if (hashtable[(byte)0] is int)
                     {
-                        int playerId = (int)hashtable3[(byte)0];
+                        int playerId = (int)hashtable[(byte)0];
                         if (playerId < 0 && sender != null && (sender.isMasterClient || sender.isLocal))
                         {
                             DestroyAll(true);
@@ -2956,28 +2842,17 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         {
                             DestroyPlayerObjects(playerId, true);
                         }
-                    }
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Debug.LogException(e);
-                    //    return;
-                    //}                   
+                    }                  
                 }
-                return;
-
+                break;
             case 208:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
                 if (!(photonEvent[0xf5] is ExitGames.Client.Photon.Hashtable))
                 {
-                    return;
+                    break;
                 }
-                hashtable3 = (ExitGames.Client.Photon.Hashtable)photonEvent[0xf5];
-                if (!(hashtable3[(byte)1] is int))
-                {
-                    return;
-                }
-                int num10 = (int)hashtable3[(byte)1];
+                hashtable = (ExitGames.Client.Photon.Hashtable)photonEvent[0xf5];
+                if (!(hashtable[(byte)1] is int)) break;
+                int num10 = (int)hashtable[(byte)1];
                 if (sender == null || !sender.isMasterClient || num10 != sender.ID)
                 {
                     if (!(sender == null || sender.isMasterClient || sender.isLocal))
@@ -2988,7 +2863,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             PhotonNetwork.SetMasterClient(PhotonNetwork.player);
                             FengGameManagerMKII.instance.kickPlayerRC(sender, true, "stealing MC.");
                         }
-                        return;
+                        break;
                     }
                     if (num10 == mLocalActor.ID)
                     {
@@ -2998,12 +2873,10 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     {
                         SetMasterClient(num10, false);
                     }
-                    return;
+                    break;
                 }
-                return;
+                break;
             case 226:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-
                 object obj4 = photonEvent[0xe5];
                 object obj5 = photonEvent[0xe3];
                 object obj6 = photonEvent[0xe4];
@@ -3013,18 +2886,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     mPlayersOnMasterCount = (int)obj5;
                     mGameCount = (int)obj6;
                 }
-                return;
-
+                break;
             case 228:
-                return;
-
+                break;
             case 229:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                obj7 = photonEvent[0xde];
-                var entries = obj7 as ExitGames.Client.Photon.Hashtable;
-                if (entries != null)
+                hashtable = photonEvent[0xde] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    foreach (DictionaryEntry entry in entries)
+                    foreach (DictionaryEntry entry in hashtable)
                     {
                         string roomName = (string)entry.Key;
                         RoomInfo info = new RoomInfo(roomName, (ExitGames.Client.Photon.Hashtable)entry.Value);
@@ -3041,16 +2910,13 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     mGameList.Values.CopyTo(mGameListCopy, 0);
                     SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate);
                 }
-                return;
-
+                break;
             case 230:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                obj7 = photonEvent[0xde];
-                var entry2s = obj7 as ExitGames.Client.Photon.Hashtable;
-                if (entry2s != null)
+                hashtable = photonEvent[0xde] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
                     mGameList = new Dictionary<string, RoomInfo>();
-                    foreach (DictionaryEntry entry2 in entry2s)
+                    foreach (DictionaryEntry entry2 in hashtable)
                     {
                         string str3 = (string)entry2.Key;
                         mGameList[str3] = new RoomInfo(str3, (ExitGames.Client.Photon.Hashtable)entry2.Value);
@@ -3059,21 +2925,17 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     mGameList.Values.CopyTo(mGameListCopy, 0);
                     SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate);
                 }
-                return;
-
+                break;
             case 253:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                var obj80 = photonEvent[0xfd];
-                if (obj80 is int)
+                hash = photonEvent[0xfd];
+                if (hash is int)
                 {
-                    int iD = (int)obj80;
+                    int iD = (int)hash;
                     ExitGames.Client.Photon.Hashtable gameProperties = null;
                     ExitGames.Client.Photon.Hashtable pActorProperties = null;
-                    object obj90;
                     if (iD != 0)
                     {
-                        obj90 = photonEvent[0xfb];
-                        var hashtable = obj90 as ExitGames.Client.Photon.Hashtable;
+                        hashtable = photonEvent[0xfb] as ExitGames.Client.Photon.Hashtable;
                         if (hashtable != null)
                         {
                             pActorProperties = hashtable;
@@ -3089,25 +2951,25 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                         RCextensions.returnIntFromObject(pActorProperties["statACL"]) > 150)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                     if (pActorProperties.ContainsKey("statBLA") &&
                                         RCextensions.returnIntFromObject(pActorProperties["statBLA"]) > 0x7d)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                     if (pActorProperties.ContainsKey("statGAS") &&
                                         RCextensions.returnIntFromObject(pActorProperties["statGAS"]) > 150)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                     if (pActorProperties.ContainsKey("statSPD") &&
                                         RCextensions.returnIntFromObject(pActorProperties["statSPD"]) > 140)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                 }
                                 if (pActorProperties.ContainsKey("name"))
@@ -3118,7 +2980,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                     }
                                     else if (!InstantiateTracker.instance.PropertiesChanged(sender))
                                     {
-                                        return;
+                                        break;
                                     }
                                 }
                             }
@@ -3126,19 +2988,10 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     }
                     else
                     {
-                        if (!(photonEvent[0xfb] is ExitGames.Client.Photon.Hashtable)) return;
-                        obj90 = photonEvent[0xfb];
-                        var hashtable = obj90 as ExitGames.Client.Photon.Hashtable;
-                        if (hashtable != null)
-                        {
-                            gameProperties = hashtable;
-                        }
-                        else
-                        {
-                            return;
-                        }
+                        hashtable = photonEvent[0xfb] as ExitGames.Client.Photon.Hashtable;
+                        if (hashtable != null) gameProperties = hashtable;
+                        else break;
                     }
-
                     ReadoutProperties(gameProperties, pActorProperties, iD);
                     object rcteam = pActorProperties["RCteam"];
                     if (!(rcteam is int) && rcteam != null)
@@ -3148,32 +3001,20 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             if ((string)rcteam == "Disconnect_mod")
                             {
                                 sender.DisconnectMod = true;
-                                return;
+                                break;
                             }
                         }
                     }
                 }
-                return;
-
+                break;
             case 254:
-                //if (sender != null && ignoreList.ContainsValue(sender.uiname) || fukRCIgnre)
-                //{
-                //    return;
-                //}
                 StatsTab.AddLine("<i>" + sender.uiname.ToRGBA() + "</i><color=black> [<color=white>" + sender.ID + "</color>]</color> <color=#7b001c>leave.</color>", StatsTab.DebugType.LOG);
                 HandleEventLeave(key);
-                return;
+                break;
             case 255:
-                //if (sender != null && FengGameManagerMKII.ignoreList.Contains(sender.ID) && ignoreList.ContainsValue(sender.uiname))
-                //{
-                //    return;
-                //}
-                object obj91 = photonEvent[249];
-                if (obj91 != null && !(obj91 is ExitGames.Client.Photon.Hashtable))
-                {
-                    return;
-                }
-                ExitGames.Client.Photon.Hashtable properties = (ExitGames.Client.Photon.Hashtable)obj91;
+                hash = photonEvent[249];
+                if (hash != null && !(hash is ExitGames.Client.Photon.Hashtable)) break;
+                ExitGames.Client.Photon.Hashtable properties = hash as ExitGames.Client.Photon.Hashtable;
                 if (sender == null)
                 {
                     bool isLocal = mLocalActor.ID == key;
@@ -3187,10 +3028,10 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         mActors[key]
                     };
                     SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerConnected, parameters);
-                    return;
+                    break;
                 }
-                object obj93 = photonEvent[252];
-                var ints = obj93 as int[];
+                object hash1 = photonEvent[252];
+                var ints = hash1 as int[];
                 if (ints != null)
                 {
                     int[] array = ints;
@@ -3208,10 +3049,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom);
                 }
                 if (FengGameManagerMKII.Rolling && FengGameManagerMKII.instance.ModRoll() == "Disconnect_mod") PhotonNetwork.networkingPeer.ResendInfo("Disconnect_mod");
-                return;
-
+                break;
             default:
-                //InRoomChat.addLINE2;
                 StatsTab.AddLine("<color=#FF0000>Unknown eventCode</color>\n<color=#7b001c>Player <color=#000000>[" + sender.ID + "]</color> <i>" + sender.uiname.ToRGBA() + "</i> send eventCode: </color> <color=#000000>" + photonEvent.Code + "</color><color=#7b001c> Params:</color> <color=#f0f0f0>" + photonEvent.Parameters.ToString() + "</color>");
                 if (!ignoreList.ContainsKey(sender.ID) || !ignoreList.ContainsValue(sender.uiname))
                 {
@@ -3230,33 +3069,54 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 if ((ignoreList.ContainsValue(sender.uiname) || (FengGameManagerMKII.disconnectBan.Contains(sender.uiname))))
                 {
                     StatsTab.AddLine(sender.uiname.ToRGBA() + " is on the sent DEFAULT");
-                    return;
+                    break;
                 }
-                //switch (photonEvent.Code)
-                //{
-                //    case 23:
-                //        StatsTab.AddLine("LightSheir : " + sender.uiname.ToRGBA() + " has Joined", DebugLog.DebugType.WARNING);
-                //        return;
-
-                //    case 210:
-                //        StatsTab.AddLine("DogeMod user : " + sender.uiname.ToRGBA() + " has Joined", DebugLog.DebugType.WARNING);
-                //        return;
-
-                //    case 101:
-                //        StatsTab.AddLine("NiggersMod user : " + sender.uiname.ToRGBA() + " has Joined", DebugLog.DebugType.WARNING);
-                //        return;
-
-                //}
                 if ((photonEvent.Code < 200) && (PhotonNetwork.OnEventCall != null))
                 {
                     //StatsTab.AddLine("Error. Unhandled event: " + photonEvent, DebugLog.DebugType.ERROR);
-                    object content = photonEvent[245];
-                    PhotonNetwork.OnEventCall(photonEvent.Code, content, key);
+                    hash = photonEvent[245];
+                    PhotonNetwork.OnEventCall(photonEvent.Code, hash, key);
                 }
-                return;
+                break;
         }
+    }
+
+    public void OnEvent(EventData photonEvent)
+    {
+        int key = -1;
+        PhotonPlayer sender = null;
+        if (photonEvent.Parameters.ContainsKey(0xfe))
+        {
+            key = (int)photonEvent[0xfe];
+            if (mActors.ContainsKey(key))
+            {
+                sender = mActors[key];
+            }
+        }
+        else if (photonEvent.Parameters.Count == 0)
+        {
+            return;
+        }
+        if (sender != null)
+        {
+            sender.Bites = sender.Bites + photonEvent.ToString().Length;
+            sender.Packs++;
+            StatsTab.fullBytes = StatsTab.fullBytes + photonEvent.ToString().Length;
+            StatsTab.fullPacksCount++;
+        }
+        if (sender != null &&
+            (BlockEventSpam(sender, photonEvent) || ignoreList.ContainsValue(sender.uiname)) && FengGameManagerMKII.instance.Joined) return;
+        //if (sender != null) sender.BytesReceived += base.ByteCountCurrentDispatch;
+        //if (base.ByteCountCurrentDispatch > 14000 && PhotonNetwork.inRoom && photonEvent.Code != 87 && photonEvent.Code != 88)
+        //{
+        //    InRoomChat.addLINE2(sender.uiname.ToRGBA() + " sent huge Event (" + ByteCountCurrentDispatch + ")");
+        //    FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
+        //    return;
+        //}
+
         //if (sender != null &&
         //    (!BlockEventSpam(sender, photonEvent) || !ignoreList.ContainsValue(sender.uiname)) && FengGameManagerMKII.instance.Joined)
+        if (sender == null) EventHandler(photonEvent.Code, sender, photonEvent, key);
         externalListener.OnEvent(photonEvent);
     }
 

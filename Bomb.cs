@@ -103,6 +103,8 @@ public class Bomb : Photon.MonoBehaviour
         baseR.velocity = Vector3.zero;
         Vector3 position = baseT.position;
         this.myExplosion = PhotonNetwork.Instantiate("RCAsset/BombExplodeMain", position, Quaternion.Euler(0f, 0f, 0f), 0);
+        //this.myExplosion = PhotonNetwork.Instantiate("FX/FXtitanDie", position, baseT.rotation, 0);
+        this.myExplosion.transform.localScale *= radius/5;
         foreach (HERO hero in FengGameManagerMKII.heroes)
         {
             if(hero != null)
@@ -127,7 +129,7 @@ public class Bomb : Photon.MonoBehaviour
                         hero.markDie();
                         pview.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
                         FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
-                        PhotonNetwork.Instantiate("FX/FXtitanDie", hero.transform.position, Quaternion.Euler(-90f, 0f, 0f), 0);
+                        PhotonNetwork.Instantiate("FX/FXtitanDie", hero.transform.position, baseT.rotation, 0);
                         //PhotonNetwork.Instantiate("FX/boom6", gameObject.GetComponent<HERO>().transform.position, gameObject.GetComponent<HERO>().transform.rotation, 0);
                     }
                 }
@@ -180,12 +182,12 @@ public class Bomb : Photon.MonoBehaviour
         }
     }
 
-    private IEnumerator WaitAndFade(float time)
-    {
-        yield return new WaitForSeconds(time);
-        PhotonNetwork.Destroy(this.myExplosion);
-        PhotonNetwork.Destroy(this.gameObject);
-    }
+    //private IEnumerator WaitAndFade(float time)
+    //{
+    //    yield return new WaitForSeconds(time);
+    //    PhotonNetwork.Destroy(this.myExplosion);
+    //    PhotonNetwork.Destroy(this.gameObject);
+    //}
 
 }
 

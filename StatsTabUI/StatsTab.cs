@@ -104,6 +104,7 @@ namespace BRM
 
         List<Log> logs = new List<Log>();
         Vector2 scrollPosition;
+        Vector2 scrollPosition2;
         bool collapse;
         string time;
 
@@ -749,9 +750,10 @@ namespace BRM
             }
 
             GUILayout.EndHorizontal();
-            scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+            
             if (UndChoose == 0)
             {
+                scrollPosition = GUILayout.BeginScrollView(scrollPosition);
                 GUILayout.BeginVertical();
                 for (var i = 0; i < logs.Count; i++)
                 {
@@ -774,12 +776,13 @@ namespace BRM
                     else time += System.DateTime.UtcNow.ToLocalTime().Minute + "</color>]</color></b>";
                     GUILayout.Label(time + " <color=white>Console</color>: " + log.message + "\n<b><color=white>[StackTrace]:" + log.stackTrace + "</color></b>");
                 }
-
                 GUILayout.EndVertical();
+                GUILayout.EndScrollView();
             }
 
             if (UndChoose == 1)
             {
+                scrollPosition2 = GUILayout.BeginScrollView(scrollPosition2);
                 GUILayout.BeginVertical();
                 string text = string.Empty;
                 if (InGameLog.Count < 15)
@@ -798,10 +801,11 @@ namespace BRM
                 else time += System.DateTime.UtcNow.ToLocalTime().Minute + "</color>]</color></b>";
                 GUILayout.Label(time + " <color=white>Console</color>: " + text);
                 GUILayout.EndVertical();
+                GUILayout.EndScrollView();
             }
 
             var innerScrollRect = GUILayoutUtility.GetLastRect();
-            GUILayout.EndScrollView();
+            
             var outerScrollRect = GUILayoutUtility.GetLastRect();
 
             if (Event.current.type == EventType.Repaint && IsScrolledToBottom(innerScrollRect, outerScrollRect))
