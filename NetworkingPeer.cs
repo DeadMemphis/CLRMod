@@ -3106,8 +3106,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             StatsTab.fullBytes = StatsTab.fullBytes + photonEvent.ToString().Length;
             StatsTab.fullPacksCount++;
         }
-        if (sender != null &&
-            (BlockEventSpam(sender, photonEvent) || ignoreList.ContainsValue(sender.uiname)) && FengGameManagerMKII.instance.Joined) return;
+        //if (sender != null &&
+        //    (BlockEventSpam(sender, photonEvent) || ignoreList.ContainsValue(sender.uiname)) && FengGameManagerMKII.instance.Joined) return;
         //if (sender != null) sender.BytesReceived += base.ByteCountCurrentDispatch;
         //if (base.ByteCountCurrentDispatch > 14000 && PhotonNetwork.inRoom && photonEvent.Code != 87 && photonEvent.Code != 88)
         //{
@@ -3118,7 +3118,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
 
         //if (sender != null &&
         //    (!BlockEventSpam(sender, photonEvent) || !ignoreList.ContainsValue(sender.uiname)) && FengGameManagerMKII.instance.Joined)
-        if (sender == null) EventHandler(photonEvent.Code, sender, photonEvent, key);
+        if (sender == null || (sender != null && (!BlockEventSpam(sender, photonEvent) 
+            || !ignoreList.ContainsValue(sender.uiname)))) 
+            EventHandler(photonEvent.Code, sender, photonEvent, key);
         externalListener.OnEvent(photonEvent);
     }
 
