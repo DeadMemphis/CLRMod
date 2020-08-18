@@ -97,7 +97,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     private string myLastRespawnTag = "playerRespawn";
     public float myRespawnTime;
     public string name;
-    public static string Chatname;
     public static string nameField;
     public bool needChooseSide;
     public static bool noRestart;
@@ -206,8 +205,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     
     public static Texture2D ImageFront;
     internal static Queue<GameObject> customObjects = new Queue<GameObject>();
-    public static string MainColor = "F0F0F0";
-    public static string Chatcolor;
     public static int SelectMode;
     
     private static Pair<Dictionary<int, string>, bool> PhotonObjectsText = new Pair<Dictionary<int, string>, bool>(new Dictionary<int, string>
@@ -823,58 +820,20 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     [RPC]
     private void Chat(string content, string sender, PhotonMessageInfo info)
     {
-        if (info.sender.chatname == null && !sender.IsNullOrEmpty())
-            info.sender.chatname = sender;
-
-        sender = chatformat(sender);
-        content = (content.HasRGBA() ? chatformat(content) : chatformat(content).RemoveTags());
-        string str = info.sender.ID.ToString() + "<color=black>|| </color>";
-        if (!sender.IsNullOrEmpty() || info.sender.uiname == string.Empty)
-        {
-            if (content != string.Empty)
-            {
-                InRoomChat.addLINE(str + sender + ":" + content, info.sender, true);
-                return;
-            }
-        }
-        else if (content != string.Empty)
-            InRoomChat.addLINE(str + content, info.sender, !info.sender.isMasterClient || !info.sender.uiname.IsNullOrEmpty());  
+        if (sender != string.Empty) content = sender + ":" + content;
+        content = "<color=#FFC000>[" + Convert.ToString(info.sender.ID) + "]</color> " + content;
+        InRoomChat.Write(content);
     }
 
 
     [RPC]
     public void ChatPM(string sender, string content, PhotonMessageInfo info)
     {
-        sender = "<color=black>{<color=yellow>PM</color>}</color>" + sender;
-        sender = chatformat(sender);
-        content = (content.HasRGBA() ? chatformat(content) : chatformat(content).RemoveTags());
-        string str = info.sender.ID.ToString() + "<color=black>|| </color>";
-        if (!sender.IsNullOrEmpty() || info.sender.uiname == string.Empty)
-        {
-            if (content != string.Empty)
-            {
-                InRoomChat.addLINE(str + sender + ":" + content, info.sender, true);
-                return;
-            }
-        }
-        else if (content != string.Empty)
-        {
-            InRoomChat.addLINE(str + content, info.sender, !info.sender.isMasterClient || !info.sender.uiname.IsNullOrEmpty());
-        }
-
+        content = sender + ":" + content;
+        content = "<color=#FFC000>FROM [" + Convert.ToString(info.sender.ID) + "]</color> " + content;
+        InRoomChat.Write(content);
     }
-
-
-    private static string chatformat(string input)
-    {
-        if (input.Contains("<size=") || input.Contains("</size>"))
-        {
-            input = Regex.Replace(input, "<size=((\\d+>)|(\\w+?>?))|<\\/size>?", string.Empty);
-        }
-
-        return input;
-    }
-
+    
     private ExitGames.Client.Photon.Hashtable checkGameGUI(string type = "")
     {
         ActiveGameModes.Clear();
@@ -1985,7 +1944,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
                     {
-                        this.ShowHUDInfoCenter(string.Concat(new object[] { "Team ", this.teamWinner, " Win!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
+                     //   if ((GameSettings.pvpMode == 0) && (GameSettings.bombMode == 0))
+                            this.ShowHUDInfoCenter(string.Concat(new object[] { "Team ", this.teamWinner, " Win!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
+                      //  else this.ShowHUDInfoCenter(string.Concat(new object[] { "Round Ended!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
                     }
                     else
                     {
@@ -9985,7 +9946,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     public void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
-        this.updatePlayerList();
+        this.RecompilePlayerList(0.1f);
+       // this.updatePlayerList(); //this will not update bomb round
         if (((playerAndUpdatedProps != null) && (playerAndUpdatedProps.Length >= 2)) && (((PhotonPlayer)playerAndUpdatedProps[0]) == PhotonNetwork.player))
         {
             ExitGames.Client.Photon.Hashtable hashtable = (ExitGames.Client.Photon.Hashtable)playerAndUpdatedProps[1];
@@ -13828,7 +13790,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             UILabel component = GameObject.Find("LabelNetworkStatus").GetComponent<UILabel>();
             if (PhotonNetwork.connected)
             {
-                component.text = component.text + " ping:[A8FF24]" + PhotonNetwork.GetPing() + ":[ffdc2e]" + PhotonNetwork.networkingPeer.UsedProtocol.ToString();
+                component.text = component.text + " ping:" + PhotonNetwork.GetPing();
             }
             else component.text = "Welcome," + LoginFengKAI.player.name;
         }

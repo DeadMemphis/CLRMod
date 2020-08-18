@@ -95,31 +95,37 @@ public class Horse : MONO
                 this.unmounted();
                 return;
             }
+
             this.heroT.position = this.baseT.position + Vector3.up * 1.68f;
             this.heroT.rotation = this.baseT.rotation;
             this.heroR.velocity = this.baseR.velocity;
-            this.myHero.transform.position = this.baseT.position + ((Vector3) (Vector3.up * 1.68f));
+
+            this.myHero.transform.position = this.baseT.position + ((Vector3)(Vector3.up * 1.68f));
+
             this.myHero.transform.rotation = this.baseT.rotation;
             this.myHero.rigidbody.velocity = this.baseR.velocity;
+
+
             if (this.controller.targetDirection != -874f)
             {
-                this.baseGT.rotation = Quaternion.Lerp(this.baseGT.rotation, Quaternion.Euler(0f, this.controller.targetDirection, 0f), (100f * Time.deltaTime) / (this.baseR.velocity.magnitude + 20f));
+                    this.baseGT.rotation = Quaternion.Lerp(this.baseGT.rotation, Quaternion.Euler(0f, this.controller.targetDirection, 0f), (100f * Time.deltaTime) / (this.baseR.velocity.magnitude + 20f));
                 if (this.controller.isWALKDown)
                 {
-                    this.baseR.AddForce((Vector3) ((this.baseT.forward * this.speed) * 0.6f), ForceMode.Acceleration);
+                    this.baseR.AddForce((Vector3)((this.baseT.forward * this.speed) * 0.6f), ForceMode.Acceleration);
                     if (this.baseR.velocity.magnitude >= (this.speed * 0.6f))
                     {
-                        this.baseR.AddForce((Vector3) ((-this.speed * 0.6f) * this.baseR.velocity.normalized), ForceMode.Acceleration);
+                        this.baseR.AddForce((Vector3)((-this.speed * 0.6f) * this.baseR.velocity.normalized), ForceMode.Acceleration);
                     }
                 }
                 else
                 {
-                    this.baseR.AddForce((Vector3) (this.baseT.forward * this.speed), ForceMode.Acceleration);
+                    this.baseR.AddForce((Vector3)(this.baseT.forward * this.speed), ForceMode.Acceleration);
                     if (this.baseR.velocity.magnitude >= this.speed)
                     {
-                        this.baseR.AddForce((Vector3) (-this.speed * this.baseR.velocity.normalized), ForceMode.Acceleration);
+                        this.baseR.AddForce((Vector3)(-this.speed * this.baseR.velocity.normalized), ForceMode.Acceleration);
                     }
                 }
+             
                 if (this.baseR.velocity.magnitude > 8f)
                 {
                     if (!this.baseA.IsPlaying("horse_Run"))
@@ -154,26 +160,31 @@ public class Horse : MONO
                         this.basePV.RPC("setDust", PhotonTargets.Others, objArray2);
                     }
                 }
+               
             }
             else
             {
                 this.toIdleAnimation();
-                if (this.baseR.velocity.magnitude > 15f)
-                {
-                    if (!this.heroA.IsPlaying("horse_Run"))
+               
+                    if (this.baseR.velocity.magnitude > 15f)
                     {
-                        this.hero.crossFade("horse_run", 0.1f);
+                        if (!this.heroA.IsPlaying("horse_Run"))
+                        {
+                            this.hero.crossFade("horse_run", 0.1f);
+                        }
+
                     }
-                }
-                else if (!this.heroA.IsPlaying("horse_idle"))
-                {
-                    this.hero.crossFade("horse_idle", 0.1f);
-                }
+                    else if (!this.heroA.IsPlaying("horse_idle"))
+                    {
+                        this.hero.crossFade("horse_idle", 0.1f);
+                    }
             }
+
             if ((this.controller.isAttackDown || this.controller.isAttackIIDown) && this.IsGrounded())
             {
-                this.baseR.AddForce((Vector3) (Vector3.up * 25f), ForceMode.VelocityChange);
+                this.baseR.AddForce((Vector3)(Vector3.up * 25f), ForceMode.VelocityChange);
             }
+
         }
         else if (this.State == "follow")
         {

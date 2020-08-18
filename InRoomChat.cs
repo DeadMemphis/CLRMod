@@ -29,44 +29,12 @@ public class InRoomChat : Photon.MonoBehaviour
         messages.Add(newLine);
     }
 
-    public static void addLINE(string newLine, PhotonPlayer player = null, bool hasSender = true)
+    public static void Write(string newLine)
     {
-
-        if (hasSender)
-        {
-            InRoomChat.messages.Add(string.Concat(new string[]
-            {
-                "<color=",
-                FengGameManagerMKII.Chatcolor,
-                ">",
-                newLine,
-                "</color>"
-            }));
-
-            return;
-        }
-        InRoomChat.messages.Add(string.Concat(new string[]
-        {
-            "<color=",
-            FengGameManagerMKII.Chatcolor,
-            ">",
-            newLine,
-            "</color>"
-        }));
+        messages.Add(newLine);
     }
 
     
-    public static void addLINE2(string newLine)
-    {
-        messages.Add(string.Concat(new string[]
-        {
-            "<color=",
-            FengGameManagerMKII.Chatcolor,
-            ">",
-            newLine,
-            "</color>"
-        }));
-    }
 
     public void OnGUI()
     {
@@ -131,13 +99,7 @@ public class InRoomChat : Photon.MonoBehaviour
                             }
                         }
                     }
-                    //        object chatname = FengGameManagerMKII.Chatname;
-                    //        FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, new object[] { "<color=",
-                    //FengGameManagerMKII.Chatcolor,
-                    //">",
-                    //inputLine,
-                    //"</color>", "<b>" + chatname + "</b>" });
-                    object[] parameters = new object[] { this.inputLine, FengGameManagerMKII.Chatname };
+                    object[] parameters = new object[] { this.inputLine, str2 };
                     FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, parameters);
                 }
                 else if (this.inputLine == "/cloth")
@@ -302,64 +264,47 @@ public class InRoomChat : Photon.MonoBehaviour
                     }
                     else if (this.inputLine.StartsWith("/pm"))
                     {
-                        string text74 = this.inputLine.Substring(3);
-                        string text75 = string.Empty;
-                        System.Text.RegularExpressions.Regex regex3 = new System.Text.RegularExpressions.Regex("(\\s?)(\\d+((\\,|\\,\\s)?))*");
-                        if (regex3.IsMatch(text74))
+                        string[] strArray = this.inputLine.Split(new char[] { ' ' });
+                        PhotonPlayer targetPlayer = PhotonPlayer.Find(Convert.ToInt32(strArray[1]));
+                        str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]).hexColor();
+                        if (str2 == string.Empty)
                         {
-                            System.Collections.Generic.List<string> list2 = new System.Collections.Generic.List<string>();
-                            System.Text.RegularExpressions.Match match3 = regex3.Match(text74);
-                            text75 = text74.Substring(match3.Value.Length + match3.Index);
-                            text74 = match3.Value;
-                            text74 = text74.Trim();
-                            int iD16;
-                            if (int.TryParse(text74, out iD16))
+                            str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]);
+                            if (PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam] != null)
                             {
-                                list2.Add(iD16.ToString());
-                            }
-                            else if (text74.Contains(","))
-                            {
-                                list2 = text74.Split(new char[]
+                                if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 1)
                                 {
-                                ','
-                                }).ToList<string>();
-                            }
-                            using (System.Collections.Generic.List<string>.Enumerator enumerator5 = list2.GetEnumerator())
-                            {
-                                while (enumerator5.MoveNext())
+                                    str2 = "<color=#00FFFF>" + str2 + "</color>";
+                                }
+                                else if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 2)
                                 {
-                                    string current5 = enumerator5.Current;
-                                    if (!string.IsNullOrEmpty(current5))
-                                    {
-                                        if (int.TryParse(current5, out iD16))
-                                        {
-                                            PhotonPlayer photonPlayer33;
-                                            if (!PhotonPlayer.Find(iD16, out photonPlayer33))
-                                            {
-                                                InRoomChat.addLINE2("A player doesn't exist with an ID of " + current5.Trim() + ".");
-                                            }
-                                            else
-                                            {
-                                                FengGameManagerMKII.instance.photonView.RPC("Chat", photonPlayer33, text75, "<color=black>{<color=yellow>PM</color>}</color>" + FengGameManagerMKII.Chatname);
-                                                addLINE(string.Concat(new object[]
-                                                {
-                                                "<color=black>{<color=yellow>PM<color=orange>",
-                                                photonPlayer33.ID,
-                                                "</color></color>}</color>",
-                                                FengGameManagerMKII.Chatname,
-                                                ":",
-                                                text75
-                                                }));
-                                            }
-                                        }
-                                        else
-                                        {
-                                            InRoomChat.addLINE2("Must be a number, dumbass. For ID " + current5);
-                                        }
-                                    }
+                                    str2 = "<color=#FF00FF>" + str2 + "</color>";
                                 }
                             }
                         }
+                        string str3 = RCextensions.returnStringFromObject(targetPlayer.customProperties[PhotonPlayerProperty.name]).hexColor();
+                        if (str3 == string.Empty)
+                        {
+                            str3 = RCextensions.returnStringFromObject(targetPlayer.customProperties[PhotonPlayerProperty.name]);
+                            if (targetPlayer.customProperties[PhotonPlayerProperty.RCteam] != null)
+                            {
+                                if (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.RCteam]) == 1)
+                                {
+                                    str3 = "<color=#00FFFF>" + str3 + "</color>";
+                                }
+                                else if (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.RCteam]) == 2)
+                                {
+                                    str3 = "<color=#FF00FF>" + str3 + "</color>";
+                                }
+                            }
+                        }
+                        string str4 = string.Empty;
+                        for (num4 = 2; num4 < strArray.Length; num4++)
+                        {
+                            str4 = str4 + strArray[num4] + " ";
+                        }
+                        FengGameManagerMKII.instance.photonView.RPC("ChatPM", targetPlayer, new object[] { /*name*/str2, str4 });
+                        this.addLINE("<color=#FFC000>TO [" + targetPlayer.ID.ToString() + "]</color> " + str3 + ":" + str4);
                     }
                     else if (this.inputLine.StartsWith("/team"))
                     {
@@ -594,7 +539,7 @@ public class InRoomChat : Photon.MonoBehaviour
                                 }
                                 if (GameSettings.moreTitans > 0)
                                 {
-                                    this.addLINE("<color=#FFCC00>Custom titan # is on (" + Convert.ToString(GameSettings.moreTitans) + ").</color>");
+                                    this.addLINE("<color=#FFCC00>Custom titan is on (" + Convert.ToString(GameSettings.moreTitans) + ").</color>");
                                 }
                                 if (GameSettings.sizeMode > 0)
                                 {

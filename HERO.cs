@@ -5411,16 +5411,14 @@ public class HERO : MONO
                 float magnitude = vector.magnitude;
                 //GameObject obj11 = this.LabelDistance;
                 string str = (magnitude <= 1000f) ? ((int)magnitude).ToString() : "???";
-                //if (((int) FengGameManagerMKII.settings[0xbd]) == 1)
-                //{
-                //    str = str + "\n" + this.currentSpeed.ToString("F1") + " u/s";
-                //speedR = this.currentSpeed;
-                //}
-                //else if (((int) FengGameManagerMKII.settings[0xbd]) == 2)
-                //{
-                //    str = str + "\n" + ((this.currentSpeed / 100f)).ToString("F1") + "K";
-                //speedK = ((this.currentSpeed / 100f));
-                //}
+                if (((int)FengGameManagerMKII.settings[0xbd]) == 1)
+                {
+                    str = str + "\n" + this.currentSpeed.ToString("F1") + " u/s";
+                }
+                else if (((int)FengGameManagerMKII.settings[0xbd]) == 2)
+                {
+                    str = str + "\n" + ((this.currentSpeed / 100f)).ToString("F1") + "K";
+                }
                 LabelDistance.text = str;
                 if (magnitude > 120f)
                 {
