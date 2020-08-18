@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using BRM;
+using CLEARSKIES;
 using System.Linq;
 
 internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
@@ -56,7 +57,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     public static string LocalIP;
     internal static Yield yield;
 
-    //private static DateTime lastViewUpdate = DateTime.Now;
+    private static DateTime lastViewUpdate = DateTime.Now;
 
     static NetworkingPeer()
     {
@@ -1148,6 +1149,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             //}
         }
         PhotonView[] photonViewsInChildren = resourceGameObject.GetPhotonViewsInChildren();
+        if (FengGameManagerMKII.instance != null)
+        {
+            PhotonView pview = FengGameManagerMKII.PView;
+            if (pview.viewID == instantiationId || pview.viewID == photonViewsInChildren[0].viewID)
+            {
+                return null;
+            }
+        }
         if (photonViewsInChildren.Length != numArray.Length)
         {
             throw new Exception("Error in Instantiation! The resource's PhotonView count is not the same as in incoming data.");
@@ -1186,6 +1195,15 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             this.RemoveInstantiatedGO(go, true);
         }
         this.instantiatedObjects.Add(instantiationId, obj2);
+        PhotonView photonView = obj2.GetComponent<PhotonView>();
+        if (photonView != null)
+        {
+            int viewID = photonView.viewID;
+            if (!this.photonViewList.ContainsKey(viewID))
+            {
+                this.photonViewList.Add(viewID, photonView);
+            }
+        }
         obj2.SendMessage(PhotonNetworkingMessage.OnPhotonInstantiate.ToString(), new PhotonMessageInfo(photonPlayer, timestamp, null), SendMessageOptions.DontRequireReceiver);
         return obj2;
     }
@@ -1240,281 +1258,15 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             }
         }
     }
-    //public void ExecuteRPC(ExitGames.Client.Photon.Hashtable rpcData, PhotonPlayer sender)
-    //{
-    //    if (rpcData == null || !rpcData.ContainsKey(0))
-    //    {
-    //        Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-    //        return;
-    //    }
-    //    int viewID = (int)rpcData[0];
-    //    int num2 = 0;
-    //    if (rpcData.ContainsKey(1))
-    //    {
-    //        num2 = (int)((short)rpcData[1]);
-    //    }
-    //    string str;
-    //    if (rpcData.ContainsKey(5))
-    //    {
-    //        int num3 = (int)((byte)rpcData[5]);
-    //        if (num3 > PhotonNetwork.PhotonServerSettings.RpcList.Count - 1)
-    //        {
-    //            Debug.LogError("Could not find RPC with index: " + num3 + ". Going to ignore! Check PhotonServerSettings.RpcList");
-    //            return;
-    //        }
-    //        str = PhotonNetwork.PhotonServerSettings.RpcList[num3];
-    //    }
-    //    else
-    //    {
-    //        str = (string)rpcData[3];
-    //    }
-    //    object[] parameters = null;
-    //    if (rpcData.ContainsKey(4))
-    //    {
-    //        parameters = (object[])rpcData[4];
-    //    }
-    //    if (parameters == null)
-    //    {
-    //        parameters = new object[0];
-    //    }
-    //    if (NetworkingPeer.BlockSpam(sender, str))
-    //    {
-    //        return;
-    //    }
-    //    if (str == "ChatPM" || str == "pauseRPC" || str == "settingRPC" || str == "loadskinRPC" || str == "ReturnFromCannon")
-    //    {
-    //        sender.RC = true;
-    //    }
-    //    if (str.StartsWith("SLB") || str == "Pan" || str == "ShinraTensei" || str == "LoliRPC" || str == "coreditor" || str == "PartyHardRPC" || str == "PartyHardRPC")
-    //    {
-    //        sender.SLB = true;
-    //    }
-    //    PhotonView photonView = this.GetPhotonView(viewID);
-    //    if (photonView == null)
-    //    {
-    //        int num6 = viewID / PhotonNetwork.MAX_VIEW_IDS;
-    //        bool flag = num6 == this.mLocalActor.ID;
-    //        bool flag2 = num6 == sender.ID;
-    //        if (flag)
-    //        {
-    //            Debug.LogWarning(string.Concat(new object[]
-    //            {
-    //            "Received RPC \"",
-    //            str,
-    //            "\" for viewID ",
-    //            viewID,
-    //            " but this PhotonView does not exist! View was/is ours.",
-    //            (!flag2) ? " Remote called." : " Owner called."
-    //            }));
-    //            return;
-    //        }
-    //        Debug.LogError(string.Concat(new object[]
-    //        {
-    //        "Received RPC \"",
-    //        str,
-    //        "\" for viewID ",
-    //        viewID,
-    //        " but this PhotonView does not exist! Was remote PV.",
-    //        (!flag2) ? " Remote called." : " Owner called."
-    //        }));
-    //        return;
-    //    }
-    //    else
-    //    {
-    //        if (photonView.prefix != num2)
-    //        {
-    //            Debug.LogError(string.Concat(new object[]
-    //            {
-    //            "Received RPC \"",
-    //            str,
-    //            "\" on viewID ",
-    //            viewID,
-    //            " with a prefix of ",
-    //            num2,
-    //            ", our prefix is ",
-    //            photonView.prefix,
-    //            ". The RPC has been ignored."
-    //            }));
-    //            return;
-    //        }
-    //        if (str == string.Empty)
-    //        {
-    //            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-    //            return;
-    //        }
-    //        if (PhotonNetwork.logLevel >= PhotonLogLevel.Full)
-    //        {
-    //            Debug.Log("Received RPC: " + str);
-    //        }
-    //        if (photonView.group == 0 || this.allowedReceivingGroups.Contains(photonView.group))
-    //        {
-    //            Type[] callParameterTypes = new Type[0];
-    //            if (parameters.Length != 0)
-    //            {
-    //                callParameterTypes = new Type[parameters.Length];
-    //                int index = 0;
-    //                foreach (object obj2 in parameters)
-    //                {
-    //                    if (obj2 == null)
-    //                    {
-    //                        callParameterTypes[index] = null;
-    //                    }
-    //                    else
-    //                    {
-    //                        callParameterTypes[index] = obj2.GetType();
-    //                    }
-    //                    index++;
-    //                }
-    //            }
-    //            int num4 = 0;
-    //            int num5 = 0;
-    //            foreach (MonoBehaviour behaviour in photonView.GetComponents<MonoBehaviour>())
-    //            {
-    //                if (behaviour == null)
-    //                {
-    //                    Debug.LogError("ERROR You have missing MonoBehaviours on your gameobjects!");
-    //                }
-    //                else
-    //                {
-    //                    Type key = behaviour.GetType();
-    //                    List<MethodInfo> list = null;
-    //                    if (this.monoRPCMethodsCache.ContainsKey(key))
-    //                    {
-    //                        list = this.monoRPCMethodsCache[key];
-    //                    }
-    //                    if (list == null)
-    //                    {
-    //                        List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(RPC));
-    //                        this.monoRPCMethodsCache[key] = methods;
-    //                        list = methods;
-    //                    }
-    //                    if (list != null)
-    //                    {
-    //                        for (int j = 0; j < list.Count; j++)
-    //                        {
-    //                            MethodInfo info = list[j];
-    //                            if (info.Name == str)
-    //                            {
-    //                                num5++;
-    //                                ParameterInfo[] methodParameters = info.GetParameters();
-    //                                if (methodParameters.Length == callParameterTypes.Length)
-    //                                {
-    //                                    if (this.CheckTypeMatch(methodParameters, callParameterTypes))
-    //                                    {
-    //                                        num4++;
-    //                                        object obj3 = info.Invoke(behaviour, parameters);
-    //                                        if (info.ReturnType == typeof(IEnumerator))
-    //                                        {
-    //                                            behaviour.StartCoroutine((IEnumerator)obj3);
-    //                                        }
-    //                                    }
-    //                                }
-    //                                else if (methodParameters.Length - 1 == callParameterTypes.Length)
-    //                                {
-    //                                    if (this.CheckTypeMatch(methodParameters, callParameterTypes) && methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo))
-    //                                    {
-    //                                        num4++;
-    //                                        int timestamp = (int)rpcData[2];
-    //                                        object[] array = new object[parameters.Length + 1];
-    //                                        parameters.CopyTo(array, 0);
-    //                                        array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
-    //                                        object obj4 = info.Invoke(behaviour, array);
-    //                                        if (info.ReturnType == typeof(IEnumerator))
-    //                                        {
-    //                                            behaviour.StartCoroutine((IEnumerator)obj4);
-    //                                        }
-    //                                    }
-    //                                }
-    //                                else if (methodParameters.Length == 1 && methodParameters[0].ParameterType.IsArray)
-    //                                {
-    //                                    num4++;
-    //                                    object[] objArray5 = new object[]
-    //                                    {
-    //                                    parameters
-    //                                    };
-    //                                    object obj5 = info.Invoke(behaviour, objArray5);
-    //                                    if (info.ReturnType == typeof(IEnumerator))
-    //                                    {
-    //                                        behaviour.StartCoroutine((IEnumerator)obj5);
-    //                                    }
-    //                                }
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //            if (num4 != 1)
-    //            {
-    //                string str2 = string.Empty;
-    //                foreach (Type type2 in callParameterTypes)
-    //                {
-    //                    if (str2 != string.Empty)
-    //                    {
-    //                        str2 += ", ";
-    //                    }
-    //                    if (type2 == null)
-    //                    {
-    //                        str2 += "null";
-    //                    }
-    //                    else
-    //                    {
-    //                        str2 += type2.Name;
-    //                    }
-    //                }
-    //                if (num4 == 0)
-    //                {
-    //                    if (num5 == 0)
-    //                    {
-    //                        Debug.LogError(string.Concat(new object[]
-    //                        {
-    //                        "PhotonView with ID ",
-    //                        viewID,
-    //                        " has no method \"",
-    //                        str,
-    //                        "\" marked with the [RPC](C#) or @RPC(JS) property! Args: ",
-    //                        str2
-    //                        }));
-    //                        return;
-    //                    }
-    //                    Debug.LogError(string.Concat(new object[]
-    //                    {
-    //                    "PhotonView with ID ",
-    //                    viewID,
-    //                    " has no method \"",
-    //                    str,
-    //                    "\" that takes ",
-    //                    callParameterTypes.Length,
-    //                    " argument(s): ",
-    //                    str2
-    //                    }));
-    //                    return;
-    //                }
-    //                else
-    //                {
-    //                    Debug.LogError(string.Concat(new object[]
-    //                    {
-    //                    "PhotonView with ID ",
-    //                    viewID,
-    //                    " has ",
-    //                    num4,
-    //                    " methods \"",
-    //                    str,
-    //                    "\" that takes ",
-    //                    callParameterTypes.Length,
-    //                    " argument(s): ",
-    //                    str2,
-    //                    ". Should be just one?"
-    //                    }));
-    //                }
-    //            }
-    //        }
-    //        return;
-    //    }
-    //}
+
 
     public void ExecuteRPC(ExitGames.Client.Photon.Hashtable rpcData, PhotonPlayer sender)
     {
-        if ((rpcData != null) && rpcData.ContainsKey((byte)0))
+        if ((rpcData == null) || !rpcData.ContainsKey((byte)0))
+        {
+            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
+        }
+        else
         {
             string str;
             int viewID = (int)rpcData[(byte)0];
@@ -1529,6 +1281,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 if (num3 > (PhotonNetwork.PhotonServerSettings.RpcList.Count - 1))
                 {
                     Debug.LogError("Could not find RPC with index: " + num3 + ". Going to ignore! Check PhotonServerSettings.RpcList");
+                    return;
                 }
                 str = PhotonNetwork.PhotonServerSettings.RpcList[num3];
             }
@@ -1545,14 +1298,12 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             {
                 parameters = new object[0];
             }
-            if (ignoreList.ContainsValue(sender.uiname)) return;        
-           
             PhotonView photonView = this.GetPhotonView(viewID);
             if (photonView == null)
             {
-                int num1 = viewID / PhotonNetwork.MAX_VIEW_IDS;
-                bool flag = num1 == this.mLocalActor.ID;
-                bool flag2 = num1 == sender.ID;
+                int num4 = viewID / PhotonNetwork.MAX_VIEW_IDS;
+                bool flag = num4 == this.mLocalActor.ID;
+                bool flag2 = num4 == sender.ID;
                 if (flag)
                 {
                     Debug.LogWarning(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! View was/is ours.", !flag2 ? " Remote called." : " Owner called." }));
@@ -1567,7 +1318,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             else if (photonView.prefix != num2)
             {
                 Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" on viewID ", viewID, " with a prefix of ", num2, ", our prefix is ", photonView.prefix, ". The RPC has been ignored." }));
-                return;
             }
             else if (str == string.Empty)
             {
@@ -1582,7 +1332,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 if ((photonView.group == 0) || this.allowedReceivingGroups.Contains(photonView.group))
                 {
                     System.Type[] callParameterTypes = new System.Type[0];
-                    if (parameters.Length != 0)
+                    if (parameters.Length > 0)
                     {
                         callParameterTypes = new System.Type[parameters.Length];
                         int index = 0;
@@ -1600,80 +1350,82 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             index++;
                         }
                     }
-                    int num4 = 0;
-                    int num5 = 0;
+                    int num7 = 0;
+                    int num8 = 0;
                     foreach (MonoBehaviour behaviour in photonView.GetComponents<MonoBehaviour>())
                     {
                         if (behaviour == null)
                         {
-                            InRoomChat.addLINE2("ERROR You have missing MonoBehaviours on your gameobjects!");
-                            return;
+                            Debug.LogError("ERROR You have missing MonoBehaviours on your gameobjects!");
                         }
-                        System.Type key = behaviour.GetType();
-                        List<MethodInfo> list = null;
-                        if (this.monoRPCMethodsCache.ContainsKey(key))
+                        else
                         {
-                            list = this.monoRPCMethodsCache[key];
-                        }
-                        if (list == null)
-                        {
-                            List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(UnityEngine.RPC));
-                            this.monoRPCMethodsCache[key] = methods;
-                            list = methods;
-                        }
-                        if (list != null)
-                        {
-                            for (int j = 0; j < list.Count; j++)
+                            System.Type key = behaviour.GetType();
+                            List<MethodInfo> list = null;
+                            if (this.monoRPCMethodsCache.ContainsKey(key))
                             {
-                                MethodInfo info = list[j];
-                                if (info.Name == str)
+                                list = this.monoRPCMethodsCache[key];
+                            }
+                            if (list == null)
+                            {
+                                List<MethodInfo> methods = SupportClass.GetMethods(key, typeof(UnityEngine.RPC));
+                                this.monoRPCMethodsCache[key] = methods;
+                                list = methods;
+                            }
+                            if (list != null)
+                            {
+                                for (int j = 0; j < list.Count; j++)
                                 {
-                                    rpcList.Add(str);
-                                    num5++;
-                                    ParameterInfo[] methodParameters = info.GetParameters();
-                                    if (methodParameters.Length == callParameterTypes.Length)
+                                    MethodInfo info = list[j];
+                                    if (info.Name == str)
                                     {
-                                        if (this.CheckTypeMatch(methodParameters, callParameterTypes))
+                                        rpcList.Add(str);
+                                        num8++;
+                                        ParameterInfo[] methodParameters = info.GetParameters();
+                                        if (methodParameters.Length == callParameterTypes.Length)
                                         {
-                                            num4++;
-                                            object obj3 = info.Invoke(behaviour, parameters);
-                                            if (info.ReturnType == typeof(IEnumerator))
+                                            if (this.CheckTypeMatch(methodParameters, callParameterTypes))
                                             {
-                                                behaviour.StartCoroutine((IEnumerator)obj3);
+                                                num7++;
+                                                object obj3 = info.Invoke(behaviour, parameters);
+                                                if (info.ReturnType == typeof(IEnumerator))
+                                                {
+                                                    behaviour.StartCoroutine((IEnumerator)obj3);
+                                                }
                                             }
                                         }
-                                    }
-                                    else if ((methodParameters.Length - 1) == callParameterTypes.Length)
-                                    {
-                                        if (this.CheckTypeMatch(methodParameters, callParameterTypes) && (methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo)))
+                                        else if ((methodParameters.Length - 1) == callParameterTypes.Length)
                                         {
-                                            num4++;
-                                            int timestamp = (int)rpcData[(byte)2];
-                                            object[] array = new object[parameters.Length + 1];
-                                            parameters.CopyTo(array, 0);
-                                            array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
-                                            object obj4 = info.Invoke(behaviour, array);
-                                            if (info.ReturnType == typeof(IEnumerator))
+                                            if (this.CheckTypeMatch(methodParameters, callParameterTypes) && (methodParameters[methodParameters.Length - 1].ParameterType == typeof(PhotonMessageInfo)))
                                             {
-                                                behaviour.StartCoroutine((IEnumerator)obj4);
+                                                num7++;
+                                                int timestamp = (int)rpcData[(byte)2];
+                                                object[] array = new object[parameters.Length + 1];
+                                                parameters.CopyTo(array, 0);
+                                                array[array.Length - 1] = new PhotonMessageInfo(sender, timestamp, photonView);
+                                                object obj4 = info.Invoke(behaviour, array);
+                                                if (info.ReturnType == typeof(IEnumerator))
+                                                {
+                                                    behaviour.StartCoroutine((IEnumerator)obj4);
+                                                }
                                             }
                                         }
-                                    }
-                                    else if ((methodParameters.Length == 1) && methodParameters[0].ParameterType.IsArray)
-                                    {
-                                        num4++;
-                                        object[] objArray3 = new object[] { parameters };
-                                        object obj5 = info.Invoke(behaviour, objArray3);
-                                        if (info.ReturnType == typeof(IEnumerator))
+                                        else if ((methodParameters.Length == 1) && methodParameters[0].ParameterType.IsArray)
                                         {
-                                            behaviour.StartCoroutine((IEnumerator)obj5);
+                                            num7++;
+                                            object[] objArray5 = new object[] { parameters };
+                                            object obj5 = info.Invoke(behaviour, objArray5);
+                                            if (info.ReturnType == typeof(IEnumerator))
+                                            {
+                                                behaviour.StartCoroutine((IEnumerator)obj5);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    if (num4 != 1)
+                    if (num7 != 1)
                     {
                         string str2 = string.Empty;
                         for (int k = 0; k < callParameterTypes.Length; k++)
@@ -1692,16 +1444,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                 str2 = str2 + type2.Name;
                             }
                         }
-                        if (viewID == 2)
-                        {
-                            viewID = 0;
-                        }
-                        if (viewID > 0x3e8)
-                        {
-                            viewID /= 0x3e8;
-                        }
-
-
                         if (!rpcList.Contains(str))
                         {
                             viewID = sender.ID;
@@ -1729,15 +1471,27 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             }
                             return;
                         }
+                        if (num7 == 0)
+                        {
+                            if (num8 == 0)
+                            {
+                                Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has no method \"", str, "\" marked with the [RPC](C#) or @RPC(JS) property! Args: ", str2 }));
+                            }
+                            else
+                            {
+                                Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has no method \"", str, "\" that takes ", callParameterTypes.Length, " argument(s): ", str2 }));
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has ", num7, " methods \"", str, "\" that takes ", callParameterTypes.Length, " argument(s): ", str2, ". Should be just one?" }));
+                        }
                     }
                 }
             }
         }
-        else
-        {
-            Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
-        }
     }
+
 
     public object[] FetchInstantiationData(int instantiationId)
     {
@@ -1880,7 +1634,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     public PhotonView GetPhotonView(int viewID)
     {
         PhotonView view = null;
-        if (!this.photonViewList.TryGetValue(viewID, out view) /*&& (NetworkingPeer.lastViewUpdate - DateTime.Now).TotalSeconds > 2.5*/)
+        if (!this.photonViewList.TryGetValue(viewID, out view) /*&& (NetworkingPeer.lastViewUpdate - DateTime.Now).TotalMilliseconds > 5.0*/)
         {
             foreach (PhotonView view2 in UnityEngine.Object.FindObjectsOfType<PhotonView>())
             {
@@ -1967,7 +1721,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         bool flag2 = (this.mRoomToGetInto == null) ? PhotonNetwork.autoCleanUpPlayerObjects : this.mRoomToGetInto.autoCleanUp;
         this.hasSwitchedMC = false;
         this.mRoomToGetInto = null;
-        NetworkingPeer.mActors = new Dictionary<int, PhotonPlayer>();
+        mActors.Clear();
         this.mPlayerListCopy = new PhotonPlayer[0];
         this.mOtherPlayerListCopy = new PhotonPlayer[0];
         this.mMasterClient = null;
@@ -2112,115 +1866,93 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     }
 
 
+
     public void OnEvent(EventData photonEvent)
     {
-        ExitGames.Client.Photon.Hashtable hashtable3;
-        object obj7;
-        object obj8;
-        object obj9;
         int key = -1;
         PhotonPlayer sender = null;
         if (photonEvent.Parameters.ContainsKey(0xfe))
         {
             key = (int)photonEvent[0xfe];
-            if (mActors.ContainsKey(key))
-            {
-                sender = mActors[key];
-            }
+            if (mActors.ContainsKey(key)) sender = mActors[key];
         }
-        if (((sender != null) && leftList.ContainsKey(sender.ID)) && ((photonEvent.Code == 255) && PhotonNetwork.inRoom))
-        {
-            leftList.Remove(sender.ID);
-        }
-        //if (sender != null) sender.BytesReceived += base.ByteCountCurrentDispatch;
-        if (base.ByteCountCurrentDispatch > 14000 && PhotonNetwork.inRoom && photonEvent.Code != 87 && photonEvent.Code != 88)
-        {
-            return;
-        }
-        switch (photonEvent.Code)
+        else if (photonEvent.Parameters.Count == 0) return;
+
+        if (sender == null || (sender != null && !ignoreList.ContainsValue(sender.uiname)))
+            EventHandler(photonEvent.Code, sender, photonEvent, key);
+        externalListener.OnEvent(photonEvent);
+    }
+
+
+
+
+    private void EventHandler(byte code, PhotonPlayer sender, EventData photonEvent, int key)
+    {
+        ExitGames.Client.Photon.Hashtable hashtable;
+        object hash;
+        switch (code)
         {
             case 200:
-                if (sender != null && (ignoreList.ContainsValue(sender.uiname)))
-                {
-                    return;
-                }
-                if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-                {
-                   
-                    return;
-                }
-                ExitGames.Client.Photon.Hashtable rpcData = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-                ExecuteRPC(rpcData, sender);
-                return;
+                if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable)) break; 
+                ExecuteRPC(photonEvent[245] as ExitGames.Client.Photon.Hashtable, sender);
+                break;
             case 201:
             case 206:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                ExitGames.Client.Photon.Hashtable evData1 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-
-                if (evData1 != null)
+                hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    if (!(evData1[(byte)0] is int))
+                    if (!(hashtable[(byte)0] is int))
                     {
-                        return;
+                        break;
                     }
-                    int networkTime = (int)evData1[(byte)0];
+                    int networkTime = (int)hashtable[(byte)0];
                     short correctPrefix = -1;
                     short num6 = 1;
-                    if (evData1.ContainsKey((byte)1))
+                    if (hashtable.ContainsKey((byte)1))
                     {
-                        if (!(evData1[(byte)1] is short))
+                        if (!(hashtable[(byte)1] is short))
                         {
-                            return;
+                            break;
                         }
-                        correctPrefix = (short)evData1[(byte)1];
+                        correctPrefix = (short)hashtable[(byte)1];
                         num6 = 2;
                     }
-                    for (short i = num6; i < evData1.Count; i++)
+                    for (short i = num6; i < hashtable.Count; i++)
                     {
-                        ExitGames.Client.Photon.Hashtable hash = evData1[i] as ExitGames.Client.Photon.Hashtable;
-                        if (hash != null && hash.Count <= 2 && hash.Count > 0)
+                        ExitGames.Client.Photon.Hashtable hashE = hashtable[i] as ExitGames.Client.Photon.Hashtable;
+                        if (hashE != null && hashE.Count <= 2 && hashE.Count > 0)
                         {
-                            if (!(hash[(byte)0] is int))
+                            if (!(hashE[(byte)0] is int))
                             {
-                                return;
+                                break;
                             }
-                            OnSerializeRead(hash, sender, networkTime, correctPrefix);
+                            OnSerializeRead(hashE, sender, networkTime, correctPrefix);
                         }
                         else
                         {
-                            return;
+                            break;
                         }
                     }
                 }
-                return;
-
+                break;
             case 202:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                ExitGames.Client.Photon.Hashtable evData = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-               
-                if (evData[(byte)0] is string && (int)evData[(byte)7] != 2)
+                hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable[(byte)0] is string && (int)hashtable[(byte)7] != 2)
                 {
-                    DoInstantiate2(evData, sender, null);
+                    DoInstantiate2(hashtable, sender, null);
                 }
-                else
-                {
-                    ignoreList.Add(sender.ID, sender.uiname);
-                }
-                return;
-
+                else ignoreList.Add(sender.ID, sender.uiname); 
+                break;
             case 203:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                return;
-
+                PhotonNetwork.LeaveRoom();
+                break;
             case 204:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                var hashtable1 = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                if (hashtable1 != null)
+                hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    hashtable3 = hashtable1;
-                    if (hashtable3[(byte)0] is int)
+                    if (hashtable[(byte)0] is int)
                     {
-                        int num8 = (int)hashtable3[(byte)0];
+                        int num8 = (int)hashtable[(byte)0];
                         GameObject obj3 = null;
                         instantiatedObjects.TryGetValue(num8, out obj3);
                         if (obj3 != null && sender != null)
@@ -2229,17 +1961,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         }
                     }
                 }
-                return;
-
+                break;
             case 207:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                var hashtable4 = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                if (hashtable4 != null)
+                hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    hashtable3 = hashtable4;
-                    if (hashtable3[(byte)0] is int)
+                    if (hashtable[(byte)0] is int)
                     {
-                        int playerId = (int)hashtable3[(byte)0];
+                        int playerId = (int)hashtable[(byte)0];
                         if (playerId < 0 && sender != null && (sender.isMasterClient || sender.isLocal))
                         {
                             DestroyAll(true);
@@ -2249,22 +1978,17 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         {
                             DestroyPlayerObjects(playerId, true);
                         }
-                    }                 
+                    }
                 }
-                return;
-
+                break;
             case 208:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
                 if (!(photonEvent[0xf5] is ExitGames.Client.Photon.Hashtable))
                 {
-                    return;
+                    break;
                 }
-                hashtable3 = (ExitGames.Client.Photon.Hashtable)photonEvent[0xf5];
-                if (!(hashtable3[(byte)1] is int))
-                {
-                    return;
-                }
-                int num10 = (int)hashtable3[(byte)1];
+                hashtable = (ExitGames.Client.Photon.Hashtable)photonEvent[0xf5];
+                if (!(hashtable[(byte)1] is int)) break;
+                int num10 = (int)hashtable[(byte)1];
                 if (sender == null || !sender.isMasterClient || num10 != sender.ID)
                 {
                     if (!(sender == null || sender.isMasterClient || sender.isLocal))
@@ -2275,7 +1999,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             PhotonNetwork.SetMasterClient(PhotonNetwork.player);
                             FengGameManagerMKII.instance.kickPlayerRC(sender, true, "stealing MC.");
                         }
-                        return;
+                        break;
                     }
                     if (num10 == mLocalActor.ID)
                     {
@@ -2285,12 +2009,10 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     {
                         SetMasterClient(num10, false);
                     }
-                    return;
+                    break;
                 }
-                return;
+                break;
             case 226:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-
                 object obj4 = photonEvent[0xe5];
                 object obj5 = photonEvent[0xe3];
                 object obj6 = photonEvent[0xe4];
@@ -2300,18 +2022,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     mPlayersOnMasterCount = (int)obj5;
                     mGameCount = (int)obj6;
                 }
-                return;
-
+                break;
             case 228:
-                return;
-
+                break;
             case 229:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                obj7 = photonEvent[0xde];
-                var entries = obj7 as ExitGames.Client.Photon.Hashtable;
-                if (entries != null)
+                hashtable = photonEvent[0xde] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
-                    foreach (DictionaryEntry entry in entries)
+                    foreach (DictionaryEntry entry in hashtable)
                     {
                         string roomName = (string)entry.Key;
                         RoomInfo info = new RoomInfo(roomName, (ExitGames.Client.Photon.Hashtable)entry.Value);
@@ -2328,16 +2046,13 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     mGameList.Values.CopyTo(mGameListCopy, 0);
                     SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate);
                 }
-                return;
-
+                break;
             case 230:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                obj7 = photonEvent[0xde];
-                var entry2s = obj7 as ExitGames.Client.Photon.Hashtable;
-                if (entry2s != null)
+                hashtable = photonEvent[0xde] as ExitGames.Client.Photon.Hashtable;
+                if (hashtable != null)
                 {
                     mGameList = new Dictionary<string, RoomInfo>();
-                    foreach (DictionaryEntry entry2 in entry2s)
+                    foreach (DictionaryEntry entry2 in hashtable)
                     {
                         string str3 = (string)entry2.Key;
                         mGameList[str3] = new RoomInfo(str3, (ExitGames.Client.Photon.Hashtable)entry2.Value);
@@ -2346,21 +2061,17 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     mGameList.Values.CopyTo(mGameListCopy, 0);
                     SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate);
                 }
-                return;
-
+                break;
             case 253:
-                if (sender != null && ignoreList.ContainsValue(sender.uiname)) return;
-                var obj80 = photonEvent[0xfd];
-                if (obj80 is int)
+                hash = photonEvent[0xfd];
+                if (hash is int)
                 {
-                    int iD = (int)obj80;
+                    int iD = (int)hash;
                     ExitGames.Client.Photon.Hashtable gameProperties = null;
                     ExitGames.Client.Photon.Hashtable pActorProperties = null;
-                    object obj90;
                     if (iD != 0)
                     {
-                        obj90 = photonEvent[0xfb];
-                        var hashtable = obj90 as ExitGames.Client.Photon.Hashtable;
+                        hashtable = photonEvent[0xfb] as ExitGames.Client.Photon.Hashtable;
                         if (hashtable != null)
                         {
                             pActorProperties = hashtable;
@@ -2376,25 +2087,25 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                         RCextensions.returnIntFromObject(pActorProperties["statACL"]) > 150)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                     if (pActorProperties.ContainsKey("statBLA") &&
                                         RCextensions.returnIntFromObject(pActorProperties["statBLA"]) > 0x7d)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                     if (pActorProperties.ContainsKey("statGAS") &&
                                         RCextensions.returnIntFromObject(pActorProperties["statGAS"]) > 150)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                     if (pActorProperties.ContainsKey("statSPD") &&
                                         RCextensions.returnIntFromObject(pActorProperties["statSPD"]) > 140)
                                     {
                                         FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-                                        return;
+                                        break;
                                     }
                                 }
                                 if (pActorProperties.ContainsKey("name"))
@@ -2405,7 +2116,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                     }
                                     else if (!InstantiateTracker.instance.PropertiesChanged(sender))
                                     {
-                                        return;
+                                        break;
                                     }
                                 }
                             }
@@ -2413,38 +2124,24 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     }
                     else
                     {
-                        if (!(photonEvent[0xfb] is ExitGames.Client.Photon.Hashtable)) return;
-                        obj90 = photonEvent[0xfb];
-                        var hashtable = obj90 as ExitGames.Client.Photon.Hashtable;
-                        if (hashtable != null)
-                        {
-                            gameProperties = hashtable;
-                        }
-                        else
-                        {
-                            return;
-                        }
+                        hashtable = photonEvent[0xfb] as ExitGames.Client.Photon.Hashtable;
+                        if (hashtable != null) gameProperties = hashtable;
+                        else break;
                     }
-
                     ReadoutProperties(gameProperties, pActorProperties, iD);
                 }
-                return;
-
+                break;
             case 254:
                 HandleEventLeave(key);
-                return;
+                break;
             case 255:
-               
-                object obj91 = photonEvent[249];
-                if (obj91 != null && !(obj91 is ExitGames.Client.Photon.Hashtable))
-                {
-                    return;
-                }
-                ExitGames.Client.Photon.Hashtable properties = (ExitGames.Client.Photon.Hashtable)obj91;
+                //hash = photonEvent[249];
+                //if (hash != null && !(hash is ExitGames.Client.Photon.Hashtable)) break;
+                //ExitGames.Client.Photon.Hashtable properties = hash as ExitGames.Client.Photon.Hashtable;
                 if (sender == null)
                 {
                     bool isLocal = mLocalActor.ID == key;
-                    AddNewPlayer(key, new PhotonPlayer(isLocal, key, properties));
+                    AddNewPlayer(key, new PhotonPlayer(isLocal, key, photonEvent[249] as ExitGames.Client.Photon.Hashtable));
                     ResetPhotonViewsOnSerialize();
                 }
                 if (key != mLocalActor.ID)
@@ -2454,659 +2151,51 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         mActors[key]
                     };
                     SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerConnected, parameters);
-                    return;
+                    break;
                 }
-                object obj93 = photonEvent[252];
-                var ints = obj93 as int[];
-                if (ints != null)
+                //object hash1 = photonEvent[252];
+                //var ints = hash1 as int[];
+                //if (ints != null)
+                //{
+                //    int[] array = ints;
+
+                //}
+                foreach (int num7 in (int[])photonEvent[252])
                 {
-                    int[] array = ints;
-                    foreach (int num7 in array)
+                    if (mLocalActor.ID != num7 && !mActors.ContainsKey(num7))
                     {
-                        if (mLocalActor.ID != num7 && !mActors.ContainsKey(num7))
-                        {
-                            AddNewPlayer(num7, new PhotonPlayer(false, num7, string.Empty));
-                        }
+                        AddNewPlayer(num7, new PhotonPlayer(false, num7, string.Empty));
                     }
-                    if (mLastJoinType == JoinType.JoinOrCreateOnDemand && mLocalActor.ID == 1)
-                    {
-                        SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom);
-                    }
-                    SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom);
                 }
-                return;
+                if (mLastJoinType == JoinType.JoinOrCreateOnDemand && mLocalActor.ID == 1)
+                {
+                    SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom);
+                }
+                SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom);
+                break;
+
 
             default:
-                //InRoomChat.addLINE2;
-               
-                if (ignoreList.ContainsValue(sender.uiname))
-                {
-                    return;
-                }
+                if (!ignoreList.ContainsKey(sender.ID) || !ignoreList.ContainsValue(sender.uiname)) return;
+                
+                
                 if ((photonEvent.Code < 200) && (PhotonNetwork.OnEventCall != null))
                 {
                     //StatsTab.AddLine("Error. Unhandled event: " + photonEvent, DebugLog.DebugType.ERROR);
-                    object content = photonEvent[245];
-                    PhotonNetwork.OnEventCall(photonEvent.Code, content, key);
+                    hash = photonEvent[245];
+                    PhotonNetwork.OnEventCall(photonEvent.Code, hash, key);
                 }
-                return;
+                break;
         }
-        externalListener.OnEvent(photonEvent);
     }
 
-    //public void OnEvent(EventData photonEvent)
-    //{
-    //    int key = -1;
-    //    PhotonPlayer sender = null;
-    //    if (photonEvent.Parameters.ContainsKey(254))
-    //    {
-    //        key = (int)photonEvent[254];
-    //        if (NetworkingPeer.mActors.ContainsKey(key))
-    //        {
-    //            sender = NetworkingPeer.mActors[key];
-    //        }
-    //    }
-    //    else if (photonEvent.Parameters.Count == 0)
-    //    {
-    //        InRoomChat.addLINE2("Nigger( " + sender.uiname.ToRGBA() + " )sent an EVENT with no Params");
-    //        if (!NetworkingPeer.ignoreList.ContainsKey(sender.ID) || !NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //        {
-    //            NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
-    //            StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{5}{3} ID: {2}{6}{3}.{7}{4}".Formats(new object[]
-    //            {
-    //            "<color=#7b001c>",
-    //            "<b>",
-    //            "<i>",
-    //            "</i>",
-    //            "</color>",
-    //            sender.uiname.ToRGBA(),
-    //            sender.ID,
-    //            "</b>"
-    //            }), StatsTab.DebugType.WARNING);
-    //        }
-    //        return;
-    //    }
-    //    if (sender != null && NetworkingPeer.leftList.ContainsKey(sender.ID) && photonEvent.Code == 255 && PhotonNetwork.inRoom)
-    //    {
-    //        NetworkingPeer.leftList.Remove(sender.ID);
-    //    }
-    //    byte code = photonEvent.Code;
-    //    //if (BlockEventSpam(sender, photonEvent)) return;
-    //    if (code <= 208)
-    //    {
-    //        if (code == 101)
-    //        {
-    //            PhotonPlayer photonPlayer2 = sender;
-    //            ExitGames.Client.Photon.Hashtable hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-    //            if (hashtable != null)
-    //            {
-    //                if (sender == null)
-    //                {
-    //                    if (key > 0 && NetworkingPeer.mActors.ContainsKey(key))
-    //                    {
-    //                        photonPlayer2 = NetworkingPeer.mActors[key];
-    //                    }
-    //                    else if (hashtable.ContainsKey(102) && hashtable[102] is short)
-    //                    {
-    //                        short num2 = (short)hashtable[102];
-    //                        if (!NetworkingPeer.mActors.TryGetValue((int)num2, out photonPlayer2))
-    //                        {
-    //                            photonPlayer2 = PhotonPlayer.Find((int)num2);
-    //                        }
-    //                    }
-    //                }
-    //                if (photonPlayer2 != null)
-    //                {
-    //                    if (hashtable[104] is string)
-    //                    {
-    //                        photonPlayer2.version = (string)hashtable[104];
-    //                    }
-    //                    if (hashtable[103] is string)
-    //                    {
-    //                        photonPlayer2.versionRS = (string)hashtable[103];
-    //                    }
-    //                    if (hashtable[102] is bool)
-    //                    {
-    //                        photonPlayer2.CM = (bool)hashtable[102];
-    //                    }
-    //                    if (hashtable[101] is bool)
-    //                    {
-    //                        photonPlayer2.RS = (bool)hashtable[101];
-    //                    }
-    //                }
-    //                this.RebuildPlayerListCopies();
-    //            }
-    //            return;
-    //        }
-    //        switch (code)
-    //        {
-    //            case 200:
-    //                {
-    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-    //                    {
-    //                        return;
-    //                    }
-    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-    //                    {
-    //                        StatsTab.AddLine(string.Concat(new object[]
-    //                        {
-    //                "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
-    //                sender.ID,
-    //                "]",
-    //                sender.uiname.ToRGBA(),
-    //                "..."
-    //                        }), StatsTab.DebugType.WARNING);
-    //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable rpc = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-    //                    this.ExecuteRPC(rpc, sender);
-    //                    return;
-    //                }
-    //            case 201:
-    //            case 206:
-    //                {
-    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                    {
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable evData = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-    //                    {
-    //                        StatsTab.AddLine(string.Concat(new object[]
-    //                        {
-    //                "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
-    //                sender.ID,
-    //                "]",
-    //                sender.uiname.ToRGBA(),
-    //                "..."
-    //                        }), StatsTab.DebugType.WARNING);
-    //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-    //                        return;
-    //                    }
-    //                    if (evData != null)
-    //                    {
-    //                        if (!(evData[0] is int))
-    //                        {
-    //                            return;
-    //                        }
-    //                        int networkTime = (int)evData[0];
-    //                        short correctPrefix = -1;
-    //                        short num3 = 1;
-    //                        if (evData.ContainsKey(1))
-    //                        {
-    //                            if (!(evData[1] is short))
-    //                            {
-    //                                return;
-    //                            }
-    //                            correctPrefix = (short)evData[1];
-    //                            num3 = 2;
-    //                        }
-    //                        short i = num3;
-    //                        while ((int)i < evData.Count)
-    //                        {
-    //                            ExitGames.Client.Photon.Hashtable hash = evData[i] as ExitGames.Client.Photon.Hashtable;
-    //                            if (hash == null || hash.Count > 2 || hash.Count <= 0)
-    //                            {
-    //                                return;
-    //                            }
-    //                            if (!(hash[0] is int))
-    //                            {
-    //                                return;
-    //                            }
-    //                            this.OnSerializeRead(hash, sender, networkTime, correctPrefix);
-    //                            i += 1;
-    //                        }
-    //                    }
-    //                    return;
-    //                }
-    //            case 202:
-    //                {
-    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-    //                    {
-    //                        return;
-    //                    }
-    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-    //                    {
-    //                        StatsTab.AddLine(string.Concat(new object[]
-    //                        {
-    //                            "Wrong 202 byte... (photonEvent[0xf5] is not a Hashtable) Start dc for [",
-    //                            sender.ID,
-    //                            "]",
-    //                            sender.uiname.ToRGBA(),
-    //                            "..."
-    //                        }), StatsTab.DebugType.WARNING);
-    //                        FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable evData2 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-    //                    if ((string)evData2[0] == "hook" && (int)evData2[7] == 2)
-    //                    {
-    //                        StatsTab.AddLine(string.Concat(new object[]
-    //                        {
-    //                            "Get AC CloseConnection from [",
-    //                            sender.ID,
-    //                            "]",
-    //                            sender.uiname.ToRGBA()
-    //                        }), StatsTab.DebugType.WARNING);
-    //                        return;
-    //                    }
-    //                    if (evData2[0] is string && (int)evData2[7] != 2)
-    //                    {
-    //                        this.DoInstantiate2(evData2, sender, null);
-    //                        return;
-    //                    }
-    //                    //NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
-    //                    //FengGameManagerMKII.instance.AutoDisconnect(sender, sender.ID, 150000L, true, true);
-    //                    //StatsTab.AddLine(string.Concat(new object[]
-    //                    //{
-    //                    //    "Wrong params for DoInstantiate2 from [",
-    //                    //    sender.ID,
-    //                    //    "]",
-    //                    //    sender.uiname.ToRGBA()
-    //                    //}), StatsTab.DebugType.ERROR);
-    //                    return;
-    //                }
-    //            case 203:
-    //                if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                {
-    //                    return;
-    //                }
-    //                StatsTab.AddLine(string.Concat(new object[]
-    //                {
-    //            "<color=#7b001c>Player <color=#000000>[",
-    //            sender.ID,
-    //            "]</color>",
-    //            sender.uiname.ToRGBA(),
-    //            "send eventCode: </color> <color=#000000>",
-    //            photonEvent.Code,
-    //            " || (Close Connection)</color>"
-    //                }), StatsTab.DebugType.WARNING);
-    //                return;
-    //            case 204:
-    //                {
-    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-    //                    {
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable hashtable2 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-    //                    if (hashtable2 != null)
-    //                    {
-    //                        ExitGames.Client.Photon.Hashtable hashtable3 = hashtable2;
-    //                        if (hashtable3[0] is int)
-    //                        {
-    //                            int num4 = (int)hashtable3[0];
-    //                            GameObject obj3 = null;
-    //                            this.instantiatedObjects.TryGetValue(num4, out obj3);
-    //                            if (obj3 != null && sender != null)
-    //                            {
-    //                                this.RemoveInstantiatedGO(obj3, true, false, 0f);
-    //                            }
-    //                        }
-    //                    }
-    //                    return;
-    //                }
-    //            case 207:
-    //                {
-    //                    if ((sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname)) || NetworkingPeer.fukRCIgnre)
-    //                    {
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable hashtable4 = photonEvent[245] as ExitGames.Client.Photon.Hashtable;
-    //                    if (hashtable4 != null)
-    //                    {
-    //                        ExitGames.Client.Photon.Hashtable hashtable3 = hashtable4;
-    //                        if (hashtable3[0] is int)
-    //                        {
-    //                            int playerId = (int)hashtable3[0];
-    //                            if (playerId < 0 && sender != null && (sender.isMasterClient || sender.isLocal))
-    //                            {
-    //                                this.DestroyAll(true);
-    //                                return;
-    //                            }
-    //                            if (sender != null && (sender.isMasterClient || sender.isLocal || playerId != PhotonNetwork.player.ID))
-    //                            {
-    //                                this.DestroyPlayerObjects(playerId, true);
-    //                            }
-    //                        }
-    //                    }
-    //                    return;
-    //                }
-    //            case 208:
-    //                {
-    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                    {
-    //                        return;
-    //                    }
-    //                    if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-    //                    {
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable hashtable3 = (ExitGames.Client.Photon.Hashtable)photonEvent[245];
-    //                    if (!(hashtable3[1] is int))
-    //                    {
-    //                        return;
-    //                    }
-    //                    int num5 = (int)hashtable3[1];
-    //                    if (sender != null && sender.isMasterClient && num5 == sender.ID)
-    //                    {
-    //                        return;
-    //                    }
-    //                    if (sender != null && !sender.isMasterClient && !sender.isLocal)
-    //                    {
-    //                        if (PhotonNetwork.isMasterClient)
-    //                        {
-    //                            FengGameManagerMKII.noRestart = true;
-    //                            PhotonNetwork.SetMasterClient(PhotonNetwork.player);
-    //                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "stealing MC.");
-    //                        }
-    //                        return;
-    //                    }
-    //                    if (num5 == this.mLocalActor.ID)
-    //                    {
-    //                        this.SetMasterClient(num5, false);
-    //                        return;
-    //                    }
-    //                    if (sender == null || sender.isMasterClient || sender.isLocal)
-    //                    {
-    //                        this.SetMasterClient(num5, false);
-    //                    }
-    //                    return;
-    //                }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        switch (code)
-    //        {
-    //            case 226:
-    //                {
-    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                    {
-    //                        return;
-    //                    }
-    //                    object obj4 = photonEvent[229];
-    //                    object obj5 = photonEvent[227];
-    //                    object obj6 = photonEvent[228];
-    //                    if (obj4 is int && obj5 is int && obj6 is int)
-    //                    {
-    //                        this.mPlayersInRoomsCount = (int)obj4;
-    //                        this.mPlayersOnMasterCount = (int)obj5;
-    //                        this.mGameCount = (int)obj6;
-    //                    }
-    //                    return;
-    //                }
-    //            case 227:
-    //                break;
-    //            case 228:
-    //                return;
-    //            case 229:
-    //                {
-    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                    {
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable entries = photonEvent[222] as ExitGames.Client.Photon.Hashtable;
-    //                    if (entries != null)
-    //                    {
-    //                        foreach (DictionaryEntry entry in entries)
-    //                        {
-    //                            string roomName = (string)entry.Key;
-    //                            RoomInfo info = new RoomInfo(roomName, (ExitGames.Client.Photon.Hashtable)entry.Value);
-    //                            if (info.removedFromList)
-    //                            {
-    //                                this.mGameList.Remove(roomName);
-    //                            }
-    //                            else
-    //                            {
-    //                                this.mGameList[roomName] = info;
-    //                            }
-    //                        }
-    //                        this.mGameListCopy = new RoomInfo[this.mGameList.Count];
-    //                        this.mGameList.Values.CopyTo(this.mGameListCopy, 0);
-    //                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate, new object[0]);
-    //                    }
-    //                    return;
-    //                }
-    //            case 230:
-    //                {
-    //                    if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                    {
-    //                        return;
-    //                    }
-    //                    ExitGames.Client.Photon.Hashtable entry2s = photonEvent[222] as ExitGames.Client.Photon.Hashtable;
-    //                    if (entry2s != null)
-    //                    {
-    //                        this.mGameList = new Dictionary<string, RoomInfo>();
-    //                        foreach (DictionaryEntry entry2 in entry2s)
-    //                        {
-    //                            string str3 = (string)entry2.Key;
-    //                            this.mGameList[str3] = new RoomInfo(str3, (ExitGames.Client.Photon.Hashtable)entry2.Value);
-    //                        }
-    //                        this.mGameListCopy = new RoomInfo[this.mGameList.Count];
-    //                        this.mGameList.Values.CopyTo(this.mGameListCopy, 0);
-    //                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnReceivedRoomListUpdate, new object[0]);
-    //                    }
-    //                    return;
-    //                }
-    //            default:
-    //                switch (code)
-    //                {
-    //                    case 253:
-    //                        {
-    //                            if (sender != null && NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                            {
-    //                                return;
-    //                            }
-    //                            object obj7 = photonEvent[253];
-    //                            if (obj7 is int)
-    //                            {
-    //                                int iD = (int)obj7;
-    //                                ExitGames.Client.Photon.Hashtable gameProperties = null;
-    //                                ExitGames.Client.Photon.Hashtable pActorProperties = null;
-    //                                if (iD != 0)
-    //                                {
-    //                                    ExitGames.Client.Photon.Hashtable hashtable5 = photonEvent[251] as ExitGames.Client.Photon.Hashtable;
-    //                                    if (hashtable5 != null)
-    //                                    {
-    //                                        pActorProperties = hashtable5;
-    //                                        if (sender != null)
-    //                                        {
-    //                                            pActorProperties["sender"] = sender;
-    //                                            if (PhotonNetwork.isMasterClient && !sender.isLocal && iD == sender.ID && (pActorProperties.ContainsKey("statACL") || pActorProperties.ContainsKey("statBLA") || pActorProperties.ContainsKey("statGAS") || pActorProperties.ContainsKey("statSPD")))
-    //                                            {
-    //                                                if (pActorProperties.ContainsKey("statACL") && RCextensions.returnIntFromObject(pActorProperties["statACL"]) > 150)
-    //                                                {
-    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-    //                                                    return;
-    //                                                }
-    //                                                if (pActorProperties.ContainsKey("statBLA") && RCextensions.returnIntFromObject(pActorProperties["statBLA"]) > 125)
-    //                                                {
-    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-    //                                                    return;
-    //                                                }
-    //                                                if (pActorProperties.ContainsKey("statGAS") && RCextensions.returnIntFromObject(pActorProperties["statGAS"]) > 150)
-    //                                                {
-    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-    //                                                    return;
-    //                                                }
-    //                                                if (pActorProperties.ContainsKey("statSPD") && RCextensions.returnIntFromObject(pActorProperties["statSPD"]) > 140)
-    //                                                {
-    //                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "excessive stats.");
-    //                                                    return;
-    //                                                }
-    //                                            }
-    //                                            if (pActorProperties.ContainsKey("name"))
-    //                                            {
-    //                                                if (iD != sender.ID)
-    //                                                {
-    //                                                    InstantiateTracker.instance.resetPropertyTracking(iD);
-    //                                                }
-    //                                                else if (!InstantiateTracker.instance.PropertiesChanged(sender))
-    //                                                {
-    //                                                    return;
-    //                                                }
-    //                                            }
-    //                                        }
-    //                                    }
-    //                                }
-    //                                else
-    //                                {
-    //                                    if (!(photonEvent[251] is ExitGames.Client.Photon.Hashtable))
-    //                                    {
-    //                                        return;
-    //                                    }
-    //                                    ExitGames.Client.Photon.Hashtable hashtable6 = photonEvent[251] as ExitGames.Client.Photon.Hashtable;
-    //                                    if (hashtable6 == null)
-    //                                    {
-    //                                        return;
-    //                                    }
-    //                                    gameProperties = hashtable6;
-    //                                }
-    //                                this.ReadoutProperties(gameProperties, pActorProperties, iD);
-    //                                object rcteam = pActorProperties["RCteam"];
-    //                                if (!(rcteam is int) && rcteam != null && pActorProperties["RCteam"] is string && (string)rcteam == "Disconnect_mod")
-    //                                {
-    //                                    sender.DisconnectMod = true;
-    //                                    return;
-    //                                }
-    //                            }
-    //                            return;
-    //                        }
-    //                    case 254:
-    //                        StatsTab.AddLine(string.Concat(new object[]
-    //                        {
-    //                "<i>",
-    //                sender.uiname.ToRGBA(),
-    //                "</i><color=black> [<color=white>",
-    //                sender.ID,
-    //                "</color>]</color> <color=#7b001c>leave.</color>"
-    //                        }), StatsTab.DebugType.LOG);
-    //                        this.HandleEventLeave(key);
-    //                        if (NetworkingPeer.actorGO.ContainsKey((short)key) && NetworkingPeer.actorGO[(short)key] != null)
-    //                        {
-    //                            NetworkingPeer.actorGO[(short)key].Clear();
-    //                            NetworkingPeer.actorGO.Remove((short)key);
-    //                        }
-    //                        break;
-    //                    case 255:
-    //                        {
-    //                            object obj8 = photonEvent[249];
-    //                            if (obj8 == null || obj8 is ExitGames.Client.Photon.Hashtable)
-    //                            {
-    //                                ExitGames.Client.Photon.Hashtable properties = (ExitGames.Client.Photon.Hashtable)obj8;
-    //                                if (sender == null)
-    //                                {
-    //                                    bool isLocal = this.mLocalActor.ID == key;
-    //                                    this.AddNewPlayer(key, new PhotonPlayer(isLocal, key, properties));
-    //                                    this.ResetPhotonViewsOnSerialize();
-    //                                }
-    //                                if (key != this.mLocalActor.ID)
-    //                                {
-    //                                    object[] parameters = new object[]
-    //                                    {
-    //                        NetworkingPeer.mActors[key]
-    //                                    };
-    //                                    NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerConnected, parameters);
-    //                                }
-    //                                else
-    //                                {
-    //                                    int[] ints = photonEvent[252] as int[];
-    //                                    if (ints != null)
-    //                                    {
-    //                                        foreach (int num6 in ints)
-    //                                        {
-    //                                            if (this.mLocalActor.ID != num6 && !NetworkingPeer.mActors.ContainsKey(num6))
-    //                                            {
-    //                                                this.AddNewPlayer(num6, new PhotonPlayer(false, num6, string.Empty));
-    //                                            }
-    //                                        }
-    //                                        if (this.mLastJoinType == JoinType.JoinOrCreateOnDemand && this.mLocalActor.ID == 1)
-    //                                        {
-    //                                            NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom, new object[0]);
-    //                                        }
-    //                                        NetworkingPeer.SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom, new object[0]);
-    //                                    }
-    //                                    if (FengGameManagerMKII.Rolling && (FengGameManagerMKII.instance.ModRoll(true) == "Disconnect_mod" || FengGameManagerMKII.instance.ModRoll(true) == "RedSkies"))
-    //                                    {
-    //                                        PhotonNetwork.networkingPeer.ResendInfo(FengGameManagerMKII.instance.ModRoll(false));
-    //                                    }
-    //                                }
-    //                            }
-    //                            break;
-    //                        }
-    //                    default:
-    //                        StatsTab.AddLine(string.Concat(new object[]
-    //                        {
-    //                            "<color=#FF0000>Unknown eventCode</color>\n<color=#7b001c>Player <color=#000000>[",
-    //                            sender.ID,
-    //                            "]</color> <i>",
-    //                            sender.uiname.ToRGBA(),
-    //                            "</i> send eventCode: </color> <color=#000000>",
-    //                            photonEvent.Code,
-    //                            "</color><color=#7b001c> Params:</color> <color=#f0f0f0>",
-    //                            photonEvent.Parameters.ToString(),
-    //                            "</color>"
-    //                            }), StatsTab.DebugType.LOG);
-    //                        if (!NetworkingPeer.ignoreList.ContainsKey(sender.ID) || !NetworkingPeer.ignoreList.ContainsValue(sender.uiname))
-    //                        {
-    //                            NetworkingPeer.ignoreList.Add(sender.ID, sender.uiname);
-    //                            StatsTab.AddLine("{0}Ignored player. {1}Name: {2}{5}{3} ID: {2}{6}{3}.{7}{4}".Formats(new object[]
-    //                            {
-    //                            "<color=#7b001c>",
-    //                            "<b>",
-    //                            "<i>",
-    //                            "</i>",
-    //                            "</color>",
-    //                            sender.uiname.ToRGBA(),
-    //                            sender.ID,
-    //                            "</b>"
-    //                            }), StatsTab.DebugType.LOG);
-    //                        }
-    //                        if (NetworkingPeer.ignoreList.ContainsValue(sender.uiname) || FengGameManagerMKII.disconnectBan.Contains(sender.customProperties[PhotonPlayerProperty.name].ToString().StripHex()))
-    //                        {
-    //                            StatsTab.AddLine(sender.uiname.ToRGBA() + " is on the sent DEFAULT", StatsTab.DebugType.LOG);
-    //                            return;
-    //                        }
-    //                        if (photonEvent.Code < 200 && PhotonNetwork.OnEventCall != null)
-    //                        {
-    //                            object content = photonEvent[245];
-    //                            PhotonNetwork.OnEventCall(photonEvent.Code, content, key);
-    //                        }
-    //                        break;
-    //                }
-    //                this.externalListener.OnEvent(photonEvent);
-    //                return;
-    //        }
-    //    }
-    //}
-    public bool BanAC(byte eventCode, object customEventContent, bool sendReliable, RaiseEventOptions raiseEventOptions)
-    {
-        if (PhotonNetwork.offlineMode)
-        {
-            return false;
-        }
-        if (raiseEventOptions.TargetActors.Length != 0)
-        {
-            RaiseEventOptions raiseEventOptions2 = new RaiseEventOptions();
-            ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable();
-            ExitGames.Client.Photon.Hashtable hashtable2 = new ExitGames.Client.Photon.Hashtable(); ;
-            int num = raiseEventOptions.TargetActors[0];
-            hashtable[0] = num;
-            hashtable2[0] = "hook";
-            hashtable2[3] = 0;
-            hashtable2[6] = (int)PhotonNetwork.time;
-            hashtable2[7] = 2;
-            OpRaiseEvent(202, hashtable2, true, raiseEventOptions);
-            raiseEventOptions2.Receivers = 0;
-            base.OpRaiseEvent(235, hashtable, sendReliable, raiseEventOptions2);
-        }
-        return base.OpRaiseEvent(eventCode, customEventContent, sendReliable, raiseEventOptions);
-    }
+    
+
     public void rejoin()
     {
         PhotonNetwork.JoinRoom(mRoomToGetInto.name);
     }
+
     public void OnOperationResponse(OperationResponse operationResponse)
     {
         if (PhotonNetwork.networkingPeer.states == PeerStates.Disconnecting)
@@ -3974,25 +3063,27 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     {
         if (!Application.isPlaying)
         {
-            this.photonViewList = new Dictionary<int, PhotonView>();
+            photonViewList = new Dictionary<int, PhotonView>();
             return;
         }
-        else if (netView.subId != 0)
+         if (netView.subId != 0)
         {
-            if (this.photonViewList.ContainsKey(netView.viewID))
+            int viewID = netView.viewID;
+            if (photonViewList.ContainsKey(viewID))
             {
-                if (netView != this.photonViewList[netView.viewID])
+                if (netView != this.photonViewList[viewID])
                 {
                     Debug.LogError(
                         String.Format(
                             "PhotonView ID duplicate found: {0}. New: {1} old: {2}. Maybe one wasn't destroyed on scene load?! Check for 'DontDestroyOnLoad'. Destroying old entry, adding new.",
                             netView.viewID, netView, this.photonViewList[netView.viewID]));
                     this.RemoveInstantiatedGO(this.photonViewList[netView.viewID].gameObject, true);
+                    this.photonViewList[viewID] = netView;
                     return;
                 }
                 
             }
-            this.photonViewList.Add(netView.viewID, netView);
+           else this.photonViewList.Add(netView.viewID, netView);
             if (PhotonNetwork.logLevel >= PhotonLogLevel.Full)
             {
                 Debug.Log("Registered PhotonView: " + netView.viewID);

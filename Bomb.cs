@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using CLEARSKIES;
+
 
 public class Bomb : Photon.MonoBehaviour
 {
@@ -15,61 +17,79 @@ public class Bomb : Photon.MonoBehaviour
     public GameObject myExplosion;
     public float SmoothingDelay = 10f;
 
-    
+    private Transform baseT;
+    private Rigidbody baseR;
+    private PhotonView basePV;
+    private bool isMine
+    {
+        get
+        {
+            if (this.basePV == null)
+            {
+                this.basePV = base.photonView;
+                //this.basePV = base.GetComponent<PhotonView>(); //wutahell
+            }
+            return this.basePV != null && this.basePV.isMine;
+        }
+    }
+
+
 
     public void Awake()
     {
-        if (base.photonView != null)
+        baseT = base.transform;
+        baseR = base.rigidbody;
+        basePV = base.photonView;
+    }
+
+    public void Start()
+    {
+        if (basePV == null)
         {
-            float num2;
-            float num3;
-            float num4;
-            base.photonView.observed = this;
+            basePV = base.photonView;
+        }
+        if (basePV != null)
+        {
+            float Red;
+            float Green;
+            float Blue;
+            basePV.observed = this;
             this.correctPlayerPos = base.transform.position;
             this.correctPlayerRot = Quaternion.identity;
             PhotonPlayer owner = base.photonView.owner;
+            ParticleSystem particle = base.GetComponent<ParticleSystem>();
             if (GameSettings.teamMode > 0)
             {
-                int num = RCextensions.returnIntFromObject(owner.customProperties[PhotonPlayerProperty.RCteam]);
-                if (num == 1)
+                int team = owner.RCteam;
+                if (team == 1)
                 {
-                    base.GetComponent<ParticleSystem>().startColor = Color.cyan;
+                    particle.startColor = Color.cyan;
                 }
-                else if (num == 2)
+                else if (team == 2)
                 {
-                    base.GetComponent<ParticleSystem>().startColor = Color.magenta;
+                    particle.startColor = Color.magenta;
                 }
                 else
                 {
-                    num2 = RCextensions.returnFloatFromObject(owner.customProperties[PhotonPlayerProperty.RCBombR]);
-                    num3 = RCextensions.returnFloatFromObject(owner.customProperties[PhotonPlayerProperty.RCBombG]);
-                    num4 = RCextensions.returnFloatFromObject(owner.customProperties[PhotonPlayerProperty.RCBombB]);
-                    //if (FengGameManagerMKII.RandomizeBombColor)
-                    //{
-                    //    System.Random rnd = new System.Random();
-                    //    base.GetComponent<ParticleSystem>().startColor = new Color(RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd));
-                    //}
-                    base.GetComponent<ParticleSystem>().startColor = new Color(num2, num3, num4, 1f);
+                    Red = owner.RCBombR;
+                    Green = owner.RCBombG;
+                    Blue = owner.RCBombB;
+                    particle.startColor = new Color(Red, Green, Blue, 1f);
                 }
             }
             else
             {
-                num2 = RCextensions.returnFloatFromObject(owner.customProperties[PhotonPlayerProperty.RCBombR]);
-                num3 = RCextensions.returnFloatFromObject(owner.customProperties[PhotonPlayerProperty.RCBombG]);
-                num4 = RCextensions.returnFloatFromObject(owner.customProperties[PhotonPlayerProperty.RCBombB]);
-                //if (FengGameManagerMKII.RandomizeBombColor)
-                //{
-                //    System.Random rnd = new System.Random();
-                //    base.GetComponent<ParticleSystem>().startColor = new Color(RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd));
-                //}
-                base.GetComponent<ParticleSystem>().startColor = new Color(num2, num3, num4, 1f);
+                Red = owner.RCBombR;
+                Green = owner.RCBombG;
+                Blue = owner.RCBombB;
+                particle.startColor = new Color(Red, Green, Blue, 1f);
             }
         }
     }
 
     public void destroyMe()
     {
-        if (base.photonView.isMine)
+        if (isMine)
         {
             if (this.myExplosion != null)
             {
@@ -82,70 +102,94 @@ public class Bomb : Photon.MonoBehaviour
     public void Explode(float radius)
     {
         this.disabled = true;
-        base.rigidbody.velocity = Vector3.zero;
-        Vector3 position = base.transform.position;
+        baseR.velocity = Vector3.zero;
+        Vector3 position = baseT.position;
         this.myExplosion = PhotonNetwork.Instantiate("RCAsset/BombExplodeMain", position, Quaternion.Euler(0f, 0f, 0f), 0);
+        //this.myExplosion = PhotonNetwork.Instantiate("FX/FXtitanDie", position, baseT.rotation, 0);
+        this.myExplosion.transform.localScale *= radius / 5;
+
         foreach (HERO hero in FengGameManagerMKII.heroes)
         {
-            GameObject gameObject = hero.gameObject;
-            if (((Vector3.Distance(gameObject.transform.position, position) < radius) && !gameObject.GetPhotonView().isMine) && !hero.bombImmune)
+            if (hero != null)
             {
-                PhotonPlayer owner = gameObject.GetPhotonView().owner;
-                if (((GameSettings.teamMode > 0) && (PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam] != null)) && (owner.customProperties[PhotonPlayerProperty.RCteam] != null))
+                PhotonView pview = hero.photonView;
+                if (((Vector3.Distance(hero.transform.position, position) < radius) && pview != null && !pview.isMine) && !hero.bombImmune)
                 {
-                    int num = RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]);
-                    int num2 = RCextensions.returnIntFromObject(owner.customProperties[PhotonPlayerProperty.RCteam]);
-                    if ((num == 0) || (num != num2))
+                    PhotonPlayer owner = pview.owner;
+                    if (((GameSettings.teamMode > 0) && (PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam] != null)) && (owner.customProperties[PhotonPlayerProperty.RCteam] != null))
                     {
-                        gameObject.GetComponent<HERO>().markDie();
-                        gameObject.GetComponent<HERO>().photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
-                        FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
+                        int rcteam = PhotonNetwork.player.RCteam;
+                        int rcteam2 = owner.RCteam;
+                        if ((rcteam == 0) || (rcteam != rcteam2))
+                        {
+                            hero.markDie();
+                            pview.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
+                            FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
+                        }
                     }
-                }
-                else
-                {
-                    gameObject.GetComponent<HERO>().markDie();
-                    gameObject.GetComponent<HERO>().photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
-                    FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
-                    //PhotonNetwork.Instantiate("FX/boom6", gameObject.GetComponent<HERO>().transform.position, gameObject.GetComponent<HERO>().transform.rotation, 0);
+                    else
+                    {
+                        hero.markDie();
+                        pview.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
+                        FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
+                        //PhotonNetwork.Instantiate("FX/boom6", gameObject.GetComponent<HERO>().transform.position, gameObject.GetComponent<HERO>().transform.rotation, 0);
+                    }
                 }
             }
         }
-        base.StartCoroutine(this.WaitAndFade(1.5f));
+        //base.StartCoroutine(this.WaitAndFade(1.5f));
+        Yield.Begin(new WaitForSeconds(1.5f), new Action(() =>
+        {
+            UnityEngine.MonoBehaviour.print("==> test yield instructions");
+            PhotonNetwork.Destroy(this.myExplosion);
+            PhotonNetwork.Destroy(this.gameObject);
+        }));
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.isWriting)
         {
-            stream.SendNext(base.transform.position);
-            stream.SendNext(base.transform.rotation);
-            stream.SendNext(base.rigidbody.velocity);
+            stream.SendNext(baseT.position);
+            stream.SendNext(baseT.rotation);
+            stream.SendNext(baseR.velocity);
         }
         else
         {
-            this.correctPlayerPos = (Vector3) stream.ReceiveNext();
-            this.correctPlayerRot = (Quaternion) stream.ReceiveNext();
-            this.correctPlayerVelocity = (Vector3) stream.ReceiveNext();
+            this.correctPlayerPos = (Vector3)stream.ReceiveNext();
+            this.correctPlayerRot = (Quaternion)stream.ReceiveNext();
+            this.correctPlayerVelocity = (Vector3)stream.ReceiveNext();
         }
     }
 
     public void Update()
     {
-        if (!(this.disabled || base.photonView.isMine))
+        if (!(this.disabled || isMine))
         {
-            base.transform.position = Vector3.Lerp(base.transform.position, this.correctPlayerPos, Time.deltaTime * this.SmoothingDelay);
-            base.transform.rotation = Quaternion.Lerp(base.transform.rotation, this.correctPlayerRot, Time.deltaTime * this.SmoothingDelay);
-            base.rigidbody.velocity = this.correctPlayerVelocity;
+            if (this.baseT == null)
+            {
+                this.baseT = base.transform;
+            }
+            if (this.baseR == null)
+            {
+                this.baseR = base.rigidbody;
+            }
+            if (this.baseT != null)
+            {
+                baseT.position = Vector3.Lerp(baseT.position, this.correctPlayerPos, Time.deltaTime * this.SmoothingDelay);
+                baseT.rotation = Quaternion.Lerp(baseT.rotation, this.correctPlayerRot, Time.deltaTime * this.SmoothingDelay);
+            }
+            if (this.baseR != null)
+                baseR.velocity = this.correctPlayerVelocity;
         }
     }
 
-    private IEnumerator WaitAndFade(float time)
-    {
-        yield return new WaitForSeconds(time);
-        PhotonNetwork.Destroy(this.myExplosion);
-        PhotonNetwork.Destroy(this.gameObject);
-    }
+    //private IEnumerator WaitAndFade(float time)
+    //{
+    //    yield return new WaitForSeconds(time);
+    //    PhotonNetwork.Destroy(this.myExplosion);
+    //    PhotonNetwork.Destroy(this.gameObject);
+    //}
 
 }
 

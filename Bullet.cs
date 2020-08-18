@@ -209,6 +209,23 @@ public class Bullet : Photon.MonoBehaviour
                     }
                 }
             }
+
+
+
+            //if (DashHook)
+            //{
+            //    if (baseT.parent != hit.collider.transform.root.gameObject.transform)
+            //    {
+            //        this.phase = 4;
+            //        object [] objArray4 = new object[] { 4 };
+            //        basePV.RPC("setPhase", PhotonTargets.Others, objArray4);
+            //        DashHook = false;
+            //    }
+            //    //else
+            //    //{
+
+            //    //}
+            //}
         }
     }
 
@@ -258,6 +275,7 @@ public class Bullet : Photon.MonoBehaviour
 
     public void launchDashNets(Vector3 v, Vector3 v2, GameObject hero, HERO victimHero)
     {
+        DashHook = true;
         this.master = hero;
         this.masterT = this.master.transform;
         this.masterR = this.master.rigidbody;
@@ -277,12 +295,11 @@ public class Bullet : Photon.MonoBehaviour
         basePV.RPC("setVelocityAndLeft", PhotonTargets.Others, objArray2);
         object[] objArray3 = new object[] { victimHero.photonView.viewID };
         basePV.RPC("tieMeToOBJ", PhotonTargets.Others, objArray3);
+        MasterHero.hookToHuman(victimHero.gameObject, baseT.position);
+        //baseT.parent = victimHero.transform;
         baseT.position = this.myRefT.position;
         baseT.rotation = Quaternion.LookRotation(v.normalized);
         object[] objArray4 = new object[] { 0 };
-        basePV.RPC("setPhase", PhotonTargets.Others, objArray4);
-        this.phase = 4;
-        objArray4 = new object[] { 4 };
         basePV.RPC("setPhase", PhotonTargets.Others, objArray4);
     }
 

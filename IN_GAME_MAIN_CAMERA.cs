@@ -87,6 +87,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
 
     //delegate void CameraMove();
     //static CameraMove move = MoveORIGINAL;
+    public static CameraShake shake;
     private static Light mainLightL;
     public static Skybox skybox;
     public static IN_GAME_MAIN_CAMERA mainCamera;
@@ -261,6 +262,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         rotationY = 0f;
         spectate = base.GetComponent<SpectatorMovement>();
         mouselook = base.GetComponent<MouseLook>();
+        shake = base.GetComponent<CameraShake>();
         this.CreateMinimap();
     }
 

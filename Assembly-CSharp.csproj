@@ -35,6 +35,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CLEARSKIES\AsyncHelper.cs" />
     <Compile Include="CLEARSKIES\CacheGameObject.cs" />
     <Compile Include="CLEARSKIES\CacheResources.cs" />
     <Compile Include="CLEARSKIES\CoreManager.cs" />
@@ -44,11 +45,12 @@
     <Compile Include="CLEARSKIES\Pooling\PoolManager.cs" />
     <Compile Include="CLEARSKIES\Pooling\SetUpPooling.cs" />
     <Compile Include="CLEARSKIES\Triplet.cs" />
+    <Compile Include="CLEARSKIES\Yield.cs" />
     <Compile Include="Photon\CustomYieldInstruction.cs" />
     <Compile Include="Photon\EventCaching.cs" />
     <Compile Include="FunctionComparer.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="AHSSShotGunCollider.cs" />
+    <Compile Include="TriggerColliders\AHSSShotGunCollider.cs" />
     <Compile Include="GAMETYPE.cs" />
     <Compile Include="GUITexture.cs" />
     <Compile Include="Hexadecimal.cs" />
@@ -125,7 +127,7 @@
     <Compile Include="PhotonPlayerProperty.cs" />
     <Compile Include="UNIFORM_TYPE.cs" />
     <Compile Include="SEX.cs" />
-    <Compile Include="TriggerColliderWeapon.cs" />
+    <Compile Include="TriggerColliders\TriggerColliderWeapon.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="GameObjectExtensions.cs" />
     <Compile Include="FlareMovement.cs" />
@@ -524,7 +526,6 @@
     <Compile Include="RCStatic.cs" />
     <Compile Include="titanTypes.cs" />
     <Compile Include="EventCallback.cs" />
-    <Compile Include="Yield.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp-firstpass">
@@ -538,10 +539,6 @@
     </Reference>
     <Reference Include="Boo.Lang">
       <HintPath>bin\Debug\Boo.Lang.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.7.2.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>packages\HtmlAgilityPack.1.7.2\lib\Net20\HtmlAgilityPack.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>bin\Debug\ICSharpCode.SharpZipLib.dll</HintPath>

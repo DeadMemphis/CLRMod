@@ -359,6 +359,146 @@ public class PhotonPlayer
             return (short)this.actorID;
         }
     }
+
+
+    protected internal int RCteam
+    {
+        get
+        {
+            object obj = this.customProperties["RCteam"];
+            if (obj != null && obj is int)
+            {
+                return (int)obj;
+            }
+            return 0;
+        }
+        private set
+        {
+            this.SetCustomProperties(new Hashtable
+            {
+                {
+                    "RCteam",
+                    value
+                }
+            });
+        }
+    }
+
+
+    protected internal float RCBombA
+    {
+        get
+        {
+            object obj = this.customProperties["RCBombA"];
+            if (obj != null && obj is float)
+            {
+                return (float)obj;
+            }
+            return 0f;
+        }
+        private set
+        {
+            this.SetCustomProperties(new Hashtable
+            {
+                {
+                    "RCBombA",
+                    value
+                }
+            });
+        }
+    }
+
+    protected internal float RCBombB
+    {
+        get
+        {
+            object obj = this.customProperties["RCBombB"];
+            if (obj != null && obj is float)
+            {
+                return (float)obj;
+            }
+            return 0f;
+        }
+        private set
+        {
+            this.SetCustomProperties(new Hashtable
+            {
+                {
+                    "RCBombB",
+                    value
+                }
+            });
+        }
+    }
+
+    protected internal float RCBombG
+    {
+        get
+        {
+            object obj = this.customProperties["RCBombG"];
+            if (obj != null && obj is float)
+            {
+                return (float)obj;
+            }
+            return 0f;
+        }
+        private set
+        {
+            this.SetCustomProperties(new Hashtable
+            {
+                {
+                    "RCBombG",
+                    value
+                }
+            });
+        }
+    }
+
+    protected internal float RCBombR
+    {
+        get
+        {
+            object obj = this.customProperties["RCBombR"];
+            if (obj != null && obj is float)
+            {
+                return (float)obj;
+            }
+            return 0f;
+        }
+        private set
+        {
+            this.SetCustomProperties(new Hashtable
+            {
+                {
+                    "RCBombR",
+                    value
+                }
+            });
+        }
+    }
+
+    protected internal float RCBombRadius
+    {
+        get
+        {
+            object obj = this.customProperties["RCBombRadius"];
+            if (obj != null && obj is float)
+            {
+                return (float)obj;
+            }
+            return 0f;
+        }
+        private set
+        {
+            this.SetCustomProperties(new Hashtable
+            {
+                {
+                    "RCBombRadius",
+                    value
+                }
+            });
+        }
+    }
     #endregion
 
 

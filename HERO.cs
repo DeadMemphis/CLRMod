@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using Xft;
 using BRM;
+using CLEARSKIES;
+
 
 public class HERO : MONO
 {
@@ -21,9 +23,6 @@ public class HERO : MONO
     public AudioSource audio_ally;
     public AudioSource audio_hitwall;
     private GameObject badGuy;
-    public Animation baseAnimation;
-    public Rigidbody baseRigidBody;
-    public Transform baseTransform;
     private bool bigLean;
     public float bombCD;
     public bool bombImmune;
@@ -82,7 +81,6 @@ public class HERO : MONO
 
     private bool hookSomeOne;
     private GameObject hookTarget;
-    public FengCustomInputs inputManager;
     private float invincible = 3f;
     public bool isCannon;
     private bool isLaunchLeft;
@@ -2703,6 +2701,587 @@ public class HERO : MONO
         this.upperarmL.rotation = Quaternion.Euler(0f, 90f + (Mathf.Atan2(y, x) * 57.29578f), -Mathf.Atan2(num2, num4) * 57.29578f);
     }
 
+
+
+    private void loadskin(int horse, string url)
+    {
+        if (this.hasspawn)
+        {
+            bool mipmap = true;
+            bool iteratorVariable1 = false;
+            if (((int)FengGameManagerMKII.settings[0x3f]) == 1)
+            {
+                mipmap = false;
+            }
+            string[] iteratorVariable2 = url.Split(new char[] { ',' });
+            bool iteratorVariable3 = false;
+            if (((int)FengGameManagerMKII.settings[15]) == 0)
+            {
+                iteratorVariable3 = true;
+            }
+            bool iteratorVariable4 = false;
+            if (LevelInfo.getInfo(FengGameManagerMKII.level).horse || (GameSettings.horseMode == 1))
+            {
+                iteratorVariable4 = true;
+            }
+            bool iteratorVariable5 = false;
+            if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || this.photonView.isMine)
+            {
+                iteratorVariable5 = true;
+            }
+            if (this.setup.part_hair_1 != null)
+            {
+                Renderer renderer = this.setup.part_hair_1.renderer;
+                if ((iteratorVariable2[1].EndsWith(".jpg") || iteratorVariable2[1].EndsWith(".png")) || iteratorVariable2[1].EndsWith(".jpeg"))
+                {
+                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
+                    {
+                        WWW link = new WWW(iteratorVariable2[1]);
+                        //yield return link;
+                        Texture2D iteratorVariable8 = RCextensions.loadimage(link, mipmap, 0x30d40);
+                        link.Dispose();
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
+                        {
+                            iteratorVariable1 = true;
+                            if (this.setup.myCostume.hairInfo.id >= 0)
+                            {
+                                renderer.material = CharacterMaterials.materials[this.setup.myCostume.hairInfo.texture];
+                            }
+                            renderer.material.mainTexture = iteratorVariable8;
+                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[1], renderer.material);
+                            renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                        }
+                        else
+                        {
+                            renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                        }
+                    }
+                    else
+                    {
+                        renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                    }
+                }
+                else if (iteratorVariable2[1].ToLower() == "transparent")
+                {
+                    renderer.enabled = false;
+                }
+            }
+            if (this.setup.part_cape != null)
+            {
+                Renderer iteratorVariable9 = this.setup.part_cape.renderer;
+                if ((iteratorVariable2[7].EndsWith(".jpg") || iteratorVariable2[7].EndsWith(".png")) || iteratorVariable2[7].EndsWith(".jpeg"))
+                {
+                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                    {
+                        WWW iteratorVariable10 = new WWW(iteratorVariable2[7]);
+                        //yield return iteratorVariable10;
+                        Texture2D iteratorVariable11 = RCextensions.loadimage(iteratorVariable10, mipmap, 0x30d40);
+                        iteratorVariable10.Dispose();
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                        {
+                            iteratorVariable1 = true;
+                            iteratorVariable9.material.mainTexture = iteratorVariable11;
+                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[7], iteratorVariable9.material);
+                            iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                        }
+                        else
+                        {
+                            iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                        }
+                    }
+                    else
+                    {
+                        iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                    }
+                }
+                else if (iteratorVariable2[7].ToLower() == "transparent")
+                {
+                    iteratorVariable9.enabled = false;
+                }
+            }
+            if (this.setup.part_chest_3 != null)
+            {
+                Renderer iteratorVariable12 = this.setup.part_chest_3.renderer;
+                if ((iteratorVariable2[6].EndsWith(".jpg") || iteratorVariable2[6].EndsWith(".png")) || iteratorVariable2[6].EndsWith(".jpeg"))
+                {
+                    if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                    {
+                        WWW iteratorVariable13 = new WWW(iteratorVariable2[6]);
+                        //yield return iteratorVariable13;
+                        Texture2D iteratorVariable14 = RCextensions.loadimage(iteratorVariable13, mipmap, 0x7a120);
+                        iteratorVariable13.Dispose();
+                        if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                        {
+                            iteratorVariable1 = true;
+                            iteratorVariable12.material.mainTexture = iteratorVariable14;
+                            FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[6], iteratorVariable12.material);
+                            iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                        }
+                        else
+                        {
+                            iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                        }
+                    }
+                    else
+                    {
+                        iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                    }
+                }
+                else if (iteratorVariable2[6].ToLower() == "transparent")
+                {
+                    iteratorVariable12.enabled = false;
+                }
+            }
+            foreach (Renderer iteratorVariable15 in this.GetComponentsInChildren<Renderer>())
+            {
+                if (iteratorVariable15.name.Contains(FengGameManagerMKII.s[1]))
+                {
+                    if ((iteratorVariable2[1].EndsWith(".jpg") || iteratorVariable2[1].EndsWith(".png")) || iteratorVariable2[1].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
+                        {
+                            WWW iteratorVariable16 = new WWW(iteratorVariable2[1]);
+                            //yield return iteratorVariable16;
+                            Texture2D iteratorVariable17 = RCextensions.loadimage(iteratorVariable16, mipmap, 0x30d40);
+                            iteratorVariable16.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
+                            {
+                                iteratorVariable1 = true;
+                                if (this.setup.myCostume.hairInfo.id >= 0)
+                                {
+                                    iteratorVariable15.material = CharacterMaterials.materials[this.setup.myCostume.hairInfo.texture];
+                                }
+                                iteratorVariable15.material.mainTexture = iteratorVariable17;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[1], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                        }
+                    }
+                    else if (iteratorVariable2[1].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if (iteratorVariable15.name.Contains(FengGameManagerMKII.s[2]))
+                {
+                    if ((iteratorVariable2[2].EndsWith(".jpg") || iteratorVariable2[2].EndsWith(".png")) || iteratorVariable2[2].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[2]))
+                        {
+                            WWW iteratorVariable18 = new WWW(iteratorVariable2[2]);
+                            //yield return iteratorVariable18;
+                            Texture2D iteratorVariable19 = RCextensions.loadimage(iteratorVariable18, mipmap, 0x30d40);
+                            iteratorVariable18.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[2]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
+                                iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
+                                iteratorVariable15.material.mainTexture = iteratorVariable19;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[2], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
+                        }
+                    }
+                    else if (iteratorVariable2[2].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if (iteratorVariable15.name.Contains(FengGameManagerMKII.s[3]))
+                {
+                    if ((iteratorVariable2[3].EndsWith(".jpg") || iteratorVariable2[3].EndsWith(".png")) || iteratorVariable2[3].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[3]))
+                        {
+                            WWW iteratorVariable20 = new WWW(iteratorVariable2[3]);
+                            //yield return iteratorVariable20;
+                            Texture2D iteratorVariable21 = RCextensions.loadimage(iteratorVariable20, mipmap, 0x30d40);
+                            iteratorVariable20.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[3]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
+                                iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
+                                iteratorVariable15.material.mainTexture = iteratorVariable21;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[3], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
+                        }
+                    }
+                    else if (iteratorVariable2[3].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if (iteratorVariable15.name.Contains(FengGameManagerMKII.s[4]))
+                {
+                    if ((iteratorVariable2[4].EndsWith(".jpg") || iteratorVariable2[4].EndsWith(".png")) || iteratorVariable2[4].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[4]))
+                        {
+                            WWW iteratorVariable22 = new WWW(iteratorVariable2[4]);
+                            //yield return iteratorVariable22;
+                            Texture2D iteratorVariable23 = RCextensions.loadimage(iteratorVariable22, mipmap, 0x30d40);
+                            iteratorVariable22.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[4]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
+                                iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
+                                iteratorVariable15.material.mainTexture = iteratorVariable23;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[4], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
+                        }
+                    }
+                    else if (iteratorVariable2[4].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if ((iteratorVariable15.name.Contains(FengGameManagerMKII.s[5]) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[6])) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[10]))
+                {
+                    if ((iteratorVariable2[5].EndsWith(".jpg") || iteratorVariable2[5].EndsWith(".png")) || iteratorVariable2[5].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[5]))
+                        {
+                            WWW iteratorVariable24 = new WWW(iteratorVariable2[5]);
+                            //yield return iteratorVariable24;
+                            Texture2D iteratorVariable25 = RCextensions.loadimage(iteratorVariable24, mipmap, 0x30d40);
+                            iteratorVariable24.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[5]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable25;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[5], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
+                        }
+                    }
+                    else if (iteratorVariable2[5].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if (((iteratorVariable15.name.Contains(FengGameManagerMKII.s[7]) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[8])) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[9])) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[0x18]))
+                {
+                    if ((iteratorVariable2[6].EndsWith(".jpg") || iteratorVariable2[6].EndsWith(".png")) || iteratorVariable2[6].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                        {
+                            WWW iteratorVariable26 = new WWW(iteratorVariable2[6]);
+                            //yield return iteratorVariable26;
+                            Texture2D iteratorVariable27 = RCextensions.loadimage(iteratorVariable26, mipmap, 0x7a120);
+                            iteratorVariable26.Dispose();
+                            if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable27;
+                                FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[6], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                        }
+                    }
+                    else if (iteratorVariable2[6].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if (iteratorVariable15.name.Contains(FengGameManagerMKII.s[11]) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[12]))
+                {
+                    if ((iteratorVariable2[7].EndsWith(".jpg") || iteratorVariable2[7].EndsWith(".png")) || iteratorVariable2[7].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                        {
+                            WWW iteratorVariable28 = new WWW(iteratorVariable2[7]);
+                            //yield return iteratorVariable28;
+                            Texture2D iteratorVariable29 = RCextensions.loadimage(iteratorVariable28, mipmap, 0x30d40);
+                            iteratorVariable28.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable29;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[7], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                        }
+                    }
+                    else if (iteratorVariable2[7].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if (iteratorVariable15.name.Contains(FengGameManagerMKII.s[15]) || ((iteratorVariable15.name.Contains(FengGameManagerMKII.s[13]) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[0x1a])) && !iteratorVariable15.name.Contains("_r")))
+                {
+                    if ((iteratorVariable2[8].EndsWith(".jpg") || iteratorVariable2[8].EndsWith(".png")) || iteratorVariable2[8].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[8]))
+                        {
+                            WWW iteratorVariable30 = new WWW(iteratorVariable2[8]);
+                            //yield return iteratorVariable30;
+                            Texture2D iteratorVariable31 = RCextensions.loadimage(iteratorVariable30, mipmap, 0x7a120);
+                            iteratorVariable30.Dispose();
+                            if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[8]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable31;
+                                FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[8], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
+                        }
+                    }
+                    else if (iteratorVariable2[8].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if ((iteratorVariable15.name.Contains(FengGameManagerMKII.s[0x11]) || iteratorVariable15.name.Contains(FengGameManagerMKII.s[0x10])) || (iteratorVariable15.name.Contains(FengGameManagerMKII.s[0x1a]) && iteratorVariable15.name.Contains("_r")))
+                {
+                    if ((iteratorVariable2[9].EndsWith(".jpg") || iteratorVariable2[9].EndsWith(".png")) || iteratorVariable2[9].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[9]))
+                        {
+                            WWW iteratorVariable32 = new WWW(iteratorVariable2[9]);
+                            //yield return iteratorVariable32;
+                            Texture2D iteratorVariable33 = RCextensions.loadimage(iteratorVariable32, mipmap, 0x7a120);
+                            iteratorVariable32.Dispose();
+                            if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[9]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable33;
+                                FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[9], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
+                        }
+                    }
+                    else if (iteratorVariable2[9].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if ((iteratorVariable15.name == FengGameManagerMKII.s[0x12]) && iteratorVariable3)
+                {
+                    if ((iteratorVariable2[10].EndsWith(".jpg") || iteratorVariable2[10].EndsWith(".png")) || iteratorVariable2[10].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[10]))
+                        {
+                            WWW iteratorVariable34 = new WWW(iteratorVariable2[10]);
+                            //yield return iteratorVariable34;
+                            Texture2D iteratorVariable35 = RCextensions.loadimage(iteratorVariable34, mipmap, 0x30d40);
+                            iteratorVariable34.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[10]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable35;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[10], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
+                        }
+                    }
+                    else if (iteratorVariable2[10].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+                else if (iteratorVariable15.name.Contains(FengGameManagerMKII.s[0x19]))
+                {
+                    if ((iteratorVariable2[11].EndsWith(".jpg") || iteratorVariable2[11].EndsWith(".png")) || iteratorVariable2[11].EndsWith(".jpeg"))
+                    {
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[11]))
+                        {
+                            WWW iteratorVariable36 = new WWW(iteratorVariable2[11]);
+                            //yield return iteratorVariable36;
+                            Texture2D iteratorVariable37 = RCextensions.loadimage(iteratorVariable36, mipmap, 0x30d40);
+                            iteratorVariable36.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[11]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable37;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[11], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
+                            }
+                        }
+                        else
+                        {
+                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
+                        }
+                    }
+                    else if (iteratorVariable2[11].ToLower() == "transparent")
+                    {
+                        iteratorVariable15.enabled = false;
+                    }
+                }
+            }
+            if (iteratorVariable4 && (horse >= 0))
+            {
+                GameObject gameObject = PhotonView.Find(horse).gameObject;
+                if (gameObject != null)
+                {
+                    foreach (Renderer iteratorVariable39 in gameObject.GetComponentsInChildren<Renderer>())
+                    {
+                        if (iteratorVariable39.name.Contains(FengGameManagerMKII.s[0x13]))
+                        {
+                            if ((iteratorVariable2[0].EndsWith(".jpg") || iteratorVariable2[0].EndsWith(".png")) || iteratorVariable2[0].EndsWith(".jpeg"))
+                            {
+                                if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[0]))
+                                {
+                                    WWW iteratorVariable40 = new WWW(iteratorVariable2[0]);
+                                    //yield return iteratorVariable40;
+                                    Texture2D iteratorVariable41 = RCextensions.loadimage(iteratorVariable40, mipmap, 0x7a120);
+                                    iteratorVariable40.Dispose();
+                                    if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[0]))
+                                    {
+                                        iteratorVariable1 = true;
+                                        iteratorVariable39.material.mainTexture = iteratorVariable41;
+                                        FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[0], iteratorVariable39.material);
+                                        iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
+                                    }
+                                    else
+                                    {
+                                        iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
+                                    }
+                                }
+                                else
+                                {
+                                    iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
+                                }
+                            }
+                            else if (iteratorVariable2[0].ToLower() == "transparent")
+                            {
+                                iteratorVariable39.enabled = false;
+                            }
+                        }
+                    }
+                }
+            }
+            if (iteratorVariable5 && ((iteratorVariable2[12].EndsWith(".jpg") || iteratorVariable2[12].EndsWith(".png")) || iteratorVariable2[12].EndsWith(".jpeg")))
+            {
+                if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[12]))
+                {
+                    WWW iteratorVariable42 = new WWW(iteratorVariable2[12]);
+                    //yield return iteratorVariable42;
+                    Texture2D iteratorVariable43 = RCextensions.loadimage(iteratorVariable42, mipmap, 0x30d40);
+                    iteratorVariable42.Dispose();
+                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[12]))
+                    {
+                        iteratorVariable1 = true;
+                        this.leftbladetrail.MyMaterial.mainTexture = iteratorVariable43;
+                        this.rightbladetrail.MyMaterial.mainTexture = iteratorVariable43;
+                        FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[12], this.leftbladetrail.MyMaterial);
+                        this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.leftbladetrail2.MyMaterial = this.leftbladetrail.MyMaterial;
+                        this.rightbladetrail2.MyMaterial = this.leftbladetrail.MyMaterial;
+                    }
+                    else
+                    {
+                        this.leftbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.rightbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                    }
+                }
+                else
+                {
+                    this.leftbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                    this.rightbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                    this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                    this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                }
+            }
+            if (iteratorVariable1)
+            {
+                FengGameManagerMKII.instance.unloadAssets();
+            }
+        }
+    }
+
+
     public void loadskin()
     {
         if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
@@ -2780,7 +3359,11 @@ public class HERO : MONO
                 string url = str12 + "," + str2 + "," + str3 + "," + str4 + "," + str5 + "," + str6 + "," + str7 + "," + str8 + "," + str9 + "," + str10 + "," + str11 + "," + str + "," + str13;
                 if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                 {
-                    base.StartCoroutine(this.loadskinE(-1, url));
+                    //base.StartCoroutine(this.loadskinE(-1, url));
+                    AsyncHelper.BeginInBackground(new Action<int, string>((int horse, string URL) =>
+                    {
+                        loadskin(horse, URL);
+                    }), -1, url);
                 }
                 else
                 {
@@ -3380,6 +3963,10 @@ public class HERO : MONO
         if (((int)FengGameManagerMKII.settings[0]) == 1)
         {
             base.StartCoroutine(this.loadskinE(horse, url));
+            //AsyncHelper.BeginInBackground(new Action<int, string>((int HORSE, string URL) =>
+            //{
+            //    loadskin(HORSE, URL);
+            //}), horse, url);
         }
     }
 
@@ -5379,8 +5966,6 @@ public class HERO : MONO
         }
         else
         {
-            //this.currentCamera = BRM.CacheGameObject.Find("MainCamera").GetComponent<Camera>();
-            this.inputManager = BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
             this.triggerLeft = this.checkBoxLeft.GetComponent<TriggerColliderWeapon>();
             this.triggerRight = this.checkBoxRight.GetComponent<TriggerColliderWeapon>();
             this.loadskin();

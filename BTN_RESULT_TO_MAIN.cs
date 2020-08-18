@@ -11,7 +11,7 @@ public class BTN_RESULT_TO_MAIN : MonoBehaviour
             PhotonNetwork.Disconnect();
         }
         IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-        FengGameManagerMKII.instance.gameStart = false;
+        FengGameManagerMKII.gameStart = false;
         Screen.lockCursor = false;
         Screen.showCursor = true;
         BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = false;

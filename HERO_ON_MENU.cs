@@ -19,7 +19,7 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
     private static UnityEngine.Object thunder = CacheResources.Load("FX/Thunder");
     private float time;
     private float time2;
-    private static UnityEngine.Object smoke = CacheResources.Load("FX/FXtitanDie");
+    private static UnityEngine.Object smoke = CacheResources.Load("FX/colossal_steam");
     private static Quaternion TitanDieQuat = Quaternion.Euler(-90f, 0f, 0f);
     private static Quaternion ThunderQuat = Quaternion.Euler(270f, 0f, 0f);
 
@@ -49,7 +49,7 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
                 this.time = 0f;               
                 UnityEngine.Object.Instantiate(thunder, ThunderPos, ThunderQuat * Quaternion.Inverse(this.mainCameraT.rotation));                
             }
-            if (this.time2 > UnityEngine.Random.Range(0.15f, 0.35f))
+            if (this.time2 > UnityEngine.Random.Range(5f, 15f))
             {
                 this.time2 = 0f;                
                 ((GameObject)UnityEngine.Object.Instantiate(smoke, TitanDiePos, TitanDieQuat)).transform.rotation *= Quaternion.Inverse(this.mainCameraT.rotation);
