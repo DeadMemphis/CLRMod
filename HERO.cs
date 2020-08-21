@@ -4138,7 +4138,7 @@ public class HERO : MONO
                 PhotonView view2 = PhotonView.Find(viewID);
                 if (view2 != null)
                 {
-                    FengGameManagerMKII.instance.sendKillInfo(killByTitan, "[ccccff]{ [000000]" + info.sender.ID.ToString() + " [ccccff]} [FFFFFF]" + RCextensions.returnStringFromObject(view2.owner.customProperties[PhotonPlayerProperty.name]), false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
+                    FengGameManagerMKII.instance.sendKillInfo(killByTitan, "[FFC000][" + info.sender.ID.ToString() + "][FFFFFF]" + RCextensions.returnStringFromObject(view2.owner.customProperties[PhotonPlayerProperty.name]), false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
                     propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                     propertiesToSet.Add(PhotonPlayerProperty.kills, RCextensions.returnIntFromObject(view2.owner.customProperties[PhotonPlayerProperty.kills]) + 1);
                     view2.owner.SetCustomProperties(propertiesToSet);
@@ -4146,7 +4146,7 @@ public class HERO : MONO
             }
             else
             {
-                FengGameManagerMKII.instance.sendKillInfo(!(titanName == string.Empty), "[ccccff]{ [000000]" + info.sender.ID.ToString() + " [ccccff]} [FFFFFF]" + titanName, false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
+                FengGameManagerMKII.instance.sendKillInfo(!(titanName == string.Empty), "[FFC000][" + info.sender.ID.ToString() + "][FFFFFF]" + titanName, false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
             }
         }
         if (basePV.isMine)
@@ -4216,7 +4216,7 @@ public class HERO : MONO
                 PhotonView view2 = PhotonView.Find(viewID);
                 if (view2 != null)
                 {
-                    FengGameManagerMKII.instance.sendKillInfo(true, "[ccccff]{ [000000]" + info.sender.ID.ToString() + " [ccccff]} [FFFFFF]" + RCextensions.returnStringFromObject(view2.owner.customProperties[PhotonPlayerProperty.name]), false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
+                    FengGameManagerMKII.instance.sendKillInfo(true, "[FFC000][" + info.sender.ID.ToString() + "][FFFFFF]" + RCextensions.returnStringFromObject(view2.owner.customProperties[PhotonPlayerProperty.name]), false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
                     propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                     propertiesToSet.Add(PhotonPlayerProperty.kills, RCextensions.returnIntFromObject(view2.owner.customProperties[PhotonPlayerProperty.kills]) + 1);
                     view2.owner.SetCustomProperties(propertiesToSet);
@@ -4224,7 +4224,7 @@ public class HERO : MONO
             }
             else
             {
-                FengGameManagerMKII.instance.sendKillInfo(true, "[ccccff]{ [000000]" + info.sender.ID.ToString() + " [ccccff]} [FFFFFF]" + titanName, false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
+                FengGameManagerMKII.instance.sendKillInfo(true, "[FFC000][" + info.sender.ID.ToString() + "][FFFFFF]" + titanName, false, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]), 0);
             }
             object[] parameters = new object[] { !(titanName == string.Empty) ? 1 : 0 };
             FengGameManagerMKII.PView.RPC("someOneIsDead", PhotonTargets.MasterClient, parameters);
@@ -4469,12 +4469,7 @@ public class HERO : MONO
         this.falseAttack();
     }
 
-    private IEnumerator NotSpamRedCross(float wait)
-    {
-        PhotonNetwork.Instantiate("redCross", base.transform.position, Quaternion.Euler(270f, 0f, 0f), 0, null);
-        yield return new WaitForSeconds(wait);
-
-    }
+    
 
     public void onDeathEvent(int viewID, bool isTitan)
     {

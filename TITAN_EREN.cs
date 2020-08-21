@@ -975,25 +975,9 @@ private string attackAnimation;
                             if (this.inputManager.isInputDown[InputCode.attack0] || this.inputManager.isInputDown[InputCode.attack1])
                             {
                                 bool flag = false;
-                                if (((IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.WOW) && this.inputManager.isInput[InputCode.down]) || this.inputManager.isInputDown[InputCode.attack1])
-                                {
-                                    if (((IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.WOW) && this.inputManager.isInputDown[InputCode.attack1]) && (this.inputManager.inputKey[11] == KeyCode.Mouse1))
-                                    {
-                                        flag = true;
-                                    }
-                                    if (flag)
-                                    {
-                                        flag = true;
-                                    }
-                                    else
-                                    {
-                                        this.attackAnimation = "attack_kick";
-                                    }
-                                }
-                                else
-                                {
+                               
                                     this.attackAnimation = "attack_combo_001";
-                                }
+                                
                                 if (!flag)
                                 {
                                     this.playAnimation(this.attackAnimation);

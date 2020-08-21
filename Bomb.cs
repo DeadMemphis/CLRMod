@@ -123,16 +123,15 @@ public class Bomb : Photon.MonoBehaviour
                         if ((rcteam == 0) || (rcteam != rcteam2))
                         {
                             hero.markDie();
-                            pview.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
+                            pview.RPC("netDie2", PhotonTargets.All, new object[] { -1, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]) + " " });
                             FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
                         }
                     }
                     else
                     {
                         hero.markDie();
-                        pview.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "bemb"/*RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name])*/ + " " });
+                        pview.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]) + " " });
                         FengGameManagerMKII.instance.playerKillInfoUpdate(PhotonNetwork.player, 0);
-                        //PhotonNetwork.Instantiate("FX/boom6", gameObject.GetComponent<HERO>().transform.position, gameObject.GetComponent<HERO>().transform.rotation, 0);
                     }
                 }
             }
