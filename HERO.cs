@@ -1025,6 +1025,8 @@ public class HERO : MONO
             Quaternion quaternion = Quaternion.Euler(0f, this.facingDirection, 0f);
             baseR.rotation = quaternion;
             this.targetRotation = quaternion;
+            UnityEngine.Object.Instantiate(CacheResources.Load("FX/boost_smoke"), baseT.position, baseT.rotation);
+          //  PhotonNetwork.Instantiate("FX/boost_smoke", base.transform.position, base.transform.rotation, 0);
             this.dashTime = 0.5f;
             this.crossFade("dash", 0.1f);
             baseA["dash"].time = 0.1f;
@@ -1996,32 +1998,19 @@ public class HERO : MONO
                         this.useGas(this.useGasSpeed * Time.deltaTime);
                         if ((!this.smoke_3dmg.enableEmission && (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)) && basePV.isMine)
                         {
-                            //if ((bool)FengGameManagerMKII.settings[0xc0]) PhotonNetwork.Instantiate("RCAsset/BombMain", baseT.position, new Quaternion(270f, 0f, 0f, 0f), 0, null);
-                            //if (!PhotonNetwork.masterClient.RC || PhotonNetwork.masterClient.isLocal) dmgsmoke = PhotonNetwork.Instantiate("redCross1", baseT.position, Quaternion.Euler(270f, 0f, 0f), 0, null);
-                            //dmgsmoke = baseT.Find("3dmg_smoke").GetComponent<ParticleSystem>();
-                            //dmgsmoke.
-                            //dmgsmoke.GetComponent<ParticleSystem>().startColor = new Color(0f, 0f, 0f);
-                            //dmgsmoke = PhotonNetwork.Instantiate("fx/3dmg_smoke", baseT.position, Quaternion.Euler(270f, 0f, 0f), 0, null);
-                            //object[] parameters = new object[] { true };
-                            //basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, parameters);
-                            //base.StartCoroutine(NotSpamRedCross(30f));
+                            object[] parameters = new object[] { true };
+                            basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, parameters);
                         }
-                        //this.smoke_3dmg.enableEmission = true;
-                        //
-                        //redCross = (GameObject)UnityEngine.Object.Instantiate(CacheResources.Load("redCross1"));
-                        //redCross.transform.position = baseT.position;
+                        this.smoke_3dmg.enableEmission = true;
                     }
                     else
                     {
                         if ((this.smoke_3dmg.enableEmission && (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)) && basePV.isMine)
                         {
-                            //base.StopCoroutine(NotSpamRedCross(30f));
-                            //PhotonNetwork.Instantiate("redCross", baseT.position, baseT.rotation, 0);
-                            //object[] objArray3 = new object[] { false };
-                            //basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, objArray3);
+                            object[] objArray3 = new object[] { false };
+                            basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, objArray3);
                         }
-                        //this.smoke_3dmg.enableEmission = false;
-                        //UnityEngine.Object.Instantiate(CacheResources.Load("redCross"), baseT.position, baseT.rotation);
+                        this.smoke_3dmg.enableEmission = false;
                     }
                     if (this.currentSpeed > 80f)
                     {

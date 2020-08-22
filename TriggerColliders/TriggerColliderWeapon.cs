@@ -116,8 +116,6 @@ public class TriggerColliderWeapon : MonoBehaviour
                                                 false
                                         };
                                         Hero.photonView.RPC("netDie", PhotonTargets.All, parameters);
-                                        PhotonNetwork.Instantiate("redCross1", this.baseT.position, Quaternion.Euler(270f, 0f, 0f), 0);
-                                        PhotonNetwork.Instantiate("redCross1", this.baseT.position, Quaternion.Euler(270f, 0f, 0f), 0);
                                     }
                                 }
                             }
@@ -347,12 +345,11 @@ public class TriggerColliderWeapon : MonoBehaviour
         mainCamera.startShake(0.2f, 0.3f, 0.95f);
         if (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)
         {
-            obj2 = PhotonNetwork.Instantiate("redCross1", this.baseT.position, Quaternion.Euler(270f, 0f, 0f), 0);
-            obj2 = PhotonNetwork.Instantiate("redCross1", this.baseT.position, Quaternion.Euler(270f, 0f, 0f), 0);
+            obj2 = PhotonNetwork.Instantiate("redCross", this.baseT.position, Quaternion.Euler(270f, 0f, 0f), 0);
         }
         else
         {
-            obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("redCross1"));
+            obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("redCross"));
         }
         obj2.transform.position = this.baseT.position;
         obj2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
