@@ -59,7 +59,7 @@ public class CustomCharacterManager : MonoBehaviour
             num += this.setup.myCostume.stat.BLA;
             return (num + this.setup.myCostume.stat.ACL);
         }
-        return 450;
+        return 400;
     }
 
     private void copyBodyCostume(HeroCostume from, HeroCostume to)
@@ -236,7 +236,7 @@ public class CustomCharacterManager : MonoBehaviour
         this.labelCostume.GetComponent<UILabel>().text = "costume_" + this.costumeId.ToString();
         this.labelCape.GetComponent<UILabel>().text = "cape_" + this.capeId.ToString();
         this.labelDivision.GetComponent<UILabel>().text = this.divisionOption[this.divisionId].ToString();
-        this.labelPOINT.GetComponent<UILabel>().text = "Points: " + ((450 - this.calTotalPoints())).ToString();
+        this.labelPOINT.GetComponent<UILabel>().text = "Points: " + ((400 - this.calTotalPoints())).ToString();
         this.labelSPD.GetComponent<UILabel>().text = "SPD " + this.setup.myCostume.stat.SPD.ToString();
         this.labelGAS.GetComponent<UILabel>().text = "GAS " + this.setup.myCostume.stat.GAS.ToString();
         this.labelBLA.GetComponent<UILabel>().text = "BLA " + this.setup.myCostume.stat.BLA.ToString();
@@ -284,7 +284,7 @@ public class CustomCharacterManager : MonoBehaviour
             this.character.GetComponent<CharacterCreateAnimationControl>().playAttack(this.setup.myCostume.stat.skillId);
             this.freshLabel();
         }
-        else if (this.calTotalPoints() < 450)
+        else if (this.calTotalPoints() < 400)
         {
             this.setStatPoint(type, 1);
         }
@@ -392,10 +392,10 @@ public class CustomCharacterManager : MonoBehaviour
                 this.setup.myCostume.stat.ACL += pt;
                 break;
         }
-        this.setup.myCostume.stat.SPD = Mathf.Clamp(this.setup.myCostume.stat.SPD, 0x4b, 150);
-        this.setup.myCostume.stat.GAS = Mathf.Clamp(this.setup.myCostume.stat.GAS, 0x4b, 150);
-        this.setup.myCostume.stat.BLA = Mathf.Clamp(this.setup.myCostume.stat.BLA, 0x4b, 150);
-        this.setup.myCostume.stat.ACL = Mathf.Clamp(this.setup.myCostume.stat.ACL, 0x4b, 150);
+        this.setup.myCostume.stat.SPD = Mathf.Clamp(this.setup.myCostume.stat.SPD, 0x4b, 125);
+        this.setup.myCostume.stat.GAS = Mathf.Clamp(this.setup.myCostume.stat.GAS, 0x4b, 125);
+        this.setup.myCostume.stat.BLA = Mathf.Clamp(this.setup.myCostume.stat.BLA, 0x4b, 125);
+        this.setup.myCostume.stat.ACL = Mathf.Clamp(this.setup.myCostume.stat.ACL, 0x4b, 125);
         this.freshLabel();
     }
 

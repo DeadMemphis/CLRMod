@@ -7244,6 +7244,7 @@ public class HERO : MONO
         {
             if (this.currentBladeSta <= 0f)
             {
+                this.currentBladeSta -= amount;
                 if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
                 {
                     this.leftbladetrail.Deactivate();
