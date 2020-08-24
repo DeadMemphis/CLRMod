@@ -5329,12 +5329,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.myLastHero = id.ToUpper();
         ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add("dead", true);
-        ExitGames.Client.Photon.Hashtable propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-        hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add(PhotonPlayerProperty.isTitan, 2);
-        propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
+        PhotonNetwork.player.SetCustomProperties(hashtable);
         if (IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.TPS || IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.OldTPS)
         {
             Screen.lockCursor = true;
@@ -5356,12 +5352,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.myLastHero = id.ToUpper();
         ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add("dead", true);
-        ExitGames.Client.Photon.Hashtable propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-        hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add(PhotonPlayerProperty.isTitan, 2);
-        propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
+        PhotonNetwork.player.SetCustomProperties(hashtable);
         if (IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.TPS || IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.OldTPS)
         {
             Screen.lockCursor = true;
@@ -5383,12 +5375,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.myLastHero = id.ToUpper();
         ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add("dead", true);
-        ExitGames.Client.Photon.Hashtable propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-        hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add(PhotonPlayerProperty.isTitan, 1);
-        propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
+        PhotonNetwork.player.SetCustomProperties(hashtable);
         if (IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.TPS || IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.OldTPS)
         {
             Screen.lockCursor = true;
@@ -5410,12 +5398,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.myLastHero = id.ToUpper();
         ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add("dead", true);
-        ExitGames.Client.Photon.Hashtable propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-        hashtable = new ExitGames.Client.Photon.Hashtable();
         hashtable.Add(PhotonPlayerProperty.isTitan, 1);
-        propertiesToSet = hashtable;
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
+        PhotonNetwork.player.SetCustomProperties(hashtable);
         if (IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.TPS || IN_GAME_MAIN_CAMERA.cameraMode == CAMERA_TYPE.OldTPS)
         {
             Screen.lockCursor = true;
