@@ -4,9 +4,6 @@ using UnityEngine;
 public class MovementUpdate1 : MonoBehaviour
 {
     public bool disabled;
-    private Vector3 lastPosition;
-    private Quaternion lastRotation;
-    private Vector3 lastVelocity;
 
     private void Start()
     {

@@ -5,14 +5,9 @@ using Xft;
 
 public class HERO_SETUP : MonoBehaviour
 {
-    private string aniname;
-    private float anitime;
     private List<BoneWeight> boneWeightsList = new List<BoneWeight>();
-    private bool change;
     public GameObject chest_info;
     private byte[] config = new byte[4];
-    private int currentOne;
-    private SkinnedMeshRenderer[][] elements;
     public bool isDeadBody;
     private List<Material> materialList;
     private GameObject mount_3dmg;
@@ -54,7 +49,6 @@ public class HERO_SETUP : MonoBehaviour
     public GameObject part_leg;
     public GameObject part_upper_body;
     public GameObject reference;
-    private float timer;
 
     private void Awake()
     {

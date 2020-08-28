@@ -9,7 +9,6 @@ public class CustomCharacterManager : MonoBehaviour
     public GameObject character;
     private int costumeId = 1;
     private HeroCostume[] costumeOption;
-    private HeroCostume currentCostume;
     private string currentSlot = "Set 1";
     private int divisionId;
     private DIVISION[] divisionOption;

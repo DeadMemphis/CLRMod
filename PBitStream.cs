@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 
 public class PBitStream
 {
-    private int currentByte;
     private List<byte> streamBytes;
     private int totalBits;
 

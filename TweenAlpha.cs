@@ -6,7 +6,6 @@ public class TweenAlpha : UITweener
 {
     public float from = 1f;
     private UIPanel mPanel;
-    private Transform mTrans;
     private UIWidget mWidget;
     public float to = 1f;
 

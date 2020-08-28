@@ -63,7 +63,6 @@ public class custom_inputs : MonoBehaviour
     private bool tempbool;
     private bool[] tempjoy1;
     private bool[] tempjoy2;
-    private string tempkeyPressed;
     private int tempLength;
 
     private void checDoubleAxis(string testAxisString, int o, int p)

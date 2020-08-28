@@ -450,7 +450,6 @@
     <Compile Include="PopuplistCharacterSelection.cs" />
     <Compile Include="RandomHouse.cs" />
     <Compile Include="RockScript.cs" />
-    <Compile Include="CLZF2.cs" />
     <Compile Include="ParticleScaling.cs" />
     <Compile Include="CompressString\StringCompressor.cs" />
     <Compile Include="BTN_BackToMain.cs" />

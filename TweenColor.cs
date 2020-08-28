@@ -7,7 +7,6 @@ public class TweenColor : UITweener
     public Color from = Color.white;
     private Light mLight;
     private Material mMat;
-    private Transform mTrans;
     private UIWidget mWidget;
     public Color to = Color.white;
 

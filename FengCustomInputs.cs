@@ -36,9 +36,7 @@ public class FengCustomInputs : MonoBehaviour
     public bool mouseAxisOn;
     public bool mouseButtonsOn = true;
     public GUISkin OurSkin;
-    private bool tempbool;
     private bool[] tempjoy1;
-    private string tempkeyPressed;
     private int tempLength;
     public static FengCustomInputs Inputs;
 
@@ -113,7 +111,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.inputKey[i] = Event.current.keyCode;
                 this.inputBool[i] = false;
                 this.inputString[i] = this.inputKey[i].ToString();
-                this.tempbool = false;
                 this.joystickActive[i] = false;
                 this.joystickString[i] = "#";
                 this.saveInputs();
@@ -144,7 +141,6 @@ public class FengCustomInputs : MonoBehaviour
                     this.inputKey[i] = (KeyCode) j;
                     this.inputBool[i] = false;
                     this.inputString[i] = this.inputKey[i].ToString();
-                    this.tempbool = false;
                     this.joystickActive[i] = false;
                     this.joystickString[i] = "#";
                     this.saveInputs();
@@ -160,7 +156,6 @@ public class FengCustomInputs : MonoBehaviour
                     this.joystickActive[i] = true;
                     this.joystickString[i] = "MouseUp";
                     this.inputString[i] = "Mouse Up";
-                    this.tempbool = false;
                     this.saveInputs();
                     this.checDoubleAxis(this.joystickString[i], i, 1);
                 }
@@ -171,7 +166,6 @@ public class FengCustomInputs : MonoBehaviour
                     this.joystickActive[i] = true;
                     this.joystickString[i] = "MouseDown";
                     this.inputString[i] = "Mouse Down";
-                    this.tempbool = false;
                     this.saveInputs();
                     this.checDoubleAxis(this.joystickString[i], i, 1);
                 }
@@ -183,7 +177,6 @@ public class FengCustomInputs : MonoBehaviour
                     this.joystickString[i] = "MouseLeft";
                     this.inputBool[i] = false;
                     this.inputString[i] = "Mouse Left";
-                    this.tempbool = false;
                     this.saveInputs();
                     this.checDoubleAxis(this.joystickString[i], i, 1);
                 }
@@ -194,7 +187,6 @@ public class FengCustomInputs : MonoBehaviour
                     this.joystickActive[i] = true;
                     this.joystickString[i] = "MouseRight";
                     this.inputString[i] = "Mouse Right";
-                    this.tempbool = false;
                     this.saveInputs();
                     this.checDoubleAxis(this.joystickString[i], i, 1);
                 }
@@ -209,7 +201,6 @@ public class FengCustomInputs : MonoBehaviour
                     this.joystickString[i] = "MouseScrollUp";
                     this.inputBool[i] = false;
                     this.inputString[i] = "Mouse scroll Up";
-                    this.tempbool = false;
                     this.saveInputs();
                     this.checDoubleAxis(this.joystickString[i], i, 1);
                 }
@@ -221,7 +212,6 @@ public class FengCustomInputs : MonoBehaviour
                     this.joystickString[i] = "MouseScrollDown";
                     this.inputBool[i] = false;
                     this.inputString[i] = "Mouse scroll Down";
-                    this.tempbool = false;
                     this.saveInputs();
                     this.checDoubleAxis(this.joystickString[i], i, 1);
                 }
@@ -233,7 +223,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "JoystickUp";
                 this.inputString[i] = "Joystick Up";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -244,7 +233,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "JoystickDown";
                 this.inputString[i] = "Joystick Down";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -255,7 +243,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "JoystickLeft";
                 this.inputString[i] = "Joystick Left";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -266,7 +253,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "JoystickRight";
                 this.inputString[i] = "Joystick Right";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -277,7 +263,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_3a";
                 this.inputString[i] = "Joystick Axis 3 +";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -288,7 +273,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_3b";
                 this.inputString[i] = "Joystick Axis 3 -";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -299,7 +283,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_4a";
                 this.inputString[i] = "Joystick Axis 4 +";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -310,7 +293,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_4b";
                 this.inputString[i] = "Joystick Axis 4 -";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -321,7 +303,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_5b";
                 this.inputString[i] = "Joystick Axis 5 -";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -332,7 +313,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_6b";
                 this.inputString[i] = "Joystick Axis 6 -";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -343,7 +323,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_7a";
                 this.inputString[i] = "Joystick Axis 7 +";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -354,7 +333,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_7b";
                 this.inputString[i] = "Joystick Axis 7 -";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -365,7 +343,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_8a";
                 this.inputString[i] = "Joystick Axis 8 +";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -376,7 +353,6 @@ public class FengCustomInputs : MonoBehaviour
                 this.joystickActive[i] = true;
                 this.joystickString[i] = "Joystick_8b";
                 this.inputString[i] = "Joystick Axis 8 -";
-                this.tempbool = false;
                 this.saveInputs();
                 this.checDoubleAxis(this.joystickString[i], i, 1);
             }
@@ -478,10 +454,10 @@ public class FengCustomInputs : MonoBehaviour
 
     private void OnGUI()
     {
-        if (Time.realtimeSinceStartup > (this.lastInterval + 3f))
-        {
-            this.tempbool = false;
-        }
+        //if (Time.realtimeSinceStartup > (this.lastInterval + 3f))
+        //{
+        //    this.tempbool = false;
+        //}
         if (this.menuOn)
         {
             this.drawButtons1();
@@ -544,7 +520,6 @@ public class FengCustomInputs : MonoBehaviour
             this.inputBool[i] = false;
             this.joystickActive[i] = true;
             this.inputBool[i] = false;
-            this.tempbool = false;
             this.saveInputs();
             this.checDoubleAxis(this.joystickString[i], i, 1);
         }
@@ -553,7 +528,6 @@ public class FengCustomInputs : MonoBehaviour
             this.inputKey[i] = (KeyCode) Enum.Parse(typeof(KeyCode), setting);
             this.inputBool[i] = false;
             this.inputString[i] = this.inputKey[i].ToString();
-            this.tempbool = false;
             this.joystickActive[i] = false;
             this.joystickString[i] = "#";
             this.saveInputs();
@@ -642,7 +616,6 @@ public class FengCustomInputs : MonoBehaviour
 
     public void startListening(int n)
     {
-        this.tempbool = true;
         this.inputBool[n] = true;
         this.lastInterval = Time.realtimeSinceStartup;
     }

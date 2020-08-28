@@ -6,7 +6,6 @@ public class KickState
     public int id;
     private int kickCount;
     private string kickers;
-    private ArrayList kickers2;
     public string name;
 
     public void addKicker(string n)

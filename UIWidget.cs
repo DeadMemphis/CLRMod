@@ -11,9 +11,6 @@ public abstract class UIWidget : MonoBehaviour
     private Color mColor = Color.white;
     [SerializeField, HideInInspector]
     private int mDepth;
-    private Vector3 mDiffPos;
-    private Quaternion mDiffRot;
-    private Vector3 mDiffScale;
     private bool mForceVisible;
     private UIGeometry mGeom = new UIGeometry();
     protected GameObject mGo;

@@ -11,11 +11,6 @@ using UnityEngine;
 
 public class TITAN : MONO
 {
-    
-    private static Dictionary<string, int> f__switchmap5;
-    
-    private static Dictionary<string, int> f__switchmap6;
-    
     private static Dictionary<string, int> f__switchmap7;
     private Vector3 abnorma_jump_bite_horizon_v;
     public AbnormalType abnormalType;
@@ -54,7 +49,6 @@ public class TITAN : MONO
     
     private static Dictionary<string, int> fswitchmap6;
     
-    private static Dictionary<string, int> fswitchmap7;
     private string fxName;
     private Vector3 fxPosition;
     private Quaternion fxRotation;
@@ -182,207 +176,7 @@ public class TITAN : MONO
     {
     }
 
-    private void attack(string type)
-    {
-        this.state = TitanState.attack;
-        this.attacked = false;
-        this.isAlarm = true;
-        if (this.attackAnimation == type)
-        {
-            this.attackAnimation = type;
-            this.playAnimationAt("attack_" + type, 0f);
-        }
-        else
-        {
-            this.attackAnimation = type;
-            this.playAnimationAt("attack_" + type, 0f);
-        }
-        this.nextAttackAnimation = null;
-        this.fxName = null;
-        this.isAttackMoveByCore = false;
-        this.attackCheckTime = 0f;
-        this.attackCheckTimeA = 0f;
-        this.attackCheckTimeB = 0f;
-        this.attackEndWait = 0f;
-        this.fxRotation = Quaternion.Euler(270f, 0f, 0f);
-        string key = type;
-        if (key != null)
-        {
-            int num;
-            if (f__switchmap6 == null)
-            {
-                Dictionary<string, int> dictionary = new Dictionary<string, int>(0x16);
-                dictionary.Add("abnormal_getup", 0);
-                dictionary.Add("abnormal_jump", 1);
-                dictionary.Add("combo_1", 2);
-                dictionary.Add("combo_2", 3);
-                dictionary.Add("combo_3", 4);
-                dictionary.Add("front_ground", 5);
-                dictionary.Add("kick", 6);
-                dictionary.Add("slap_back", 7);
-                dictionary.Add("slap_face", 8);
-                dictionary.Add("stomp", 9);
-                dictionary.Add("bite", 10);
-                dictionary.Add("bite_l", 11);
-                dictionary.Add("bite_r", 12);
-                dictionary.Add("jumper_0", 13);
-                dictionary.Add("crawler_jump_0", 14);
-                dictionary.Add("anti_AE_l", 15);
-                dictionary.Add("anti_AE_r", 0x10);
-                dictionary.Add("anti_AE_low_l", 0x11);
-                dictionary.Add("anti_AE_low_r", 0x12);
-                dictionary.Add("quick_turn_l", 0x13);
-                dictionary.Add("quick_turn_r", 20);
-                dictionary.Add("throw", 0x15);
-                f__switchmap6 = dictionary;
-            }
-            if (f__switchmap6.TryGetValue(key, out num))
-            {
-                switch (num)
-                {
-                    case 0:
-                        this.attackCheckTime = 0f;
-                        this.fxName = string.Empty;
-                        break;
-
-                    case 1:
-                        this.nextAttackAnimation = "abnormal_getup";
-                        if (!this.nonAI)
-                        {
-                            this.attackEndWait = (this.myDifficulty <= 0) ? UnityEngine.Random.Range((float) 1f, (float) 4f) : UnityEngine.Random.Range((float) 0f, (float) 1f);
-                        }
-                        else
-                        {
-                            this.attackEndWait = 0f;
-                        }
-                        this.attackCheckTime = 0.75f;
-                        this.fxName = "boom4";
-                        this.fxRotation = Quaternion.Euler(270f,baseT.rotation.eulerAngles.y, 0f);
-                        break;
-
-                    case 2:
-                        this.nextAttackAnimation = "combo_2";
-                        this.attackCheckTimeA = 0.54f;
-                        this.attackCheckTimeB = 0.76f;
-                        this.nonAIcombo = false;
-                        this.isAttackMoveByCore = true;
-                        this.leftHandAttack = false;
-                        break;
-
-                    case 3:
-                        if (this.abnormalType != AbnormalType.TYPE_PUNK)
-                        {
-                            this.nextAttackAnimation = "combo_3";
-                        }
-                        this.attackCheckTimeA = 0.37f;
-                        this.attackCheckTimeB = 0.57f;
-                        this.nonAIcombo = false;
-                        this.isAttackMoveByCore = true;
-                        this.leftHandAttack = true;
-                        break;
-
-                    case 4:
-                        this.nonAIcombo = false;
-                        this.isAttackMoveByCore = true;
-                        this.attackCheckTime = 0.21f;
-                        this.fxName = "boom1";
-                        break;
-
-                    case 5:
-                        this.fxName = "boom1";
-                        this.attackCheckTime = 0.45f;
-                        break;
-
-                    case 6:
-                        this.fxName = "boom5";
-                        this.fxRotation =baseT.rotation;
-                        this.attackCheckTime = 0.43f;
-                        break;
-
-                    case 7:
-                        this.fxName = "boom3";
-                        this.attackCheckTime = 0.66f;
-                        break;
-
-                    case 8:
-                        this.fxName = "boom3";
-                        this.attackCheckTime = 0.655f;
-                        break;
-
-                    case 9:
-                        this.fxName = "boom2";
-                        this.attackCheckTime = 0.42f;
-                        break;
-
-                    case 10:
-                        this.fxName = "bite";
-                        this.attackCheckTime = 0.6f;
-                        break;
-
-                    case 11:
-                        this.fxName = "bite";
-                        this.attackCheckTime = 0.4f;
-                        break;
-
-                    case 12:
-                        this.fxName = "bite";
-                        this.attackCheckTime = 0.4f;
-                        break;
-
-                    case 13:
-                        this.abnorma_jump_bite_horizon_v = Vector3.zero;
-                        break;
-
-                    case 14:
-                        this.abnorma_jump_bite_horizon_v = Vector3.zero;
-                        break;
-
-                    case 15:
-                        this.attackCheckTimeA = 0.31f;
-                        this.attackCheckTimeB = 0.4f;
-                        this.leftHandAttack = true;
-                        break;
-
-                    case 0x10:
-                        this.attackCheckTimeA = 0.31f;
-                        this.attackCheckTimeB = 0.4f;
-                        this.leftHandAttack = false;
-                        break;
-
-                    case 0x11:
-                        this.attackCheckTimeA = 0.31f;
-                        this.attackCheckTimeB = 0.4f;
-                        this.leftHandAttack = true;
-                        break;
-
-                    case 0x12:
-                        this.attackCheckTimeA = 0.31f;
-                        this.attackCheckTimeB = 0.4f;
-                        this.leftHandAttack = false;
-                        break;
-
-                    case 0x13:
-                        this.attackCheckTimeA = 2f;
-                        this.attackCheckTimeB = 2f;
-                        this.isAttackMoveByCore = true;
-                        break;
-
-                    case 20:
-                        this.attackCheckTimeA = 2f;
-                        this.attackCheckTimeB = 2f;
-                        this.isAttackMoveByCore = true;
-                        break;
-
-                    case 0x15:
-                        this.isAlarm = true;
-                        this.chaseDistance = 99999f;
-                        break;
-                }
-            }
-        }
-        this.needFreshCorePosition = true;
-    }
-
+  
     private void attack2(string type)
     {
         this.state = TitanState.attack;
@@ -412,29 +206,31 @@ public class TITAN : MONO
             int num;
             if (fswitchmap6 == null)
             {
-                Dictionary<string, int> dictionary = new Dictionary<string, int>(0x16);
-                dictionary.Add("abnormal_getup", 0);
-                dictionary.Add("abnormal_jump", 1);
-                dictionary.Add("combo_1", 2);
-                dictionary.Add("combo_2", 3);
-                dictionary.Add("combo_3", 4);
-                dictionary.Add("front_ground", 5);
-                dictionary.Add("kick", 6);
-                dictionary.Add("slap_back", 7);
-                dictionary.Add("slap_face", 8);
-                dictionary.Add("stomp", 9);
-                dictionary.Add("bite", 10);
-                dictionary.Add("bite_l", 11);
-                dictionary.Add("bite_r", 12);
-                dictionary.Add("jumper_0", 13);
-                dictionary.Add("crawler_jump_0", 14);
-                dictionary.Add("anti_AE_l", 15);
-                dictionary.Add("anti_AE_r", 0x10);
-                dictionary.Add("anti_AE_low_l", 0x11);
-                dictionary.Add("anti_AE_low_r", 0x12);
-                dictionary.Add("quick_turn_l", 0x13);
-                dictionary.Add("quick_turn_r", 20);
-                dictionary.Add("throw", 0x15);
+                Dictionary<string, int> dictionary = new Dictionary<string, int>(0x16)
+                {
+                    { "abnormal_getup", 0 },
+                    { "abnormal_jump", 1 },
+                    { "combo_1", 2 },
+                    { "combo_2", 3 },
+                    { "combo_3", 4 },
+                    { "front_ground", 5 },
+                    { "kick", 6 },
+                    { "slap_back", 7 },
+                    { "slap_face", 8 },
+                    { "stomp", 9 },
+                    { "bite", 10 },
+                    { "bite_l", 11 },
+                    { "bite_r", 12 },
+                    { "jumper_0", 13 },
+                    { "crawler_jump_0", 14 },
+                    { "anti_AE_l", 15 },
+                    { "anti_AE_r", 0x10 },
+                    { "anti_AE_low_l", 0x11 },
+                    { "anti_AE_low_r", 0x12 },
+                    { "quick_turn_l", 0x13 },
+                    { "quick_turn_r", 20 },
+                    { "throw", 0x15 }
+                };
                 fswitchmap6 = dictionary;
             }
             if (fswitchmap6.TryGetValue(key, out num))
@@ -881,8 +677,6 @@ public class TITAN : MONO
                     IN_GAME_MAIN_CAMERA.mainCamera.gameOver = true;
                     ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                     propertiesToSet.Add(PhotonPlayerProperty.dead, true);
-                    PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-                    propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                     propertiesToSet.Add(PhotonPlayerProperty.deaths, ((int) PhotonNetwork.player.customProperties[PhotonPlayerProperty.deaths]) + 1);
                     PhotonNetwork.player.SetCustomProperties(propertiesToSet);
                 }
@@ -1005,8 +799,6 @@ public class TITAN : MONO
                     IN_GAME_MAIN_CAMERA.mainCamera.gameOver = true;
                     ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                     propertiesToSet.Add(PhotonPlayerProperty.dead, true);
-                    PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-                    propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                     propertiesToSet.Add(PhotonPlayerProperty.deaths, ((int) PhotonNetwork.player.customProperties[PhotonPlayerProperty.deaths]) + 1);
                     PhotonNetwork.player.SetCustomProperties(propertiesToSet);
                 }
@@ -1093,116 +885,7 @@ public class TITAN : MONO
         }
     }
 
-    private bool executeAttack(string decidedAction)
-    {
-        string key = decidedAction;
-        if (key != null)
-        {
-            int num;
-            if (f__switchmap5 == null)
-            {
-                Dictionary<string, int> dictionary = new Dictionary<string, int>(0x12);
-                dictionary.Add("grab_ground_front_l", 0);
-                dictionary.Add("grab_ground_front_r", 1);
-                dictionary.Add("grab_ground_back_l", 2);
-                dictionary.Add("grab_ground_back_r", 3);
-                dictionary.Add("grab_head_front_l", 4);
-                dictionary.Add("grab_head_front_r", 5);
-                dictionary.Add("grab_head_back_l", 6);
-                dictionary.Add("grab_head_back_r", 7);
-                dictionary.Add("attack_abnormal_jump", 8);
-                dictionary.Add("attack_combo", 9);
-                dictionary.Add("attack_front_ground", 10);
-                dictionary.Add("attack_kick", 11);
-                dictionary.Add("attack_slap_back", 12);
-                dictionary.Add("attack_slap_face", 13);
-                dictionary.Add("attack_stomp", 14);
-                dictionary.Add("attack_bite", 15);
-                dictionary.Add("attack_bite_l", 0x10);
-                dictionary.Add("attack_bite_r", 0x11);
-                f__switchmap5 = dictionary;
-            }
-            if (f__switchmap5.TryGetValue(key, out num))
-            {
-                switch (num)
-                {
-                    case 0:
-                        this.grab("ground_front_l");
-                        return true;
-
-                    case 1:
-                        this.grab("ground_front_r");
-                        return true;
-
-                    case 2:
-                        this.grab("ground_back_l");
-                        return true;
-
-                    case 3:
-                        this.grab("ground_back_r");
-                        return true;
-
-                    case 4:
-                        this.grab("head_front_l");
-                        return true;
-
-                    case 5:
-                        this.grab("head_front_r");
-                        return true;
-
-                    case 6:
-                        this.grab("head_back_l");
-                        return true;
-
-                    case 7:
-                        this.grab("head_back_r");
-                        return true;
-
-                    case 8:
-                        this.attack("abnormal_jump");
-                        return true;
-
-                    case 9:
-                        this.attack("combo_1");
-                        return true;
-
-                    case 10:
-                        this.attack("front_ground");
-                        return true;
-
-                    case 11:
-                        this.attack("kick");
-                        return true;
-
-                    case 12:
-                        this.attack("slap_back");
-                        return true;
-
-                    case 13:
-                        this.attack("slap_face");
-                        return true;
-
-                    case 14:
-                        this.attack("stomp");
-                        return true;
-
-                    case 15:
-                        this.attack("bite");
-                        return true;
-
-                    case 0x10:
-                        this.attack("bite_l");
-                        return true;
-
-                    case 0x11:
-                        this.attack("bite_r");
-                        return true;
-                }
-            }
-        }
-        return false;
-    }
-
+    
     private bool executeAttack2(string decidedAction)
     {
         string key = decidedAction;
@@ -2106,100 +1789,7 @@ public class TITAN : MONO
         transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y + 180f, transform.localRotation.eulerAngles.z);
     }
 
-    public void headMovement()
-    {
-        if (!this.hasDie)
-        {
-            if (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)
-            {
-                if (basePV.isMine)
-                {
-                    this.targetHeadRotation = this.head.rotation;
-                    bool flag = false;
-                    if (((((this.abnormalType != AbnormalType.TYPE_CRAWLER) && (this.state != TitanState.attack)) && ((this.state != TitanState.down) && (this.state != TitanState.hit))) && (((this.state != TitanState.recover) && (this.state != TitanState.eat)) && ((this.state != TitanState.hit_eye) && !this.hasDie))) && ((this.myDistance < 100f) && (this.myHero != null)))
-                    {
-                        Vector3 vector = this.myHeroT.position -baseT.position;
-                        this.angle = -Mathf.Atan2(vector.z, vector.x) * 57.29578f;
-                        float num = -Mathf.DeltaAngle(this.angle,baseT.rotation.eulerAngles.y - 90f);
-                        num = Mathf.Clamp(num, -40f, 40f);
-                        float y = (this.neck.position.y + (this.myLevel * 2f)) - this.myHeroT.position.y;
-                        float num3 = Mathf.Atan2(y, this.myDistance) * 57.29578f;
-                        num3 = Mathf.Clamp(num3, -40f, 30f);
-                        this.targetHeadRotation = Quaternion.Euler(this.head.rotation.eulerAngles.x + num3, this.head.rotation.eulerAngles.y + num, this.head.rotation.eulerAngles.z);
-                        if (!this.asClientLookTarget)
-                        {
-                            this.asClientLookTarget = true;
-                            object[] parameters = new object[] { true };
-                            basePV.RPC("setIfLookTarget", PhotonTargets.Others, parameters);
-                        }
-                        flag = true;
-                    }
-                    if (!flag && this.asClientLookTarget)
-                    {
-                        this.asClientLookTarget = false;
-                        object[] objArray2 = new object[] { false };
-                        basePV.RPC("setIfLookTarget", PhotonTargets.Others, objArray2);
-                    }
-                    if (((this.state == TitanState.attack) || (this.state == TitanState.hit)) || (this.state == TitanState.hit_eye))
-                    {
-                        this.oldHeadRotation = Quaternion.Lerp(this.oldHeadRotation, this.targetHeadRotation, Time.deltaTime * 20f);
-                    }
-                    else
-                    {
-                        this.oldHeadRotation = Quaternion.Lerp(this.oldHeadRotation, this.targetHeadRotation, Time.deltaTime * 10f);
-                    }
-                }
-                else
-                {
-                    this.targetHeadRotation = this.head.rotation;
-                    if (this.asClientLookTarget && (this.myHero != null))
-                    {
-                        Vector3 vector8 = this.myHeroT.position -baseT.position;
-                        this.angle = -Mathf.Atan2(vector8.z, vector8.x) * 57.29578f;
-                        float num4 = -Mathf.DeltaAngle(this.angle,baseT.rotation.eulerAngles.y - 90f);
-                        num4 = Mathf.Clamp(num4, -40f, 40f);
-                        float num5 = (this.neck.position.y + (this.myLevel * 2f)) - this.myHeroT.position.y;
-                        float num6 = Mathf.Atan2(num5, this.myDistance) * 57.29578f;
-                        num6 = Mathf.Clamp(num6, -40f, 30f);
-                        this.targetHeadRotation = Quaternion.Euler(this.head.rotation.eulerAngles.x + num6, this.head.rotation.eulerAngles.y + num4, this.head.rotation.eulerAngles.z);
-                    }
-                    if (!this.hasDie)
-                    {
-                        this.oldHeadRotation = Quaternion.Lerp(this.oldHeadRotation, this.targetHeadRotation, Time.deltaTime * 10f);
-                    }
-                }
-            }
-            else
-            {
-                this.targetHeadRotation = this.head.rotation;
-                if (((((this.abnormalType != AbnormalType.TYPE_CRAWLER) && (this.state != TitanState.attack)) && ((this.state != TitanState.down) && (this.state != TitanState.hit))) && (((this.state != TitanState.recover) && (this.state != TitanState.hit_eye)) && (!this.hasDie && (this.myDistance < 100f)))) && (this.myHero != null))
-                {
-                    Vector3 vector15 = this.myHeroT.position -baseT.position;
-                    this.angle = -Mathf.Atan2(vector15.z, vector15.x) * 57.29578f;
-                    float num7 = -Mathf.DeltaAngle(this.angle,baseT.rotation.eulerAngles.y - 90f);
-                    num7 = Mathf.Clamp(num7, -40f, 40f);
-                    float num8 = (this.neck.position.y + (this.myLevel * 2f)) - this.myHeroT.position.y;
-                    float num9 = Mathf.Atan2(num8, this.myDistance) * 57.29578f;
-                    num9 = Mathf.Clamp(num9, -40f, 30f);
-                    this.targetHeadRotation = Quaternion.Euler(this.head.rotation.eulerAngles.x + num9, this.head.rotation.eulerAngles.y + num7, this.head.rotation.eulerAngles.z);
-                }
-                if (((this.state == TitanState.attack) || (this.state == TitanState.hit)) || (this.state == TitanState.hit_eye))
-                {
-                    this.oldHeadRotation = Quaternion.Lerp(this.oldHeadRotation, this.targetHeadRotation, Time.deltaTime * 20f);
-                }
-                else
-                {
-                    this.oldHeadRotation = Quaternion.Lerp(this.oldHeadRotation, this.targetHeadRotation, Time.deltaTime * 10f);
-                }
-            }
-            this.head.rotation = this.oldHeadRotation;
-        }
-        if (!baseA.IsPlaying("die_headOff"))
-        {
-            this.head.localScale = this.headscale;
-        }
-    }
-
+  
     public void headMovement2()
     {
         if (!this.hasDie)
@@ -2830,57 +2420,6 @@ public class TITAN : MONO
         }
     }
 
-    private bool longRangeAttackCheck()
-    {
-        if ((this.abnormalType == AbnormalType.TYPE_PUNK) && ((this.myHero != null) && (this.myHero.rigidbody != null)))
-        {
-            Vector3 line = (Vector3) ((this.myHero.rigidbody.velocity * Time.deltaTime) * 30f);
-            if (line.sqrMagnitude > 10f)
-            {
-                if (this.simpleHitTestLineAndBall(line,baseT.Find("chkAeLeft").position - this.myHeroT.position, 5f * this.myLevel))
-                {
-                    this.attack("anti_AE_l");
-                    return true;
-                }
-                if (this.simpleHitTestLineAndBall(line,baseT.Find("chkAeLLeft").position - this.myHeroT.position, 5f * this.myLevel))
-                {
-                    this.attack("anti_AE_low_l");
-                    return true;
-                }
-                if (this.simpleHitTestLineAndBall(line,baseT.Find("chkAeRight").position - this.myHeroT.position, 5f * this.myLevel))
-                {
-                    this.attack("anti_AE_r");
-                    return true;
-                }
-                if (this.simpleHitTestLineAndBall(line,baseT.Find("chkAeLRight").position - this.myHeroT.position, 5f * this.myLevel))
-                {
-                    this.attack("anti_AE_low_r");
-                    return true;
-                }
-            }
-            Vector3 vector2 = this.myHeroT.position -baseT.position;
-            float current = -Mathf.Atan2(vector2.z, vector2.x) * 57.29578f;
-            float f = -Mathf.DeltaAngle(current, this.baseGT.rotation.eulerAngles.y - 90f);
-            if (this.rockInterval > 0f)
-            {
-                this.rockInterval -= Time.deltaTime;
-            }
-            else if (Mathf.Abs(f) < 5f)
-            {
-                Vector3 vector4 = this.myHeroT.position + line;
-                Vector3 vector5 = vector4 -baseT.position;
-                float sqrMagnitude = vector5.sqrMagnitude;
-                if ((sqrMagnitude > 8000f) && (sqrMagnitude < 90000f))
-                {
-                    this.attack("throw");
-                    this.rockInterval = 2f;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private bool longRangeAttackCheck2()
     {
         if (this.myHero == null || this.myHeroT == null || this.myHeroR == null)
@@ -2970,8 +2509,6 @@ public class TITAN : MONO
                 IN_GAME_MAIN_CAMERA.mainCamera.gameOver = true;
                 ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                 propertiesToSet.Add(PhotonPlayerProperty.dead, true);
-                PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-                propertiesToSet = new ExitGames.Client.Photon.Hashtable();
                 propertiesToSet.Add(PhotonPlayerProperty.deaths, ((int) PhotonNetwork.player.customProperties[PhotonPlayerProperty.deaths]) + 1);
                 PhotonNetwork.player.SetCustomProperties(propertiesToSet);
             }
@@ -3303,95 +2840,6 @@ public class TITAN : MONO
         this.setmyLevel();
     }
 
-    public void setAbnormalType(AbnormalType type,bool forceCrawler = false)
-    {
-        int num = 0;
-        float num2 = 0.02f * (IN_GAME_MAIN_CAMERA.difficulty + 1);
-        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
-        {
-            num2 = 100f;
-        }
-        if (type == AbnormalType.NORMAL)
-        {
-            if (UnityEngine.Random.Range((float) 0f, (float) 1f) < num2)
-            {
-                num = 4;
-            }
-            else
-            {
-                num = 0;
-            }
-        }
-        else if (type == AbnormalType.TYPE_I)
-        {
-            if (UnityEngine.Random.Range((float) 0f, (float) 1f) < num2)
-            {
-                num = 4;
-            }
-            else
-            {
-                num = 1;
-            }
-        }
-        else if (type == AbnormalType.TYPE_JUMPER)
-        {
-            if (UnityEngine.Random.Range((float) 0f, (float) 1f) < num2)
-            {
-                num = 4;
-            }
-            else
-            {
-                num = 2;
-            }
-        }
-        else if (type == AbnormalType.TYPE_CRAWLER)
-        {
-            num = 3;
-            if ((BRM.CacheGameObject.Find("Crawler") != null) && (UnityEngine.Random.Range(0, 0x3e8) > 5))
-            {
-                num = 2;
-            }
-        }
-        else if (type == AbnormalType.TYPE_PUNK)
-        {
-            num = 4;
-        }
-        if (forceCrawler)
-        {
-            num = 3;
-        }
-        if (num == 4)
-        {
-            if (!LevelInfo.getInfo(FengGameManagerMKII.level).punk)
-            {
-                num = 1;
-            }
-            else
-            {
-                if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) && (this.getPunkNumber() >= 3))
-                {
-                    num = 1;
-                }
-                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-                {
-                    int wave = FengGameManagerMKII.instance.wave;
-                    if (((wave != 5) && (wave != 10)) && ((wave != 15) && (wave != 20)))
-                    {
-                        num = 1;
-                    }
-                }
-            }
-        }
-        if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && basePV.isMine)
-        {
-            object[] parameters = new object[] { num };
-            basePV.RPC("netSetAbnormalType", PhotonTargets.AllBuffered, parameters);
-        }
-        else if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-        {
-            this.netSetAbnormalType(num);
-        }
-    }
 
     public void setAbnormalType2(AbnormalType type, bool forceCrawler)
     {
@@ -3518,86 +2966,7 @@ public class TITAN : MONO
         this.asClientLookTarget = bo;
     }
 
-    // TITAN
-    private void setLevel(float level, int AI, int skinColor)
-    {
-        this.myLevel = level;
-        this.myLevel = Mathf.Clamp(this.myLevel, 0.7f, 3f);
-        this.attackWait += UnityEngine.Random.Range(0f, 2f);
-        this.chaseDistance += this.myLevel * 10f;
-       baseT.localScale = new Vector3(this.myLevel, this.myLevel, this.myLevel);
-        float num = Mathf.Pow(2f / this.myLevel, 0.35f);
-        num = Mathf.Min(num, 1.25f);
-        this.headscale = new Vector3(num, num, num);
-        this.head =baseT.Find("Amarture/Core/Controller_Body/hip/spine/chest/neck/head");
-        this.head.localScale = this.headscale;
-        if (skinColor != 0)
-        {
-            this.mainMaterial.GetComponent<SkinnedMeshRenderer>().material.color = ((skinColor != 1) ? ((skinColor != 2) ? FengColor.titanSkin3 : FengColor.titanSkin2) : FengColor.titanSkin1);
-        }
-        float num2 = 1.4f - (this.myLevel - 0.7f) * 0.15f;
-        num2 = Mathf.Clamp(num2, 0.9f, 1.5f);
-        foreach (AnimationState animationState in baseA)
-        {
-            animationState.speed = num2;
-        }
-        base.rigidbody.mass *= this.myLevel;
-        base.rigidbody.rotation = Quaternion.Euler(0f, (float)UnityEngine.Random.Range(0, 360), 0f);
-        if (this.myLevel > 1f)
-        {
-            this.speed *= Mathf.Sqrt(this.myLevel);
-        }
-        this.myDifficulty = AI;
-        if (this.myDifficulty == 1 || this.myDifficulty == 2)
-        {
-            foreach (AnimationState animationState2 in baseA)
-            {
-                animationState2.speed = num2 * 1.05f;
-            }
-            if (this.nonAI)
-            {
-                this.speed *= 1.1f;
-            }
-            else
-            {
-                this.speed *= 1.4f;
-            }
-            this.chaseDistance *= 1.15f;
-        }
-        if (this.myDifficulty == 2)
-        {
-            foreach (AnimationState animationState3 in baseA)
-            {
-                animationState3.speed = num2 * 1.05f;
-            }
-            if (this.nonAI)
-            {
-                this.speed *= 1.1f;
-            }
-            else
-            {
-                this.speed *= 1.5f;
-            }
-            this.chaseDistance *= 1.3f;
-        }
-        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.ENDLESS_TITAN || IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-        {
-            this.chaseDistance = 999999f;
-        }
-        if (this.nonAI)
-        {
-            if (this.abnormalType == AbnormalType.TYPE_CRAWLER)
-            {
-                this.speed = Mathf.Min(70f, this.speed);
-            }
-            else
-            {
-                this.speed = Mathf.Min(60f, this.speed);
-            }
-        }
-        this.attackDistance = Vector3.Distance(base.transform.position,baseT.Find("ap_front_ground").position) * 1.65f;
-    }
-
+  
 
     // TITAN
     private void setLevel2(float level, int AI, int skinColor)

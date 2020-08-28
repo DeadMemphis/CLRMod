@@ -29,7 +29,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     public static Dictionary<int, string> leftList = new Dictionary<int, string>();
     protected internal bool loadingLevelAndPausedNetwork;
     internal static System.Collections.Generic.Dictionary<int, PhotonPlayer> mActors;
-    private static System.Collections.Generic.Queue<string> MonoRPCS;
     protected internal string mAppId;
     protected internal string mAppVersion;
     public Dictionary<string, RoomInfo> mGameList;
@@ -52,9 +51,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     protected internal static System.Collections.Generic.Dictionary<string, int> rpcShortcuts;
     private Dictionary<int, object[]> tempInstantiationData;
     public static bool UsePrefabCache = true;
-    internal static System.Collections.Generic.Dictionary<PhotonPlayer, int> banlist;
     public static List<string> ipAddr = new List<string>();
-    public static string LocalIP;
     internal static Yield yield;
 
     private static DateTime lastViewUpdate = DateTime.Now;
@@ -740,27 +737,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
     }
 
-    private void DisconnectToReconnect()
-    {
-        switch (this.server)
-        {
-            case ServerConnection.MasterServer:
-                this.states = PeerStates.DisconnectingFromMasterserver;
-                base.Disconnect();
-                return;
-
-            case ServerConnection.GameServer:
-                this.states = PeerStates.DisconnectingFromGameserver;
-                base.Disconnect();
-                return;
-
-            case ServerConnection.NameServer:
-                this.states = PeerStates.DisconnectingFromNameServer;
-                base.Disconnect();
-                return;
-        }
-    }
-
+   
     private void DisconnectToReconnect2()
     {
         this.checkLAN();
@@ -901,133 +878,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         return result;
     }
 
-    internal GameObject DoInstantiate(ExitGames.Client.Photon.Hashtable evData, PhotonPlayer photonPlayer, GameObject resourceGameObject)
-    {
-        Vector3 zero;
-        int[] numArray;
-        object[] objArray;
-        string key = (string) evData[(byte) 0];
-        int timestamp = (int) evData[(byte) 6];
-        int instantiationId = (int) evData[(byte) 7];
-        if (evData.ContainsKey((byte) 1))
-        {
-            zero = (Vector3) evData[(byte) 1];
-        }
-        else
-        {
-            zero = Vector3.zero;
-        }
-        Quaternion identity = Quaternion.identity;
-        if (evData.ContainsKey((byte) 2))
-        {
-            identity = (Quaternion) evData[(byte) 2];
-        }
-        int item = 0;
-        if (evData.ContainsKey((byte) 3))
-        {
-            item = (int) evData[(byte) 3];
-        }
-        short num4 = 0;
-        if (evData.ContainsKey((byte) 8))
-        {
-            num4 = (short) evData[(byte) 8];
-        }
-        if (evData.ContainsKey((byte) 4))
-        {
-            numArray = (int[]) evData[(byte) 4];
-        }
-        else
-        {
-            numArray = new int[] { instantiationId };
-        }
-        if (!InstantiateTracker.instance.checkObj(key, photonPlayer, numArray))
-        {
-            return null;
-        }
-        /*if (!NetworkingPeer.BlockSpam(photonPlayer, key))
-        {
-            return null;
-        }*/
-        if (evData.ContainsKey((byte) 5))
-        {
-            objArray = (object[]) evData[(byte) 5];
-        }
-        else
-        {
-            objArray = null;
-        }
-        if ((item != 0) && !this.allowedReceivingGroups.Contains(item))
-        {
-            return null;
-        }
-        if (resourceGameObject == null)
-        {
-            if (key.StartsWith("RCAsset/"))
-            {
-                resourceGameObject = CacheResources.RCLoad<GameObject>(key.Substring(8));
-            }
-            else if (!CacheResources.Load<GameObject>(key, out resourceGameObject))
-            {
-                Debug.LogError("PhotonNetwork error: Could not Instantiate the prefab [" + key + "]. Please verify you have this gameobject in a Resources folder.");
-                return null;
-            }
-            //if (!UsePrefabCache || !PrefabCache.TryGetValue(key, out resourceGameObject))
-            //{
-            //    resourceGameObject = (GameObject) BRM.CacheResources.Load(key, typeof(GameObject));
-            //    if (UsePrefabCache)
-            //    {
-            //        PrefabCache.Add(key, resourceGameObject);
-            //    }
-            //}
-            //if (resourceGameObject == null)
-            //{
-            //    Debug.LogError("PhotonNetwork error: Could not Instantiate the prefab [" + key + "]. Please verify you have this gameobject in a Resources folder.");
-            //    return null;
-            //}
-        }
-        PhotonView[] photonViewsInChildren = resourceGameObject.GetPhotonViewsInChildren();
-        if (photonViewsInChildren.Length != numArray.Length)
-        {
-            throw new Exception("Error in Instantiation! The resource's PhotonView count is not the same as in incoming data.");
-        }
-        for (int i = 0; i < numArray.Length; i++)
-        {
-            photonViewsInChildren[i].viewID = numArray[i];
-            photonViewsInChildren[i].prefix = num4;
-            photonViewsInChildren[i].instantiationId = instantiationId;
-        }
-        this.StoreInstantiationData(instantiationId, objArray);
-        GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(resourceGameObject, zero, identity);
-        for (int j = 0; j < numArray.Length; j++)
-        {
-            photonViewsInChildren[j].viewID = 0;
-            photonViewsInChildren[j].prefix = -1;
-            photonViewsInChildren[j].prefixBackup = -1;
-            photonViewsInChildren[j].instantiationId = -1;
-        }
-        this.RemoveInstantiationData(instantiationId);
-        if (this.instantiatedObjects.ContainsKey(instantiationId))
-        {
-            GameObject go = this.instantiatedObjects[instantiationId];
-            string str2 = string.Empty;
-            if (go != null)
-            {
-                foreach (PhotonView view in go.GetPhotonViewsInChildren())
-                {
-                    if (view != null)
-                    {
-                        str2 = str2 + view.ToString() + ", ";
-                    }
-                }
-            }
-            Debug.LogError(string.Format("DoInstantiate re-defines a GameObject. Destroying old entry! New: '{0}' (instantiationID: {1}) Old: {3}. PhotonViews on old: {4}. instantiatedObjects.Count: {2}. PhotonNetwork.lastUsedViewSubId: {5} PhotonNetwork.lastUsedViewSubIdStatic: {6} this.photonViewList.Count {7}.)", new object[] { obj2, instantiationId, this.instantiatedObjects.Count, go, str2, PhotonNetwork.lastUsedViewSubId, PhotonNetwork.lastUsedViewSubIdStatic, this.photonViewList.Count }));
-            this.RemoveInstantiatedGO(go, true);
-        }
-        this.instantiatedObjects.Add(instantiationId, obj2);
-        obj2.SendMessage(PhotonNetworkingMessage.OnPhotonInstantiate.ToString(), new PhotonMessageInfo(photonPlayer, timestamp, null), SendMessageOptions.DontRequireReceiver);
-        return obj2;
-    }
-
+   
     internal GameObject DoInstantiate2(ExitGames.Client.Photon.Hashtable evData, PhotonPlayer photonPlayer, GameObject resourceGameObject)
     {
         Vector3 zero;

@@ -26,7 +26,6 @@ public class Minimap : MonoBehaviour
     private bool maximized = false;
     private RectTransform minimap;
     private float MINIMAP_CORNER_SIZE;
-    private float MINIMAP_CORNER_SIZE_SCALED;
     private Vector2 MINIMAP_ICON_SIZE;
     private float MINIMAP_POINTER_DIST;
     private float MINIMAP_POINTER_SIZE;

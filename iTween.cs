@@ -47,7 +47,6 @@ public class iTween : MonoBehaviour
     private bool isLocal;
     public bool isPaused;
     public bool isRunning;
-    private bool kinematic;
     private float lastRealTime;
     private bool loop;
     public LoopType loopType;

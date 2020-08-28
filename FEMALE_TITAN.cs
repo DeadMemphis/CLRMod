@@ -40,12 +40,6 @@ public class FEMALE_TITAN : MONO
     private float desDeg;
     private float dieTime;
     private GameObject eren;
-    
-    private static Dictionary<string, int> f__switchsmap1;
-    
-    private static Dictionary<string, int> f__switchsmap2;
-    
-    private static Dictionary<string, int> f__switchsmap3;
     private string fxName;
     private Vector3 fxPosition;
     private Quaternion fxRotation;
@@ -58,7 +52,6 @@ public class FEMALE_TITAN : MONO
     public bool hasspawn;
     public GameObject healthLabel;
     public float healthTime;
-    private string hitAnimation;
     private bool isAttackMoveByCore;
     private bool isGrabHandLeft;
     public float lagMax;

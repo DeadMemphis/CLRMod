@@ -36,7 +36,6 @@ public class Bullet : Photon.MonoBehaviour
     public HERO MasterHero;
     public string myRefName;
     private Transform myRefT;
-    private bool DashHook;
 
     private void Awake()
     {
@@ -275,7 +274,6 @@ public class Bullet : Photon.MonoBehaviour
 
     public void launchDashNets(Vector3 v, Vector3 v2, GameObject hero, HERO victimHero)
     {
-        DashHook = true;
         this.master = hero;
         this.masterT = this.master.transform;
         this.masterR = this.master.rigidbody;

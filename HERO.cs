@@ -23,7 +23,6 @@ public class HERO : MONO
     public AudioSource audio_ally;
     public AudioSource audio_hitwall;
     private GameObject badGuy;
-    private bool bigLean;
     public float bombCD;
     public bool bombImmune;
     public float bombRadius;
@@ -144,7 +143,6 @@ public class HERO : MONO
     public GameObject speedFX;
     public GameObject speedFX1;
     private ParticleSystem speedFXPS;
-    private bool spinning;
     private string standAnimation = "stand";
     private Quaternion targetHeadRotation;
     private Quaternion targetRotation;
@@ -178,7 +176,6 @@ public class HERO : MONO
     public GameObject hookRefL2;
     public GameObject hookRefR1;
     public GameObject hookRefR2;
-    private GameObject targetHero;
     public SmoothSyncMovement sync;
     private GameObject cross1;
     private GameObject cross2;
@@ -276,7 +273,6 @@ public class HERO : MONO
         this.setup = baseG.GetComponent<HERO_SETUP>();
         baseR.freezeRotation = true;
         baseR.useGravity = false;
-        targetHero = null;
         this.handL = baseT.Find("Amarture/Controller_Body/hip/spine/chest/shoulder_L/upper_arm_L/forearm_L/hand_L");
         this.handR = baseT.Find("Amarture/Controller_Body/hip/spine/chest/shoulder_R/upper_arm_R/forearm_R/hand_R");
         this.forearmL = baseT.Find("Amarture/Controller_Body/hip/spine/chest/shoulder_L/upper_arm_L/forearm_L");
@@ -1107,60 +1103,7 @@ public class HERO : MONO
         }
     }
 
-    private void dodge(bool offTheWall = false)
-    {
-        if (((this.myHorse != null) && !this.isMounted) && (Vector3.Distance(this.myHorse.transform.position, baseT.position) < 15f))
-        {
-            this.getOnHorse();
-        }
-        else
-        {
-            this.state = HERO_STATE.GroundDodge;
-            if (!offTheWall)
-            {
-                float num;
-                float num2;
-                if (FengCustomInputs.Inputs.isInput[InputCode.up])
-                {
-                    num = 1f;
-                }
-                else if (FengCustomInputs.Inputs.isInput[InputCode.down])
-                {
-                    num = -1f;
-                }
-                else
-                {
-                    num = 0f;
-                }
-                if (FengCustomInputs.Inputs.isInput[InputCode.left])
-                {
-                    num2 = -1f;
-                }
-                else if (FengCustomInputs.Inputs.isInput[InputCode.right])
-                {
-                    num2 = 1f;
-                }
-                else
-                {
-                    num2 = 0f;
-                }
-                float num3 = this.getGlobalFacingDirection(num2, num);
-                if ((num2 != 0f) || (num != 0f))
-                {
-                    this.facingDirection = num3 + 180f;
-                    this.targetRotation = Quaternion.Euler(0f, this.facingDirection, 0f);
-                }
-                this.crossFade("dodge", 0.1f);
-            }
-            else
-            {
-                this.playAnimation("dodge");
-                this.playAnimationAt("dodge", 0.2f);
-            }
-            this.sparks.enableEmission = false;
-        }
-    }
-
+    
     private void dodge2(bool offTheWall = false)
     {
         if (((!FengGameManagerMKII.inputRC.isInputHorse(InputCodeRC.horseMount) || (this.myHorse == null)) || this.isMounted) || (Vector3.Distance(this.myHorse.transform.position, baseT.position) >= 15f))
@@ -1860,7 +1803,6 @@ public class HERO : MONO
                             this.crossFade("onWall", 0.3f);
                         }
                     }
-                    this.spinning = false;
                     if (flag3 && flag4)
                     {
                         float num14 = this.currentSpeed + 0.1f;
@@ -1883,7 +1825,6 @@ public class HERO : MONO
                         float num16 = 1f + num15;
                         Vector3 vector14 = Vector3.RotateTowards(vector13, baseR.velocity, 1.53938f * num16, 1.53938f * num16);
                         vector14.Normalize();
-                        this.spinning = true;
                         baseR.velocity = (Vector3)(vector14 * num14);
                     }
                     else if (flag3)
@@ -1908,7 +1849,6 @@ public class HERO : MONO
                         float num19 = 1f + num18;
                         Vector3 vector16 = Vector3.RotateTowards(vector15, baseR.velocity, 1.53938f * num19, 1.53938f * num19);
                         vector16.Normalize();
-                        this.spinning = true;
                         baseR.velocity = (Vector3)(vector16 * num17);
                     }
                     else if (flag4)
@@ -1933,7 +1873,6 @@ public class HERO : MONO
                         float num22 = 1f + num21;
                         Vector3 vector18 = Vector3.RotateTowards(vector17, baseR.velocity, 1.53938f * num22, 1.53938f * num22);
                         vector18.Normalize();
-                        this.spinning = true;
                         baseR.velocity = (Vector3)(vector18 * num20);
                     }
                     if (((this.state == HERO_STATE.Attack) && ((this.attackAnimation == "attack5") || (this.attackAnimation == "special_petra"))) && ((baseA[this.attackAnimation].normalizedTime > 0.4f) && !this.attackMove))
@@ -4116,8 +4055,6 @@ public class HERO : MONO
             PhotonNetwork.RemoveRPCs(basePV);
             ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
             propertiesToSet.Add(PhotonPlayerProperty.dead, true);
-            PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-            propertiesToSet = new ExitGames.Client.Photon.Hashtable();
             propertiesToSet.Add(PhotonPlayerProperty.deaths, RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.deaths]) + 1);
             PhotonNetwork.player.SetCustomProperties(propertiesToSet);
             object[] parameters = new object[] { !(titanName == string.Empty) ? 1 : 0 };
@@ -4196,8 +4133,6 @@ public class HERO : MONO
             PhotonNetwork.RemoveRPCs(basePV);
             ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
             propertiesToSet.Add(PhotonPlayerProperty.dead, true);
-            PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-            propertiesToSet = new ExitGames.Client.Photon.Hashtable();
             propertiesToSet.Add(PhotonPlayerProperty.deaths, ((int)PhotonNetwork.player.customProperties[PhotonPlayerProperty.deaths]) + 1);
             PhotonNetwork.player.SetCustomProperties(propertiesToSet);
             if (viewID != -1)
@@ -4343,8 +4278,6 @@ public class HERO : MONO
             PhotonNetwork.RemoveRPCs(basePV);
             ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
             propertiesToSet.Add(PhotonPlayerProperty.dead, true);
-            PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-            propertiesToSet = new ExitGames.Client.Photon.Hashtable();
             propertiesToSet.Add(PhotonPlayerProperty.deaths, RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.deaths]) + 1);
             PhotonNetwork.player.SetCustomProperties(propertiesToSet);
             object[] parameters = new object[] { !(titanName == string.Empty) ? 1 : 0 };
@@ -4868,19 +4801,7 @@ public class HERO : MONO
             }
         }
     }
-
-    public void setSkillHUDPosition()
-    {
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillId);
-        if (this.skillCD != null)
-        {
-            this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
-        }
-        if (this.useGun)
-        {
-            this.skillCD.transform.localPosition = (Vector3)(Vector3.up * 5000f);
-        }
-    }
+    
 
     public void setSkillHUDPosition2()
     {
@@ -4894,147 +4815,7 @@ public class HERO : MONO
             this.skillCD.transform.localPosition = (Vector3)(Vector3.up * 5000f);
         }
     }
-
-    public void setStat()
-    {
-        this.skillCDLast = 1.5f;
-        this.skillId = this.setup.myCostume.stat.skillId;
-        if (this.skillId == "levi")
-        {
-            this.skillCDLast = 3.5f;
-        }
-        this.customAnimationSpeed();
-        if (this.skillId == "armin")
-        {
-            this.skillCDLast = 5f;
-        }
-        if (this.skillId == "marco")
-        {
-            this.skillCDLast = 10f;
-        }
-        if (this.skillId == "jean")
-        {
-            this.skillCDLast = 0.001f;
-        }
-        if (this.skillId == "eren")
-        {
-            this.skillCDLast = 120f;
-            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
-            {
-                if ((LevelInfo.getInfo(FengGameManagerMKII.level).teamTitan || (LevelInfo.getInfo(FengGameManagerMKII.level).type == GAMEMODE.RACING)) || ((LevelInfo.getInfo(FengGameManagerMKII.level).type == GAMEMODE.PVP_CAPTURE) || (LevelInfo.getInfo(FengGameManagerMKII.level).type == GAMEMODE.TROST)))
-                {
-                    this.skillId = "petra";
-                    this.skillCDLast = 1f;
-                }
-                else
-                {
-                    int num = 0;
-                    foreach (PhotonPlayer player in PhotonNetwork.playerList)
-                    {
-                        if ((((int)player.customProperties[PhotonPlayerProperty.isTitan]) == 1) && (((string)player.customProperties[PhotonPlayerProperty.character]).ToUpper() == "EREN"))
-                        {
-                            num++;
-                        }
-                    }
-                    if (num > 1)
-                    {
-                        this.skillId = "petra";
-                        this.skillCDLast = 1f;
-                    }
-                }
-            }
-        }
-        if (this.skillId == "sasha")
-        {
-            this.skillCDLast = 20f;
-        }
-        if (this.skillId == "petra")
-        {
-            this.skillCDLast = 3.5f;
-        }
-        this.skillCDDuration = this.skillCDLast;
-        this.speed = ((float)this.setup.myCostume.stat.SPD) / 10f;
-        this.totalGas = this.currentGas = this.setup.myCostume.stat.GAS;
-        this.totalBladeSta = this.currentBladeSta = this.setup.myCostume.stat.BLA;
-        baseR.mass = 0.5f - ((this.setup.myCostume.stat.ACL - 100) * 0.001f);
-        BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition = new Vector3(0f, (-Screen.height * 0.5f) + 5f, 0f);
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillId);
-        this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
-        BRM.CacheGameObject.Find("GasUI").transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
-        if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
-        {
-            BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = false;
-        }
-        if (this.setup.myCostume.uniform_type == UNIFORM_TYPE.CasualAHSS)
-        {
-            this.standAnimation = "AHSS_stand_gun";
-            this.useGun = true;
-            this.gunDummy = new GameObject();
-            this.gunDummy.name = "gunDummy";
-            this.gunDummy.transform.position = baseT.position;
-            this.gunDummy.transform.rotation = baseT.rotation;
-            this.myGroup = GROUP.A;
-            this.setTeam(2);
-            if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
-            {
-                BRM.CacheGameObject.Find<UISprite>("bladeCL").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladeCR").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = true;
-                this.skillCD.transform.localPosition = (Vector3)(Vector3.up * 5000f);
-            }
-        }
-        else if (this.setup.myCostume.sex == SEX.FEMALE)
-        {
-            this.standAnimation = "stand";
-            this.setTeam(1);
-        }
-        else
-        {
-            this.standAnimation = "stand_levi";
-            this.setTeam(1);
-        }
-    }
-
+    
     public void setStat2()
     {
         this.skillCDLast = 1.5f;
@@ -5178,18 +4959,7 @@ public class HERO : MONO
         }
     }
 
-    public void setTeam(int team)
-    {
-        this.setMyTeam(team);
-        if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && basePV.isMine)
-        {
-            object[] parameters = new object[] { team };
-            basePV.RPC("setMyTeam", PhotonTargets.OthersBuffered, parameters);
-            ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
-            propertiesToSet.Add(PhotonPlayerProperty.team, team);
-            PhotonNetwork.player.SetCustomProperties(propertiesToSet);
-        }
-    }
+ 
 
     public void setTeam2(int team)
     {
@@ -5239,120 +5009,7 @@ public class HERO : MONO
             }
         }
     }
-
-    private void showAimUI()
-    {
-        Vector3 vector;
-        if (Screen.showCursor)
-        {
-            //GameObject obj2 = BRM.CacheGameObject.Find("cross1");
-            //GameObject obj3 = BRM.CacheGameObject.Find("cross2");
-            //GameObject obj4 = BRM.CacheGameObject.Find("crossL1");
-            //GameObject obj5 = BRM.CacheGameObject.Find("crossL2");
-            //GameObject obj6 = BRM.CacheGameObject.Find("crossR1");
-            //GameObject obj7 = BRM.CacheGameObject.Find("crossR2");
-            //GameObject obj8 = BRM.CacheGameObject.Find("LabelDistance");
-            vector = (Vector3)(Vector3.up * 10000f);
-            crossT2.localPosition = vector;
-            crossT1.localPosition = vector;
-            crossR2T.localPosition = vector;
-            crossR1T.localPosition = vector;
-            crossL2T.localPosition = vector;
-            crossL1T.localPosition = vector;
-            labelT.localPosition = vector;
-        }
-        else
-        {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            LayerMask mask = ((int)1) << LayerMask.NameToLayer("Ground");
-            LayerMask mask2 = ((int)1) << LayerMask.NameToLayer("EnemyBox");
-            LayerMask mask3 = mask2 | mask;
-            if (Physics.Raycast(ray, out hit, 1E+07f, mask3.value))
-            {
-                RaycastHit hit2;
-                //GameObject obj9 = BRM.CacheGameObject.Find("cross1");
-                GameObject obj10 = BRM.CacheGameObject.Find("cross2");
-                crossT1.localPosition = Input.mousePosition;
-                //Transform transform = obj9.transform;
-                crossT1.localPosition -= new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
-                crossT2.localPosition = crossT1.localPosition;
-                vector = hit.point - baseT.position;
-                float magnitude = vector.magnitude;
-                //GameObject obj11 = BRM.CacheGameObject.Find("LabelDistance");
-                string str = (magnitude <= 1000f) ? ((int)magnitude).ToString() : "???";
-                LabelDistance.text = str;
-                if (magnitude > 120f)
-                {
-                    //Transform transform2 = obj9.transform;
-                    crossT1.localPosition += (Vector3)(Vector3.up * 10000f);
-                    labelT.localPosition = crossT2.localPosition;
-                }
-                else
-                {
-                    //Transform transform3 = obj10.transform;
-                    crossT2.localPosition += (Vector3)(Vector3.up * 10000f);
-                    labelT.localPosition = crossT1.localPosition;
-                }
-                //Transform transform4 = labelT;
-                labelT.localPosition -= new Vector3(0f, 15f, 0f);
-                Vector3 vector2 = new Vector3(0f, 0.4f, 0f);
-                vector2 -= (Vector3)(baseT.right * 0.3f);
-                Vector3 vector3 = new Vector3(0f, 0.4f, 0f);
-                vector3 += (Vector3)(baseT.right * 0.3f);
-                float num3 = (hit.distance <= 50f) ? (hit.distance * 0.05f) : (hit.distance * 0.3f);
-                Vector3 vector4 = (hit.point - ((Vector3)(baseT.right * num3))) - (baseT.position + vector2);
-                Vector3 vector5 = (hit.point + ((Vector3)(baseT.right * num3))) - (baseT.position + vector3);
-                vector4.Normalize();
-                vector5.Normalize();
-                vector4 = (Vector3)(vector4 * 1000000f);
-                vector5 = (Vector3)(vector5 * 1000000f);
-                if (Physics.Linecast(baseT.position + vector2, (baseT.position + vector2) + vector4, out hit2, mask3.value))
-                {
-                    //GameObject obj12 = BRM.CacheGameObject.Find("crossL1");
-                    crossL1T.localPosition = Camera.main.WorldToScreenPoint(hit2.point);
-                    //Transform transform5 = obj12.transform;
-                    crossL1T.localPosition -= new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
-                    crossL1T.localRotation = Quaternion.Euler(0f, 0f, (Mathf.Atan2(crossL1T.localPosition.y - (Input.mousePosition.y - (Screen.height * 0.5f)), crossL1T.localPosition.x - (Input.mousePosition.x - (Screen.width * 0.5f))) * 57.29578f) + 180f);
-                    //GameObject obj13 = BRM.CacheGameObject.Find("crossL2");
-                    crossL2T.localPosition = crossL1T.localPosition;
-                    crossL2T.localRotation = crossL1T.transform.localRotation;
-                    if (hit2.distance > 120f)
-                    {
-                        //Transform transform6 = obj12.transform;
-                        crossL1T.localPosition += (Vector3)(Vector3.up * 10000f);
-                    }
-                    else
-                    {
-                        //Transform transform7 = obj13.transform;
-                        crossL2T.localPosition += (Vector3)(Vector3.up * 10000f);
-                    }
-                }
-                if (Physics.Linecast(baseT.position + vector3, (baseT.position + vector3) + vector5, out hit2, mask3.value))
-                {
-                    GameObject obj14 = BRM.CacheGameObject.Find("crossR1");
-                    obj14.transform.localPosition = Camera.main.WorldToScreenPoint(hit2.point);
-                    Transform transform8 = obj14.transform;
-                    transform8.localPosition -= new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
-                    obj14.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(obj14.transform.localPosition.y - (Input.mousePosition.y - (Screen.height * 0.5f)), obj14.transform.localPosition.x - (Input.mousePosition.x - (Screen.width * 0.5f))) * 57.29578f);
-                    GameObject obj15 = BRM.CacheGameObject.Find("crossR2");
-                    obj15.transform.localPosition = obj14.transform.localPosition;
-                    obj15.transform.localRotation = obj14.transform.localRotation;
-                    if (hit2.distance > 120f)
-                    {
-                        Transform transform9 = obj14.transform;
-                        transform9.localPosition += (Vector3)(Vector3.up * 10000f);
-                    }
-                    else
-                    {
-                        Transform transform10 = obj15.transform;
-                        transform10.localPosition += (Vector3)(Vector3.up * 10000f);
-                    }
-                }
-            }
-        }
-    }
-
+    
     private void showAimUI2()
     {
         Vector3 vector;
@@ -5474,16 +5131,7 @@ public class HERO : MONO
             }
         }
     }
-
-    private void showFlareCD()
-    {
-        if (this.flare1 != null && this.flare2 != null && this.flare3 != null)
-        {
-            this.flare1.fillAmount = (this.flareTotalCD - this.flare1CD) / this.flareTotalCD;
-            this.flare2.fillAmount = (this.flareTotalCD - this.flare2CD) / this.flareTotalCD;
-            this.flare3.fillAmount = (this.flareTotalCD - this.flare3CD) / this.flareTotalCD;
-        }
-    }
+    
 
     private void showFlareCD2()
     {
@@ -5494,119 +5142,7 @@ public class HERO : MONO
             this.cachedSprites["UIflare3"].fillAmount = (this.flareTotalCD - this.flare3CD) / this.flareTotalCD;
         }
     }
-
-    private void showGas()
-    {
-        float num = this.currentGas / this.totalGas;
-        float num2 = this.currentBladeSta / this.totalBladeSta;
-        BRM.CacheGameObject.Find("gasL1").GetComponent<UISprite>().fillAmount = this.currentGas / this.totalGas;
-        BRM.CacheGameObject.Find("gasR1").GetComponent<UISprite>().fillAmount = this.currentGas / this.totalGas;
-        if (!this.useGun)
-        {
-            BRM.CacheGameObject.Find("bladeCL").GetComponent<UISprite>().fillAmount = this.currentBladeSta / this.totalBladeSta;
-            BRM.CacheGameObject.Find("bladeCR").GetComponent<UISprite>().fillAmount = this.currentBladeSta / this.totalBladeSta;
-            if (num <= 0f)
-            {
-                BRM.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.red;
-                BRM.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.red;
-            }
-            else if (num < 0.3f)
-            {
-                BRM.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.yellow;
-                BRM.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.yellow;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.white;
-                BRM.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.white;
-            }
-            if (num2 <= 0f)
-            {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.red;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.red;
-            }
-            else if (num2 < 0.3f)
-            {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.yellow;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.yellow;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.white;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.white;
-            }
-            if (this.currentBladeNum <= 4)
-            {
-                BRM.CacheGameObject.Find("bladel5").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader5").GetComponent<UISprite>().enabled = false;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bladel5").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader5").GetComponent<UISprite>().enabled = true;
-            }
-            if (this.currentBladeNum <= 3)
-            {
-                BRM.CacheGameObject.Find("bladel4").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader4").GetComponent<UISprite>().enabled = false;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bladel4").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader4").GetComponent<UISprite>().enabled = true;
-            }
-            if (this.currentBladeNum <= 2)
-            {
-                BRM.CacheGameObject.Find("bladel3").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader3").GetComponent<UISprite>().enabled = false;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bladel3").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader3").GetComponent<UISprite>().enabled = true;
-            }
-            if (this.currentBladeNum <= 1)
-            {
-                BRM.CacheGameObject.Find("bladel2").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader2").GetComponent<UISprite>().enabled = false;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bladel2").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader2").GetComponent<UISprite>().enabled = true;
-            }
-            if (this.currentBladeNum <= 0)
-            {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().enabled = false;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().enabled = true;
-            }
-        }
-        else
-        {
-            if (this.leftGunHasBullet)
-            {
-                BRM.CacheGameObject.Find("bulletL").GetComponent<UISprite>().enabled = true;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bulletL").GetComponent<UISprite>().enabled = false;
-            }
-            if (this.rightGunHasBullet)
-            {
-                BRM.CacheGameObject.Find("bulletR").GetComponent<UISprite>().enabled = true;
-            }
-            else
-            {
-                BRM.CacheGameObject.Find("bulletR").GetComponent<UISprite>().enabled = false;
-            }
-        }
-    }
-
+    
     private void showGas2()
     {
         float num = this.currentGas / this.totalGas;
@@ -5967,10 +5503,7 @@ public class HERO : MONO
         yield return new WaitForSeconds(5f);
         this.bombImmune = false;
     }
-
-    private void suicide()
-    {
-    }
+    
 
     private void suicide2()
     {
@@ -6511,7 +6044,7 @@ public class HERO : MONO
                                         //LayerMask mask9 = mask8 | mask7;
                                         if (Physics.Raycast(ray3, out hit3, 1E+07f, Layer.GroundEnemy.value))
                                         {
-                                            this.gunTarget = hit3.point;
+                                            gunTarget = hit3.point;
                                         }
                                     }
                                     bool flag4 = false;
@@ -7231,9 +6764,9 @@ public class HERO : MONO
         amount *= 2;
         if (this.currentBladeSta > 0f)
         {
+            this.currentBladeSta -= amount;
             if (this.currentBladeSta <= 0f)
             {
-                this.currentBladeSta -= amount;
                 if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
                 {
                     this.leftbladetrail.Deactivate();

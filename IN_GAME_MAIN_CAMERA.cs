@@ -28,9 +28,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
     public bool gameOver;
     public static GAMETYPE gametype = GAMETYPE.STOP;
     private bool hasSnapShot;
-
-    private float height = 5f;
-    private float heightDamping = 2f;
+    
     public float heightMulti;
     public static int invertY = 1;
     public static bool isCheating;
@@ -72,15 +70,10 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
     public bool spectatorMode;
     private bool startSnapShotFrameCount;
     public static STEREO_3D_TYPE stereoType;
-    private Transform target;
-    public Texture texture;
     public float timer;
     public static bool triggerAutoLock;
     public static bool usingTitan;
     private Vector3 verticalHeightOffset = Vector3.zero;
-    private float verticalRotationOffset;
-    private float xSpeed = -3f;
-    private float ySpeed = -0.8f;
 
 
 
@@ -1001,17 +994,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         }
     }
 
-    public void startSnapShot(Vector3 p, int dmg, GameObject target, float startTime = 0.02f)
-    {
-        this.snapShotCount = 1;
-        this.startSnapShotFrameCount = true;
-        this.snapShotTargetPosition = p;
-        this.snapShotTarget = target;
-        this.snapShotStartCountDownTime = startTime;
-        this.snapShotInterval = 0.05f + UnityEngine.Random.Range(0f, 0.03f);
-        this.snapShotDmg = dmg;
-    }
-
+  
     public void startSnapShot2(Vector3 p, int dmg, GameObject target, float startTime)
     {
         int num;
@@ -1199,7 +1182,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                             Screen.lockCursor = false;
                             break;
                     }
-                    this.verticalRotationOffset = 0f;
                     if ((((int)FengGameManagerMKII.settings[0xf5]) == 1) || (main_object.GetComponent<HERO>() == null))
                     {
                         Screen.showCursor = false;

@@ -31,7 +31,6 @@ public class UICamera : MonoBehaviour
     private static List<Highlighted> mHighlighted = new List<Highlighted>();
     private static GameObject mHover;
     private bool mIsEditor;
-    private LayerMask mLayerMask;
     private static List<UICamera> mList = new List<UICamera>();
     private static MouseOrTouch[] mMouse = new MouseOrTouch[] { new MouseOrTouch(), new MouseOrTouch(), new MouseOrTouch() };
     private static float mNextEvent = 0f;

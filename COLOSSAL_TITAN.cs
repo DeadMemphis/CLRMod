@@ -41,7 +41,6 @@ public class COLOSSAL_TITAN : MONO
     public float size;
     private string state = "idle";
     public GameObject sweepSmokeObject;
-    private float tauntTime;
     private float waitTime = 2f;
 
     private COLOSSAL_TITAN() : base(SPECIES.ColossalTitan)
