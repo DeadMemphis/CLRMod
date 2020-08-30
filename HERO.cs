@@ -219,6 +219,8 @@ public class HERO : MONO
     //};
 
 
+    private bool netPauseStopped;
+
     private HERO() : base(SPECIES.Hero)
     {
     }
@@ -955,21 +957,25 @@ public class HERO : MONO
 
     public void continueAnimation()
     {
-        foreach (AnimationState animationState in baseA)
+        if (!this.netPauseStopped) return;
+        this.netPauseStopped = false;
+        foreach (object obj in this.baseA)
         {
-            if (animationState.speed == 1f)
+            AnimationState current = (AnimationState)obj;
+            if (current.speed == 1f)
             {
                 return;
             }
-            animationState.speed = 1f;
+            current.speed = 1f;
         }
         this.customAnimationSpeed();
         this.playAnimation(this.currentPlayingClipName());
-        if (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE && basePV.isMine)
+        if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && this.basePV.isMine)
         {
-            basePV.RPC("netContinueAnimation", PhotonTargets.Others, new object[0]);
+            this.basePV.RPC("netContinueAnimation", PhotonTargets.Others, new object[0]);
         }
     }
+    
 
 
     public void crossFade(string aniName, float time)
@@ -4496,14 +4502,16 @@ public class HERO : MONO
 
     public void pauseAnimation()
     {
-        foreach (AnimationState animationState in baseA)
+        if (this.netPauseStopped) return;
+        foreach (object obj in this.baseA)
         {
-            animationState.speed = 0f;
+            ((AnimationState)obj).speed = 0f;
         }
-        if (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE && basePV.isMine)
+        if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && this.basePV.isMine)
         {
-            basePV.RPC("netPauseAnimation", PhotonTargets.Others, new object[0]);
+            this.basePV.RPC("netPauseAnimation", PhotonTargets.Others, new object[0]);
         }
+        this.netPauseStopped = true;
     }
 
 
