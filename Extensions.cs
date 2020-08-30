@@ -48,6 +48,10 @@ public static class Extensions
     {
         return (Mathf.Abs((float) (target - second)) < floatDiff);
     }
+    public static float Angleof(this Vector3 first, Vector3 second)
+    {
+        return Mathf.Abs(Mathf.Acos(Vector3.Dot(first.normalized, second.normalized)) * 57.29578f);
+    }
 
     public static bool AlmostEquals(this Quaternion target, Quaternion second, float maxAngle)
     {

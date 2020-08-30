@@ -175,7 +175,7 @@ public class TITAN : MONO
         }
     }
 
-        
+
 
 
     public TITAN() : base(SPECIES.Titan)
@@ -4952,6 +4952,654 @@ public class TITAN : MONO
     //    }
     //}
 
+    private bool IsNearingGround(Vector3 hero, float scale)
+    {
+        return Physics.Raycast(hero + Vector3.up * 0.1f, -Vector3.up, Mathf.Abs(scale), Layer.GroundEnemyAABB.value);
+    }
+
+    private void RockThrowAim1(Vector3 angularDistance, HERO myhero, float scale, float num4, float num5, float num6, float dis, ref Vector3 launch)
+    {
+        if (myhero == null)
+        {
+            return;
+        }
+        Transform transform = myhero.transform;
+        Rigidbody rigidbody = myhero.rigidbody;
+        if (myhero.isHooked)
+        {
+            Vector3 vector = rigidbody.velocity;
+            if (myhero.isGassing)
+            {
+                Animation animation = this.myHero.animation;
+                if (!animation.IsPlaying("attack5") && !animation.IsPlaying("special_petra") && !animation.IsPlaying("dash") && !animation.IsPlaying("jump") && !animation.IsPlaying("air_release") && !animation.IsPlaying("dodge"))
+                {
+                    float num7 = new Vector3(vector.x, 0f, vector.z).Angleof(new Vector3(transform.forward.x, 0f, transform.forward.z));
+                    if (num7 >= 50f)
+                    {
+                        float num8 = myhero.isLocal ? 1.58f : (0.0004f * Mathf.Abs((this.rockT.localPosition - transform.localPosition).magnitude));
+                        vector += transform.forward * ((float)myhero.setup.myCostume.stat.ACL / 10f * num8);
+                    }
+                    else if (num7 >= 15f)
+                    {
+                        float num9 = myhero.isLocal ? 1.45f : (0.0004f * Mathf.Abs((this.rockT.localPosition - transform.localPosition).magnitude));
+                        vector += transform.forward * ((float)myhero.setup.myCostume.stat.ACL / 10f * num9);
+                    }
+                    else if (myhero.isLocal)
+                    {
+                        vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1f);
+                    }
+                    else
+                    {
+                        vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1.1f);
+                    }
+                }
+            }
+            Vector3 vector2 = transform.position + vector;
+            Vector3 vector3 = myhero.currentHook.transform.position - this.rockT.position;
+            bool flag = myhero.hook["right"] != null && myhero.hook["right"].phase != 2 && myhero.hook["right"].phase != 4;
+            bool flag2 = myhero.hook["left"] != null && myhero.hook["left"].phase != 2 && myhero.hook["left"].phase != 4;
+            if (myhero.hook["left"] != null && myhero.hook["left"].isHooked() && myhero.hook["right"] != null && myhero.hook["right"].isHooked())
+            {
+                Transform transform2 = myhero.hook["left"].transform;
+                Transform transform3 = myhero.hook["right"].transform;
+                Vector3 vector4 = transform2.position - vector2;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag)
+                {
+                    vector4 *= 2f;
+                }
+                vector2 += vector4;
+                vector4 = transform3.position - vector2;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag2)
+                {
+                    vector4 *= 2f;
+                }
+                vector2 += vector4;
+                num5 = vector2.y + 2f * this.myLevel;
+                num6 = num5 - this.rockT.position.y;
+                dis = Vector3.Distance(vector2, this.rockT.position);
+                angularDistance = vector2;
+                vector4 = transform2.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag)
+                {
+                    vector4 *= 2f;
+                }
+                vector += vector4;
+                angularDistance += vector4;
+                vector4 = transform3.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag2)
+                {
+                    vector4 *= 2f;
+                }
+                vector += vector4;
+                angularDistance += vector4;
+                angularDistance -= this.rockT.forward * (num6 + (dis + 5f - num6)) + vector;
+                vector3 = (transform2.position - this.rockT.position) * 0.5f;
+                vector3 += (transform3.position - this.rockT.position) * 0.5f;
+            }
+            else if (myhero.hook["left"] != null && myhero.hook["left"].isHooked())
+            {
+                Transform transform4 = myhero.hook["left"].transform;
+                Vector3 vector5 = transform4.position - vector2;
+                vector5.Normalize();
+                vector5 *= 10f;
+                if (!flag)
+                {
+                    vector5 *= 2f;
+                }
+                vector2 += vector5;
+                num5 = vector2.y + 2f * this.myLevel;
+                num6 = num5 - this.rockT.position.y;
+                dis = Vector3.Distance(vector2, this.rockT.position);
+                angularDistance = vector2;
+                vector5 = transform4.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector5.Normalize();
+                vector5 *= 10f;
+                if (!flag)
+                {
+                    vector5 *= 2f;
+                }
+                vector += vector5;
+                angularDistance += vector5;
+                angularDistance -= this.rockT.forward * (num6 + (dis + 5f - num6)) + vector;
+                vector3 = transform4.position - this.rockT.position;
+            }
+            else if (myhero.hook["right"] != null && myhero.hook["right"].isHooked())
+            {
+                Transform transform5 = myhero.hook["right"].transform;
+                Vector3 vector6 = transform5.position - vector2;
+                vector6.Normalize();
+                vector6 *= 10f;
+                if (!flag2)
+                {
+                    vector6 *= 2f;
+                }
+                vector2 += vector6;
+                num5 = vector2.y + 2f * this.myLevel;
+                num6 = num5 - this.rockT.position.y;
+                dis = Vector3.Distance(vector2, this.rockT.position);
+                angularDistance = vector2;
+                vector6 = transform5.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector6.Normalize();
+                vector6 *= 10f;
+                if (!flag2)
+                {
+                    vector6 *= 2f;
+                }
+                vector += vector6;
+                angularDistance += vector6;
+                angularDistance -= this.rockT.forward * (num6 + (dis + 5f - num6)) + vector;
+                vector3 = transform5.position - this.rockT.position;
+            }
+            launch = vector2 - this.rockT.position;
+            launch += angularDistance.normalized + vector2.normalized + vector3.normalized + vector.normalized;
+            launch += vector3;
+            launch += Vector3.up * scale;
+            if (vector2.y > this.baseT.position.y && this.IsNearingGround(vector2, scale))
+            {
+                launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z) + Vector3.down * scale;
+                return;
+            }
+            if (vector2.y < 25f || this.IsNearingGround(vector2, scale))
+            {
+                launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z) + Vector3.down * scale;
+                return;
+            }
+        }
+        else
+        {
+            Vector3 vector7 = rigidbody.velocity;
+            if (myhero.isGassing)
+            {
+                Animation animation2 = this.myHero.animation;
+                if (!animation2.IsPlaying("attack5") && !animation2.IsPlaying("special_petra") && !animation2.IsPlaying("dash") && !animation2.IsPlaying("jump") && !animation2.IsPlaying("air_release") && !animation2.IsPlaying("dodge"))
+                {
+                    float num10 = new Vector3(vector7.x, 0f, vector7.z).Angleof(new Vector3(transform.forward.x, 0f, transform.forward.z));
+                    if (num10 >= 50f)
+                    {
+                        float num11 = myhero.isLocal ? 1.58f : (0.0004f * Mathf.Abs((this.rockT.localPosition - transform.localPosition).magnitude));
+                        vector7 += transform.forward * ((float)myhero.setup.myCostume.stat.ACL / 10f * num11);
+                    }
+                    else if (num10 >= 15f)
+                    {
+                        float num12 = myhero.isLocal ? 1.45f : (0.0004f * Mathf.Abs((this.rockT.localPosition - transform.localPosition).magnitude));
+                        vector7 += transform.forward * ((float)myhero.setup.myCostume.stat.ACL / 10f * num12);
+                    }
+                    else if (myhero.isLocal)
+                    {
+                        vector7 += vector7.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1f);
+                    }
+                    else
+                    {
+                        vector7 += vector7.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1.1f);
+                    }
+                }
+            }
+            launch = transform.position - this.rockT.position + vector7;
+            launch += angularDistance.normalized + vector7.normalized;
+            launch += Vector3.up * scale;
+            Vector3 hero = transform.position + vector7;
+            if (hero.y > this.baseT.position.y && this.IsNearingGround(hero, scale))
+            {
+                launch = transform.position - this.rockT.position + vector7;
+                launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z);
+                return;
+            }
+            if (hero.y < 25f || this.IsNearingGround(hero, scale))
+            {
+                launch = transform.position - this.rockT.position + vector7;
+                launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z);
+            }
+        }
+    }
+
+    private void RockThrowAim4(Vector3 angularDistance, HERO myhero, float scale, float num4, float num6, out Vector3 launch)
+    {
+        if (myhero == null)
+        {
+            launch = Vector3.zero;
+            return;
+        }
+        Transform transform = myhero.transform;
+        Vector3 vector = myhero.rigidbody.velocity;
+        if (myhero.isGassing)
+        {
+            Animation animation = this.myHero.animation;
+            if (!animation.IsPlaying("attack5") && !animation.IsPlaying("special_petra") && !animation.IsPlaying("dash") && !animation.IsPlaying("jump") && !animation.IsPlaying("air_release") && !animation.IsPlaying("dodge"))
+            {
+                float num7 = new Vector3(vector.x, 0f, vector.z).Angleof(new Vector3(transform.forward.x, 0f, transform.forward.z));
+                if (num7 >= 15f)
+                {
+                    float num8 = myhero.isLocal ? 1.5f : 1.55f;
+                    vector += transform.forward * ((float)myhero.setup.myCostume.stat.ACL / 10f * num8);
+                }
+                else if (myhero.isLocal)
+                {
+                    vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1f);
+                }
+                else
+                {
+                    vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1.1f);
+                }
+            }
+        }
+        launch = transform.position - this.rockT.position + vector;
+        launch += angularDistance.normalized + vector.normalized;
+        launch += Vector3.up * scale;
+        Vector3 hero = transform.position + vector;
+        if (hero.y > this.baseT.position.y && this.IsNearingGround(hero, scale))
+        {
+            launch = transform.position - this.rockT.position + vector;
+            launch += angularDistance.normalized + vector.normalized;
+            launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z);
+        }
+        else if (hero.y < 25f || this.IsNearingGround(hero, scale))
+        {
+            launch = transform.position - this.rockT.position + vector;
+            launch += angularDistance.normalized + vector.normalized;
+            launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z);
+        }
+        RaycastHit raycastHit;
+        if (Physics.Raycast(this.rockT.position, launch, out raycastHit, launch.magnitude, Layer.Ground.value))
+        {
+            launch += Vector3.up * (launch - (raycastHit.point - this.rockT.position + Vector3.up * scale)).y;
+            launch += Vector3.up * scale * 2f;
+        }
+    }
+
+    private void RockThrowAim2(Vector3 angularDistance, HERO myhero, float scale, float num4, float num6, out Vector3 launch)
+    {
+        if (myhero == null)
+        {
+            launch = Vector3.zero;
+            return;
+        }
+        Transform transform = myhero.transform;
+        Vector3 vector = myhero.rigidbody.velocity;
+        if (myhero.isGassing)
+        {
+            Animation animation = this.myHero.animation;
+            if (!animation.IsPlaying("attack5") && !animation.IsPlaying("special_petra") && !animation.IsPlaying("dash") && !animation.IsPlaying("jump") && !animation.IsPlaying("air_release") && !animation.IsPlaying("dodge"))
+            {
+                float num7 = new Vector3(vector.x, 0f, vector.z).Angleof(new Vector3(transform.forward.x, 0f, transform.forward.z));
+                if (num7 >= 15f)
+                {
+                    float num8 = myhero.isLocal ? 1.55f : 1.6f;
+                    vector += transform.forward * ((float)myhero.setup.myCostume.stat.ACL / 10f * num8);
+                }
+                else if (myhero.isLocal)
+                {
+                    vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1f);
+                }
+                else
+                {
+                    vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1.1f);
+                }
+            }
+        }
+        launch = transform.position - this.rockT.position + vector;
+        launch += angularDistance.normalized + vector.normalized;
+        launch += Vector3.up * scale;
+        if ((transform.position + vector).y > this.baseT.position.y && this.IsNearingGround(transform.position + vector, scale))
+        {
+            launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z);
+            launch += Vector3.down * scale;
+        }
+        else if ((transform.position + vector).y < 25f || this.IsNearingGround(transform.position + vector, scale))
+        {
+            launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z);
+            launch += Vector3.down * scale;
+        }
+        RaycastHit raycastHit;
+        if (Physics.Raycast(this.rockT.position, launch, out raycastHit, launch.magnitude, Layer.Ground.value))
+        {
+            launch += Vector3.up * (launch - (raycastHit.point - this.rockT.position + Vector3.up * scale)).y;
+            launch += Vector3.up * scale * 2f;
+        }
+    }
+
+    private void RockThrowAim3(Vector3 angularDistance, HERO myhero, float scale, float num4, float num5, float num6, float dis, ref Vector3 launch)
+    {
+        if (myhero == null)
+        {
+            return;
+        }
+        Transform transform = myhero.transform;
+        Rigidbody rigidbody = myhero.rigidbody;
+        Vector3 vector = rigidbody.velocity;
+        Vector3 vector2 = transform.position + vector;
+        if (myhero != null && myhero.isHooked)
+        {
+            if (myhero.isGassing)
+            {
+                Animation animation = this.myHero.animation;
+                if (!animation.IsPlaying("attack5") && !animation.IsPlaying("special_petra") && !animation.IsPlaying("dash") && !animation.IsPlaying("jump") && !animation.IsPlaying("air_release") && !animation.IsPlaying("dodge"))
+                {
+                    float num7 = new Vector3(vector.x, 0f, vector.z).Angleof(new Vector3(transform.forward.x, 0f, transform.forward.z));
+                    if (num7 >= 15f)
+                    {
+                        float num8 = myhero.isLocal ? 1.55f : 1.6f;
+                        vector += transform.forward * ((float)myhero.setup.myCostume.stat.ACL / 10f * num8);
+                    }
+                    else if (myhero.isLocal)
+                    {
+                        vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1f);
+                    }
+                    else
+                    {
+                        vector += vector.normalized * ((float)myhero.setup.myCostume.stat.ACL / 10f * 1.1f);
+                    }
+                }
+            }
+            vector2 = transform.position + vector;
+            launch += Vector3.up * scale;
+            Vector3 vector3 = myhero.currentHook.transform.position - this.rockT.position;
+            bool flag = myhero.hook["right"] != null && myhero.hook["right"].phase != 2 && myhero.hook["right"].phase != 4;
+            bool flag2 = myhero.hook["left"] != null && myhero.hook["left"].phase != 2 && myhero.hook["left"].phase != 4;
+            if (myhero.hook["left"] != null && myhero.hook["left"].isHooked() && myhero.hook["right"] != null && myhero.hook["right"].isHooked())
+            {
+                Transform transform2 = myhero.hook["left"].transform;
+                Transform transform3 = myhero.hook["right"].transform;
+                Vector3 vector4 = transform2.position - vector2;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag)
+                {
+                    vector4 *= 2f;
+                }
+                vector2 += vector4;
+                vector4 = transform3.position - vector2;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag2)
+                {
+                    vector4 *= 2f;
+                }
+                vector2 += vector4;
+                num5 = vector2.y + 2f * this.myLevel;
+                num6 = num5 - this.rockT.position.y;
+                dis = Vector3.Distance(vector2, this.rockT.position);
+                angularDistance = vector2;
+                vector4 = transform2.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag)
+                {
+                    vector4 *= 2f;
+                }
+                vector += vector4;
+                angularDistance += vector4;
+                vector4 = transform3.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector4.Normalize();
+                vector4 *= 10f;
+                if (!flag2)
+                {
+                    vector4 *= 2f;
+                }
+                vector += vector4;
+                angularDistance += vector4;
+                angularDistance -= this.rockT.forward * (num6 + (dis + 5f - num6)) + vector;
+                vector3 = (transform2.position - this.rockT.position) * 0.5f;
+                vector3 += (transform3.position - this.rockT.position) * 0.5f;
+            }
+            else if (myhero.hook["left"] != null && myhero.hook["left"].isHooked())
+            {
+                Transform transform4 = myhero.hook["left"].transform;
+                Vector3 vector5 = transform4.position - vector2;
+                vector5.Normalize();
+                vector5 *= 10f;
+                if (!flag)
+                {
+                    vector5 *= 2f;
+                }
+                vector2 += vector5;
+                num5 = vector2.y + 2f * this.myLevel;
+                num6 = num5 - this.rockT.position.y;
+                dis = Vector3.Distance(vector2, this.rockT.position);
+                angularDistance = vector2;
+                vector5 = transform4.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector5.Normalize();
+                vector5 *= 10f;
+                if (!flag)
+                {
+                    vector5 *= 2f;
+                }
+                vector += vector5;
+                angularDistance += vector5;
+                angularDistance -= this.rockT.forward * (num6 + (dis + 5f - num6)) + vector;
+                vector3 = transform4.position - this.rockT.position;
+            }
+            else if (myhero.hook["right"] != null && myhero.hook["right"].isHooked())
+            {
+                Transform transform5 = myhero.hook["right"].transform;
+                Vector3 vector6 = transform5.position - vector2;
+                vector6.Normalize();
+                vector6 *= 10f;
+                if (!flag2)
+                {
+                    vector6 *= 2f;
+                }
+                vector2 += vector6;
+                num5 = vector2.y + 2f * this.myLevel;
+                num6 = num5 - this.rockT.position.y;
+                dis = Vector3.Distance(vector2, this.rockT.position);
+                angularDistance = vector2;
+                vector6 = transform5.forward * (num6 + (dis + 5f - num6)) - angularDistance;
+                vector6.Normalize();
+                vector6 *= 10f;
+                if (!flag2)
+                {
+                    vector6 *= 2f;
+                }
+                vector += vector6;
+                angularDistance += vector6;
+                angularDistance -= this.rockT.forward * (num6 + (dis + 5f - num6)) + vector;
+                vector3 = transform5.position - this.rockT.position;
+            }
+            launch = vector2 - this.rockT.position;
+            launch += angularDistance.normalized + vector.normalized;
+            launch += vector3;
+            launch += Vector3.up * scale;
+            if (vector2.y > this.baseT.position.y && this.IsNearingGround(vector2, scale * 0.45f))
+            {
+                launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z) + Vector3.down * scale;
+                return;
+            }
+            if (vector2.y < 25f || this.IsNearingGround(vector2, scale * 0.45f))
+            {
+                launch = new Vector3(launch.x, num6 - 0.5f * num4, launch.z) + Vector3.down * scale;
+                return;
+            }
+        }
+        else
+        {
+            launch = vector2 - this.rockT.position + Vector3.up * scale;
+            launch += angularDistance.normalized + rigidbody.velocity.normalized;
+        }
+    }
+
+    public void RockThrow(out Vector3 launch, HERO target)
+    {
+        Transform myHeroTlocal = target.transform;
+        Rigidbody myHeroRlocal = target.rigidbody;
+        if (target != null && this.rockT != null && this.throwRock != null)
+        {
+            Animation animation = target.animation;
+            float num = -20f;
+            float num2 = this.rockT.lossyScale.y * -0.5f;
+            launch = myHeroTlocal.position - this.rockT.position + myHeroRlocal.velocity;
+            float num3 = myHeroTlocal.position.y + myHeroRlocal.velocity.y + 2f * this.myLevel;
+            float num4 = num3 - this.rockT.position.y;
+            float num5 = Vector3.Distance(myHeroTlocal.position + myHeroRlocal.velocity, this.rockT.position);
+            Vector3 angularDistance;
+            if (target.isGassing)
+            {
+                Vector3 vector = myHeroRlocal.velocity;
+                if (!animation.IsPlaying("attack5") && !animation.IsPlaying("special_petra") && !animation.IsPlaying("dash") && !animation.IsPlaying("jump") && !animation.IsPlaying("air_release") && !animation.IsPlaying("dodge"))
+                {
+                    float num6 = new Vector3(vector.x, 0f, vector.z).Angleof(new Vector3(myHeroTlocal.forward.x, 0f, myHeroTlocal.forward.z));
+                    if (num6 >= 15f)
+                    {
+                        float num7 = target.isLocal ? 1.5f : 1.55f;
+                        vector += myHeroTlocal.forward * ((float)target.setup.myCostume.stat.ACL / 10f * Mathf.Clamp(1f + num6 % 1.218f, 1f, num7));
+                    }
+                    else if (target.isLocal)
+                    {
+                        vector += vector.normalized * ((float)target.setup.myCostume.stat.ACL / 10f * 1f);
+                    }
+                    else
+                    {
+                        vector += vector.normalized * ((float)target.setup.myCostume.stat.ACL / 10f * 1.1f);
+                    }
+                }
+                angularDistance = myHeroTlocal.forward * (num4 + (num5 + 5f - num4)) - this.rockT.forward * (num4 + (num5 + 5f - num4)) + vector;
+            }
+            else
+            {
+                angularDistance = myHeroTlocal.forward * (num4 + (num5 + 5f - num4)) - this.rockT.forward * (num4 + (num5 + 5f - num4)) + myHeroRlocal.velocity;
+            }
+            bool flag = !(bool)FengGameManagerMKII.settings[6] || UnityEngine.Random.Range(0, 10) < 2;
+            if ((animation.IsPlaying("horse_idle") || animation.IsPlaying("horse_run")) && target != null && target.horse != null)
+            {
+                Horse horse = target.horse;
+                Transform transform = horse.transform;
+                Rigidbody rigidbody = horse.rigidbody;
+                num3 = transform.position.y + rigidbody.velocity.y + 2f * this.myLevel;
+                num4 = num3 - this.rockT.position.y;
+                num5 = Vector3.Distance(transform.position + rigidbody.velocity, this.rockT.position);
+                angularDistance = transform.forward * (num4 + (num5 - num4)) + rigidbody.velocity - this.rockT.forward * (num4 + (num5 - num4));
+                if (rigidbody.velocity.magnitude < 20f && Vector3.Angle(transform.position + rigidbody.velocity, this.rockT.position) < 130f && this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2 * 0.2f))
+                {
+                    launch = (transform.position - this.rockT.position) / 1f + rigidbody.velocity;
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < 5)
+                {
+                    launch = transform.position + rigidbody.velocity - this.rockT.position;
+                    launch += angularDistance.normalized + rigidbody.velocity.normalized;
+                    launch += Vector3.up * num2;
+                    if ((transform.position + rigidbody.velocity).y < 25f || this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2))
+                    {
+                        launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z) - Vector3.up * num2;
+                        return;
+                    }
+                }
+                else
+                {
+                    launch = transform.position + rigidbody.velocity - this.rockT.position;
+                    launch += angularDistance.normalized + rigidbody.velocity.normalized;
+                    if ((transform.position + rigidbody.velocity).y < 25f || this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2))
+                    {
+                        launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                        return;
+                    }
+                }
+            }
+            else if (this.nonAI)
+            {
+                if (myHeroRlocal.velocity.magnitude < 20f && Vector3.Angle(myHeroTlocal.position + myHeroRlocal.velocity, this.rockT.position) < 130f && this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2 * 0.25f))
+                {
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                this.RockThrowAim1(angularDistance, target, num2, num, num3, num4, num5, ref launch);
+                return;
+            }
+            else if ((bool)FengGameManagerMKII.settings[10])
+            {
+                if (UnityEngine.Random.Range(0, 5) < 2 && myHeroRlocal.velocity.magnitude < 20f && Vector3.Angle(myHeroTlocal.position + myHeroRlocal.velocity, this.rockT.position) < 130f && this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2 * 0.25f))
+                {
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                if (!flag)
+                {
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < (((int)FengGameManagerMKII.settings[113] == 4) ? 7 : 8))
+                {
+                    this.RockThrowAim1(angularDistance, target, num2, num, num3, num4, num5, ref launch);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < 3)
+                {
+                    this.RockThrowAim4(angularDistance, target, num2, num, num4, out launch);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < 4)
+                {
+                    this.RockThrowAim2(angularDistance, target, num2, num, num4, out launch);
+                    return;
+                }
+                this.RockThrowAim3(angularDistance, target, num2, num, num3, num4, num5, ref launch);
+                return;
+            }
+            else if ((int)FengGameManagerMKII.settings[113] == 4)
+            {
+                if (UnityEngine.Random.Range(0, 5) < 2 && myHeroRlocal.velocity.magnitude < 20f && Vector3.Angle(myHeroTlocal.position + myHeroRlocal.velocity, this.rockT.position) < 130f && this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2 * 0.25f))
+                {
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                if (!flag)
+                {
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < 6)
+                {
+                    this.RockThrowAim1(angularDistance, target, num2, num, num3, num4, num5, ref launch);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < 3)
+                {
+                    this.RockThrowAim4(angularDistance, target, num2, num, num4, out launch);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < 5)
+                {
+                    this.RockThrowAim2(angularDistance, target, num2, num, num4, out launch);
+                    return;
+                }
+                this.RockThrowAim3(angularDistance, target, num2, num, num3, num4, num5, ref launch);
+                return;
+            }
+            else
+            {
+                if (UnityEngine.Random.Range(0, 10) < 5)
+                {
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                if (!flag)
+                {
+                    launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
+                    return;
+                }
+                if (UnityEngine.Random.Range(0, 10) < 5)
+                {
+                    this.RockThrowAim1(angularDistance, target, num2, num, num3, num4, num5, ref launch);
+                    return;
+                }
+                this.RockThrowAim2(angularDistance, target, num2, num, num4, out launch);
+                return;
+            }
+        }
+        else
+        {
+            launch = this.baseT.forward * 60f + Vector3.up * 10f;
+        }
+    }
+
     public void update()
     {
         if (((!IN_GAME_MAIN_CAMERA.isPausing || (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)) && (this.myDifficulty >= 0)) && ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine))
@@ -5488,7 +6136,7 @@ public class TITAN : MONO
                             {
                                 vector6 = (Vector3) ((baseT.forward * 60f) + (Vector3.up * 10f));
                             }
-                            this.throwRock.launch(vector6);
+                            this.throwRock.launch(vector6, this.baseG.name, -1);
                             this.rockT.parent = null;
                             //this.throwRock = null;
                         }

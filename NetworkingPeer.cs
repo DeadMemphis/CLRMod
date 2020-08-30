@@ -2744,7 +2744,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 {
                     StatsTab.AddLine(string.Concat(new object[]
                     {
-                    "Wrong 206 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
+                    "Wrong 200 byte... (photonEvent[245] is not a Hashtable) Start dc for [",
                     sender.ID,
                     "]",
                     sender.uiname.ToRGBA(),

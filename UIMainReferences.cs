@@ -66,13 +66,11 @@ public class UIMainReferences : MonoBehaviour
 
     private void Start()
     {
-        
         if (UIMainReferences.sky_Night == null)
         {
             UIMainReferences.sky_Night = Resources.Load<IN_GAME_MAIN_CAMERA>("MainCamera_mono").skyBoxNIGHT;
         }
         Camera.main.GetComponent<Skybox>().material = UIMainReferences.sky_Night;
-       
         Camera.main.GetComponent<Camera>().transform.rotation = new Quaternion(0f, 1f, 0f, 0f);
         Camera.main.GetComponent<Camera>().transform.position = new Vector3(0f, 0f, 0f);
         string versionShow = "8/12/2015";

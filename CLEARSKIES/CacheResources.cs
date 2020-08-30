@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace BRM
 {
-    // Token: 0x0200000C RID: 12
     internal static class CacheResources
     {
-        // Token: 0x0600006A RID: 106 RVA: 0x00012EB8 File Offset: 0x000110B8
         internal static UnityEngine.Object Load(string path)
         {
             path = path.ToUpper();
@@ -18,7 +16,6 @@ namespace BRM
             return CacheResources.cacheLocal[path] = Resources.Load(path);
         }
 
-        // Token: 0x0600006B RID: 107 RVA: 0x00012F10 File Offset: 0x00011110
         internal static UnityEngine.Object Load(string path, System.Type type)
         {
             string key = path.ToUpper() + type.FullName;
@@ -29,7 +26,6 @@ namespace BRM
             return CacheResources.cacheGO[key] = Resources.Load(path, type);
         }
 
-        // Token: 0x0600006C RID: 108 RVA: 0x00012F70 File Offset: 0x00011170
         internal static T Load<T>(string path) where T : UnityEngine.Object
         {
             string key = path.ToUpper() + typeof(T).FullName;
@@ -40,7 +36,6 @@ namespace BRM
             return (T)((object)(CacheResources.cacheGO[key] = Resources.Load<T>(path)));
         }
 
-        // Token: 0x0600006D RID: 109 RVA: 0x00012FFC File Offset: 0x000111FC
         internal static bool Load<T>(string path, out T value) where T : UnityEngine.Object
         {
             string key = path.ToUpper() + typeof(T).FullName;
@@ -53,7 +48,6 @@ namespace BRM
             return value != null;
         }
 
-        // Token: 0x0600006E RID: 110 RVA: 0x000130B0 File Offset: 0x000112B0
         internal static UnityEngine.Object RCLoad(string path)
         {
             string key = "RC" + path.ToUpper();
@@ -64,7 +58,6 @@ namespace BRM
             return CacheResources.cacheLocal[key] = FengGameManagerMKII.RCassets.Load(path);
         }
 
-        // Token: 0x0600006F RID: 111 RVA: 0x00013114 File Offset: 0x00011314
         internal static UnityEngine.Object RCLoad(string path, System.Type type)
         {
             string key = "RC" + path.ToUpper() + type.FullName;
@@ -75,7 +68,6 @@ namespace BRM
             return CacheResources.cacheGO[key] = FengGameManagerMKII.RCassets.Load(path, type);
         }
 
-        // Token: 0x06000070 RID: 112 RVA: 0x00013180 File Offset: 0x00011380
         internal static T RCLoad<T>(string path) where T : UnityEngine.Object
         {
             string key = "RC" + path.ToUpper() + typeof(T).FullName;
@@ -86,7 +78,6 @@ namespace BRM
             return (T)((object)(CacheResources.cacheGO[key] = (T)((object)FengGameManagerMKII.RCassets.Load(path, typeof(T)))));
         }
 
-        // Token: 0x06000071 RID: 113 RVA: 0x00013224 File Offset: 0x00011424
         internal static bool RCLoad<T>(string path, out T value) where T : UnityEngine.Object
         {
             string key = "RC" + path.ToUpper() + typeof(T).FullName;
@@ -145,7 +136,6 @@ namespace BRM
         //    return value != null;
         //}
 
-        // Token: 0x04000033 RID: 51
         private static System.Collections.Generic.Dictionary<string, UnityEngine.Object> cacheLocal = new System.Collections.Generic.Dictionary<string, UnityEngine.Object>
         {
             {
@@ -218,7 +208,6 @@ namespace BRM
             }
         };
 
-        // Token: 0x04000034 RID: 52
         private static System.Collections.Generic.Dictionary<string, UnityEngine.Object> cacheGO = new System.Collections.Generic.Dictionary<string, UnityEngine.Object>
         {
             {
