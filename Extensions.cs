@@ -6,6 +6,12 @@ using UnityEngine;
 
 public static class Extensions
 {
+    public static float Angleof(this Vector3 first, Vector3 second)
+    {
+        return Mathf.Abs(Mathf.Acos(Vector3.Dot(first.normalized, second.normalized)) * 57.29578f);
+    }
+
+
     public static bool EqualTo(this string text, bool and, params string[] array)
     {
         if (array.Length == 0)

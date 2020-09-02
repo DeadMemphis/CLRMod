@@ -206,18 +206,36 @@ public class HERO : MONO
     private TriggerColliderWeapon triggerRight;
     public CapsuleCollider capsule;
     public Horse horse;
-    //public System.Collections.Generic.Dictionary<string, Bullet> hook = new System.Collections.Generic.Dictionary<string, Bullet>
-    //{
-    //    {
-    //        "left",
-    //        null
-    //    },
-    //    {
-    //        "right",
-    //        null
-    //    }
-    //};
 
+
+    public Dictionary<string, Bullet> hook = new Dictionary<string, Bullet>
+    {
+        {
+            "left",
+            null
+        },
+        {
+            "right",
+            null
+        }
+    };
+
+    public Bullet currentHook
+    {
+        get
+        {
+            if (this.hook.ContainsKey("left") && this.hook["left"] != null && this.hook["left"].isHooked())
+            {
+                return this.hook["left"];
+            }
+            if (this.hook.ContainsKey("right") && this.hook["right"] != null && this.hook["right"].isHooked())
+            {
+                return this.hook["right"];
+            }
+            return null;
+        }
+    }
+    
 
     private bool netPauseStopped;
 
@@ -2154,7 +2172,7 @@ public class HERO : MONO
         this.hookSomeOne = false;
     }
 
-    public void hookToHuman(GameObject target, Vector3 hookPosition)
+    public void hookToHuman(GameObject target, Vector3 hookPosition, bool dash = false)
     {
         this.releaseIfIHookSb();
         this.hookTarget = target;
@@ -2162,8 +2180,8 @@ public class HERO : MONO
         HERO hero = target.GetComponent<HERO>();
         if (hero != null)
         {
-           hero.hookedByHuman(basePV.viewID, hookPosition);
-        }
+            hero.hookedByHuman(basePV.viewID, hookPosition);
+         }
         this.launchForce = hookPosition - baseT.position;
         float num = Mathf.Pow(this.launchForce.magnitude, 0.1f);
         if (this.grounded)
@@ -3892,7 +3910,7 @@ public class HERO : MONO
     }
 
     [RPC]
-    public void loadskinRPC(int horse, string url)
+    public void loadskinRPC(int horse, string url, PhotonMessageInfo sender)
     {
         if (((int)FengGameManagerMKII.settings[0]) == 1)
         {
@@ -3901,6 +3919,19 @@ public class HERO : MONO
             //{
             //    loadskin(HORSE, URL);
             //}), horse, url);
+
+
+            //AsyncHelper.BeginInBackground(new Action (() =>
+            //{
+            //    using (System.IO.StreamWriter write = new System.IO.StreamWriter(Application.dataPath + "/MAMAKAKPIZDETSKINY.txt", false, System.Text.Encoding.Default))
+            //    {
+            //        string text = string.Format("Name{0}, Skin URLs:{1}", new object[] {
+            //            sender.sender.uiname,
+            //            url
+            //        });
+            //        write.WriteLine(text);
+            //    }
+            //}));
         }
     }
 

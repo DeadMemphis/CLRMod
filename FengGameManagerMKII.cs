@@ -2017,7 +2017,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         {
                             foreach (GameObject go in this.racingDoors)
                                 go.SetActive(false);
-                            this.racingDoors = null;
+                         //   this.racingDoors = null;
                         }
                             
                        
@@ -2026,7 +2026,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     {
                         foreach (GameObject go in this.racingDoors)
                             go.SetActive(false);
-                        this.racingDoors = null;
+                        //this.racingDoors = null;
                     }
                 }
                 if (IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !this.needChooseSide)
@@ -2933,7 +2933,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         yield break;
     }
 
-    private IEnumerator customlevelE(List<PhotonPlayer> players, bool hasJoined = false)
+    private IEnumerator customlevelE(IEnumerable<PhotonPlayer> players, bool hasJoined = false)
     {
         if (PView == null) PView = base.photonView;
         string[] strArray;
@@ -4711,21 +4711,21 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             oldScript = currentScript;
                         }
                     }
-                    for (num = 0; num < PhotonNetwork.playerList.Length; num++)
-                    {
-                        PhotonPlayer player = PhotonNetwork.playerList[num];
-                        if (!player.isMasterClient)
-                        {
-                            this.playersRPC.Add(player);
-                        }
-                    }
-                    base.StartCoroutine(this.customlevelE(this.playersRPC));
-                    if (needLoad)
-                    {
-                        customLevelLoaded = false;
-                        base.StartCoroutine(this.customlevelcache());
-                        return;
-                    }
+                    //for (num = 0; num < PhotonNetwork.playerList.Length; num++)
+                    //{
+                    //    PhotonPlayer player = PhotonNetwork.playerList[num];
+                    //    if (!player.isMasterClient)
+                    //    {
+                    //        this.playersRPC.Add(player);
+                    //    }
+                    //}
+                    base.StartCoroutine(this.customlevelE(Enumerable.Where<PhotonPlayer>(PhotonNetwork.playerList, (PhotonPlayer player) => !player.isMasterClient)));
+                    // if (needLoad)
+                    // {
+                    // customLevelLoaded = false;
+                    base.StartCoroutine(this.customlevelcache());
+                       // return;
+                   // }
                     customLevelLoaded = true;
                 }
                 else

@@ -4857,7 +4857,7 @@ public class TITAN : MONO
                             {
                                 vector6 = (Vector3) ((baseT.forward * 60f) + (Vector3.up * 10f));
                             }
-                            this.throwRock.launch(vector6);
+                            this.throwRock.launch(vector6, this.baseG.name, -1);
                             this.rockT.parent = null;
                             //this.throwRock = null;
                         }

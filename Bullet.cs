@@ -19,7 +19,7 @@ public class Bullet : Photon.MonoBehaviour
     private GameObject myRef;
     public TITAN myTitan;
     private ArrayList nodes = new ArrayList();
-    private int phase;
+    public int phase;
     private GameObject rope;
     private int spiralcount;
     private ArrayList spiralNodes;
@@ -293,7 +293,7 @@ public class Bullet : Photon.MonoBehaviour
         basePV.RPC("setVelocityAndLeft", PhotonTargets.Others, objArray2);
         object[] objArray3 = new object[] { victimHero.photonView.viewID };
         basePV.RPC("tieMeToOBJ", PhotonTargets.Others, objArray3);
-        MasterHero.hookToHuman(victimHero.gameObject, baseT.position);
+        MasterHero.hookToHuman(victimHero.gameObject, baseT.position, true);
         //baseT.parent = victimHero.transform;
         baseT.position = this.myRefT.position;
         baseT.rotation = Quaternion.LookRotation(v.normalized);
@@ -403,21 +403,21 @@ public class Bullet : Photon.MonoBehaviour
                         {
                             this.myRef = component.hookRefL1;
                             this.myRefT = this.myRef.transform;
-                            //component.hook["left"] = this;
+                            component.hook["left"] = this;
                             return;
                         }
                         if (a == "hookRefL2")
                         {
                             this.myRef = component.hookRefL2;
                             this.myRefT = this.myRef.transform;
-                            //component.hook["left"] = this;
+                            component.hook["left"] = this;
                             return;
                         }
                         if (a == "hookRefR1")
                         {
                             this.myRef = component.hookRefR1;
                             this.myRefT = this.myRef.transform;
-                            //component.hook["right"] = this;
+                            component.hook["right"] = this;
                             return;
                         }
                         if (!(a == "hookRefR2"))
@@ -426,7 +426,7 @@ public class Bullet : Photon.MonoBehaviour
                         }
                         this.myRef = component.hookRefR2;
                         this.myRefT = this.myRef.transform;
-                        //component.hook["right"] = this;
+                        component.hook["right"] = this;
                     }
                 }
             }
@@ -483,34 +483,34 @@ public class Bullet : Photon.MonoBehaviour
         {
             this.myTitan.isHooked = false;
         }
-        //if (this.master != null)
-        //{
-        //    if (this.MasterHero.hook["left"] == this)
-        //    {
-        //        this.MasterHero.hook["left"] = null;
-        //    }
-        //    if (this.MasterHero.hook["right"] == this)
-        //    {
-        //        this.MasterHero.hook["right"] = null;
-        //    }
-        //}
+        if (this.master != null)
+        {
+            if (this.MasterHero.hook["left"] == this)
+            {
+                this.MasterHero.hook["left"] = null;
+            }
+            if (this.MasterHero.hook["right"] == this)
+            {
+                this.MasterHero.hook["right"] = null;
+            }
+        }
         UnityEngine.Object.Destroy(this.rope);
     }
 
     public void removeMe()
     {
         this.isdestroying = true;
-        //if (this.MasterHero != null)
-        //{
-        //    if (this.MasterHero.hook["left"] == this)
-        //    {
-        //        this.MasterHero.hook["left"] = null;
-        //    }
-        //    else if (this.MasterHero.hook["right"] == this)
-        //    {
-        //        this.MasterHero.hook["right"] = null;
-        //    }
-        //}
+        if (this.MasterHero != null)
+        {
+            if (this.MasterHero.hook["left"] == this)
+            {
+                this.MasterHero.hook["left"] = null;
+            }
+            else if (this.MasterHero.hook["right"] == this)
+            {
+                this.MasterHero.hook["right"] = null;
+            }
+        }
         if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && basePV.isMine)
         {
             PhotonNetwork.Destroy(basePV);

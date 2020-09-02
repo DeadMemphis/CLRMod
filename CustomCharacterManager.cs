@@ -270,7 +270,7 @@ public class CustomCharacterManager : MonoBehaviour
         }
         else
         {
-            this.toOption(part, true);
+            this.toOption2(part, true);
         }
     }
 
@@ -335,7 +335,7 @@ public class CustomCharacterManager : MonoBehaviour
         }
         else
         {
-            this.toOption(part, false);
+            this.toOption2(part, false);
         }
     }
 
@@ -462,122 +462,7 @@ public class CustomCharacterManager : MonoBehaviour
         id = Mathf.Clamp(id, start, (start + Count) - 1);
         return id;
     }
-
-    public void toOption(CreatePart part, bool next)
-    {
-        switch (part)
-        {
-            case CreatePart.Sex:
-                this.sexId = ((!next) ? this.toPrev(this.sexId, this.sexOption.Length, 0) : this.toNext(this.sexId, this.sexOption.Length, 0));
-                if (this.sexId != 0)
-                {
-                    this.costumeId = 0;
-                }
-                else
-                {
-                    this.costumeId = 11;
-                }
-                this.copyCostume(this.costumeOption[this.costumeId], this.setup.myCostume, true);
-                this.setup.myCostume.sex = this.sexOption[this.sexId];
-                this.character.GetComponent<CharacterCreateAnimationControl>().toStand();
-                this.CostumeDataToMyID();
-                this.setup.deleteCharacterComponent();
-                this.setup.setCharacterComponent();
-                break;
-            case CreatePart.Eye:
-                this.eyeId = ((!next) ? this.toPrev(this.eyeId, this.eyeOption.Length, 0) : this.toNext(this.eyeId, this.eyeOption.Length, 0));
-                this.setup.myCostume.eye_texture_id = this.eyeId;
-                this.setup.setFacialTexture(this.setup.part_eye, this.eyeOption[this.eyeId]);
-                break;
-            case CreatePart.Face:
-                this.faceId = ((!next) ? this.toPrev(this.faceId, this.faceOption.Length, 0) : this.toNext(this.faceId, this.faceOption.Length, 0));
-                this.setup.myCostume.beard_texture_id = this.faceOption[this.faceId];
-                if (this.setup.part_face == null)
-                {
-                    this.setup.createFace();
-                }
-                this.setup.setFacialTexture(this.setup.part_face, this.faceOption[this.faceId]);
-                break;
-            case CreatePart.Glass:
-                this.glassId = ((!next) ? this.toPrev(this.glassId, this.glassOption.Length, 0) : this.toNext(this.glassId, this.glassOption.Length, 0));
-                this.setup.myCostume.glass_texture_id = this.glassOption[this.glassId];
-                if (this.setup.part_glass == null)
-                {
-                    this.setup.createGlass();
-                }
-                this.setup.setFacialTexture(this.setup.part_glass, this.glassOption[this.glassId]);
-                break;
-            case CreatePart.Hair:
-                this.hairId = ((!next) ? this.toPrev(this.hairId, this.hairOption.Length, 0) : this.toNext(this.hairId, this.hairOption.Length, 0));
-                if (this.sexId != 0)
-                {
-                    this.setup.myCostume.hair_mesh = CostumeHair.hairsF[this.hairOption[this.hairId]].hair;
-                    this.setup.myCostume.hair_1_mesh = CostumeHair.hairsF[this.hairOption[this.hairId]].hair_1;
-                    this.setup.myCostume.hairInfo = CostumeHair.hairsF[this.hairOption[this.hairId]];
-                }
-                else
-                {
-                    this.setup.myCostume.hair_mesh = CostumeHair.hairsM[this.hairOption[this.hairId]].hair;
-                    this.setup.myCostume.hair_1_mesh = CostumeHair.hairsM[this.hairOption[this.hairId]].hair_1;
-                    this.setup.myCostume.hairInfo = CostumeHair.hairsM[this.hairOption[this.hairId]];
-                }
-                this.setup.createHair();
-                this.setHairColor();
-                break;
-            case CreatePart.Skin:
-                if (this.setup.myCostume.uniform_type != UNIFORM_TYPE.CasualAHSS)
-                {
-                    this.skinId = ((!next) ? this.toPrev(this.skinId, 2, 0) : this.toNext(this.skinId, 2, 0));
-                }
-                else
-                {
-                    this.skinId = 2;
-                }
-                this.setup.myCostume.skin_color = this.skinOption[this.skinId];
-                this.setup.myCostume.setTexture();
-                this.setup.setSkin();
-                break;
-            case CreatePart.Costume:
-                if (this.setup.myCostume.uniform_type != UNIFORM_TYPE.CasualAHSS)
-                {
-                    if (this.sexId == 0)
-                    {
-                        this.costumeId = ((!next) ? this.toPrev(this.costumeId, 24, 10) : this.toNext(this.costumeId, 24, 10));
-                    }
-                    else
-                    {
-                        this.costumeId = ((!next) ? this.toPrev(this.costumeId, 10, 0) : this.toNext(this.costumeId, 10, 0));
-                    }
-                }
-                else
-                {
-                    this.costumeId = 25;
-                }
-                this.copyBodyCostume(this.costumeOption[this.costumeId], this.setup.myCostume);
-                this.setup.myCostume.setMesh();
-                this.setup.myCostume.setTexture();
-                this.setup.createUpperBody();
-                this.setup.createLeftArm();
-                this.setup.createRightArm();
-                this.setup.createLowerBody();
-                break;
-            case CreatePart.Cape:
-                this.capeId = ((!next) ? this.toPrev(this.capeId, this.capeOption.Length, 0) : this.toNext(this.capeId, this.capeOption.Length, 0));
-                this.setup.myCostume.cape = (this.capeId == 1);
-                this.setup.myCostume.setCape();
-                this.setup.myCostume.setTexture();
-                this.setup.createCape();
-                break;
-            case CreatePart.Division:
-                this.divisionId = ((!next) ? this.toPrev(this.divisionId, this.divisionOption.Length, 0) : this.toNext(this.divisionId, this.divisionOption.Length, 0));
-                this.setup.myCostume.division = this.divisionOption[this.divisionId];
-                this.setup.myCostume.setTexture();
-                this.setup.createUpperBody();
-                break;
-        }
-        this.freshLabel();
-    }
-
+    
     public void toOption2(CreatePart part, bool next)
     {
         switch (part)

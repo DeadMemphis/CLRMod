@@ -44,10 +44,11 @@ public class CostumeConeveter
         PlayerPrefs.SetString(slot + PhotonPlayerProperty.statSKILL, costume.stat.skillId);
     }
 
-    
+
     public static void HeroCostumeToPhotonData2(HeroCostume costume, PhotonPlayer player)
     {
         Hashtable propertiesToSet = new Hashtable();
+        propertiesToSet.Add(PhotonPlayerProperty.sex, SexToInt(costume.sex));
         int costumeId = costume.costumeId;
         if (costumeId == 0x1a)
         {
@@ -72,6 +73,8 @@ public class CostumeConeveter
         propertiesToSet.Add(PhotonPlayerProperty.statSKILL, costume.stat.skillId);
         player.SetCustomProperties(propertiesToSet);
     }
+
+
 
     private static DIVISION IntToDivision(int id)
     {
