@@ -14,14 +14,14 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
 
 
     private Transform mainCameraT;
-    private static Vector3 ThunderPos;
-    private static Vector3 TitanDiePos;
-    private static UnityEngine.Object thunder = CacheResources.Load("FX/Thunder");
-    private float time;
-    private float time2;
-    private static UnityEngine.Object smoke = CacheResources.Load("FX/colossal_steam");
-    private static Quaternion TitanDieQuat = Quaternion.Euler(-90f, 0f, 0f);
-    private static Quaternion ThunderQuat = Quaternion.Euler(270f, 0f, 0f);
+    //private static Vector3 ThunderPos;
+    //private static Vector3 TitanDiePos;
+    //private static UnityEngine.Object thunder = CacheResources.Load("FX/Thunder");
+    //private float time;
+    //private float time2;
+    //private static UnityEngine.Object smoke = CacheResources.Load("FX/colossal_steam");
+    //private static Quaternion TitanDieQuat = Quaternion.Euler(-90f, 0f, 0f);
+    //private static Quaternion ThunderQuat = Quaternion.Euler(270f, 0f, 0f);
 
     private void Awake()
     {
@@ -42,18 +42,18 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
             //    this.mainCameraT.position = this.cameraPref.position + this.cameraOffset;
             //    return;
             //}
-            this.time += Time.fixedDeltaTime;
-            this.time2 += Time.fixedDeltaTime;
-            if (this.time > Mathf.Min(UnityEngine.Random.Range(5f, 15f), 10f))
-            {
-                this.time = 0f;               
-                UnityEngine.Object.Instantiate(thunder, ThunderPos, ThunderQuat * Quaternion.Inverse(this.mainCameraT.rotation));                
-            }
-            if (this.time2 > UnityEngine.Random.Range(5f, 15f))
-            {
-                this.time2 = 0f;                
-                ((GameObject)UnityEngine.Object.Instantiate(smoke, TitanDiePos, TitanDieQuat)).transform.rotation *= Quaternion.Inverse(this.mainCameraT.rotation);
-            }
+            //this.time += Time.fixedDeltaTime;
+            //this.time2 += Time.fixedDeltaTime;
+            //if (this.time > Mathf.Min(UnityEngine.Random.Range(5f, 15f), 10f))
+            //{
+            //    this.time = 0f;               
+            //    UnityEngine.Object.Instantiate(thunder, ThunderPos, ThunderQuat * Quaternion.Inverse(this.mainCameraT.rotation));                
+            //}
+            //if (this.time2 > UnityEngine.Random.Range(5f, 15f))
+            //{
+            //    this.time2 = 0f;                
+            //    ((GameObject)UnityEngine.Object.Instantiate(smoke, TitanDiePos, TitanDieQuat)).transform.rotation *= Quaternion.Inverse(this.mainCameraT.rotation);
+            //}
             if (QualitySettings.masterTextureLimit != 0)
             {
                 QualitySettings.masterTextureLimit = 0;
@@ -96,8 +96,8 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
             //}
             this.mainCameraT.position = new Vector3(10.9f, 5841.2f, 3338.3f);
             this.mainCameraT.rotation = new Quaternion(-0.4f, 0.3f, 0.1f, 0.9f);
-            ThunderPos = this.mainCameraT.position;
-            TitanDiePos = this.mainCameraT.position + Vector3.down * 15f + this.mainCameraT.right * 3.5f;
+            //ThunderPos = this.mainCameraT.position;
+            //TitanDiePos = this.mainCameraT.position + Vector3.down * 15f + this.mainCameraT.right * 3.5f;
             //Camera.main.GetComponent<Skybox>().material = new Material(FengGameManagerMKII.skinCache[4]["NIGHT"]);
             return;
         }

@@ -146,7 +146,7 @@ public static class PhotonNetwork
         RaiseEventOptions options = new RaiseEventOptions();
         options.TargetActors = new int[] { kickPlayer.ID };
         RaiseEventOptions raiseEventOptions = options;
-        return networkingPeer.OpRaiseEvent(0xcb, null, true, raiseEventOptions);
+        return networkingPeer.OpRaiseEvent(203, null, true, raiseEventOptions);
     }
 
     public static bool ConnectToBestCloudServer(string gameVersion)

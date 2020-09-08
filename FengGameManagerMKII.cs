@@ -57,7 +57,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     private float currentSpeed;
     public static bool customLevelLoaded;
     public int cyanKills;
-    internal float deltaTime;
+    
+    internal float deltaTime = 0.0f;
+    
     public int difficulty;
     public float distanceSlider;
     private bool endRacing;
@@ -3858,7 +3860,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     {
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
         {
-            this.deltaTime += (Time.deltaTime - this.deltaTime) * 0.1f;
+            //this.deltaTime += (Time.deltaTime - this.deltaTime) * 0.1f;
+            deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
             if (this.LabelInfoTopRight == null)
             {
                 this.LabelInfoTopRight = CacheGameObject.Find<UILabel>("LabelInfoTopRight");
@@ -3884,7 +3887,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         string text6 = string.Empty;
         string text7 = string.Empty;
         int num = GameSettings.waveModeNum;
-        float num3;
         string content;
         if (GameSettings.waveModeOn > 0)
         {
@@ -3904,7 +3906,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             text6 = string.Concat(new object[]
             {
                             obj4,
-                            "\n[d4ecff]RC POINT MODE",
+                            "\n[d4ecff]RC POINT MODE ",
                             numpoint,
                             "[-]"
             });
@@ -4108,72 +4110,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         string text14 = PhotonNetwork.networkingPeer.ServerAddress;
         string text15 = string.Empty;
         string text17 = string.Empty;
-        //text17 = text14.Remove(text14.IndexOf(":"));
-        //IpAddrServer = text17;
         text15 = text14.Substring(text14.IndexOf(":"));
         string text16 = "\n[7b001c]" + DateTime.UtcNow.ToLocalTime().ToString() + "[-]";
-        //string text12 = "\n[" + MainColor + "]ServerAddress: [7b001c]" + IpAddrServer;
-        //string str11 = "\n[" + MainColor + "]Your Local IP Address: [7b001c]" + Network.player.ipAddress.ToString();
-        //string AllIP = "\n[000000][[" + MainColor + "]LIST OF IP ADDRESSES[000000]]";
-        //AllIP += text12 += str11;
-        //try
-        //{
-        //    if (UpDateIPList == true)
-        //    {
-        //        if (NetworkingPeer.ipAddr != null) NetworkingPeer.ipAddr.Clear();
-        //        NetworkingPeer.ipAddr.Add("\n[" + MainColor + "]Trying connect to [7b001c]" + IpAddrServer);
-        //        IPHostEntry host = Dns.GetHostEntry(IpAddrServer);
-        //        NetworkingPeer.ipAddr.Clear();
-        //        foreach (IPAddress ip in host.AddressList)
-        //        {
-        //            if (ip.AddressFamily == AddressFamily.InterNetwork)
-        //            {
-        //                NetworkingPeer.LocalIP = ip.ToString();
-        //            }
-        //            if (!NetworkingPeer.ipAddr.Contains(ip.ToString()))
-        //                NetworkingPeer.ipAddr.Add(ip.ToString());
-        //        }
-        //        UpDateIPList = false;
-        //    }
-        //}
-        //catch (ArgumentOutOfRangeException)
-        //{
-        //    NetworkingPeer.ipAddr.Clear();
-        //    NetworkingPeer.ipAddr.Add("[FF0000]Error... \nCan't connect with GetHostEntry to " + FengGameManagerMKII.IpAddrServer + " \nArgumentOutOfRangeException...[-]");
-        //}
-        //catch (SocketException)
-        //{
-        //    NetworkingPeer.ipAddr.Clear();
-        //    NetworkingPeer.ipAddr.Add("[FF0000]Error... \nCan't connect with GetHostEntry to " + FengGameManagerMKII.IpAddrServer + " \nSocketException...[-]");
-        //}
-        //catch (ArgumentNullException)
-        //{
-        //    NetworkingPeer.ipAddr.Clear();
-        //    NetworkingPeer.ipAddr.Add("[FF0000]Error... \nCan't connect with GetHostEntry to " + FengGameManagerMKII.IpAddrServer + " \nArgumentNullException...[-]");
-        //}
-        //catch (ArgumentException)
-        //{
-        //    NetworkingPeer.ipAddr.Clear();
-        //    NetworkingPeer.ipAddr.Add("[FF0000]Error... \nCan't connect with GetHostEntry to " + FengGameManagerMKII.IpAddrServer + " \nArgumentException...[-]");
-        //}
-        //if (NetworkingPeer.ipAddr.Count > 0)
-        //{
-        //    foreach (string ip in NetworkingPeer.ipAddr)
-        //    {
-        //        if (ip == NetworkingPeer.LocalIP && !AllIP.Equals(ip.ToString()))
-        //        {
-        //            AllIP += "\n[" + MainColor + "]Local IP address: [7b001c]" + ip;
-        //        }
-        //        if (!AllIP.Equals(ip.ToString()))
-        //        {
-        //            AllIP += "\n[7b001c]" + ip;
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    AllIP += "\nOther IP not exist in IP list. \nMay be GetHostEntry not work...";
-        //}
+        
         string text4 = (string)FengGameManagerMKII.settings[275];
         string text5 = string.Concat(new string[]
         {
@@ -4183,19 +4122,18 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         PhotonNetwork.room.maxPlayers.ToString(),
                         ")[-][-][7b001c]",
         });
-        //text4 += text5;
-        float num4 = this.deltaTime * 1000f;
-        num3 = 1f / this.deltaTime;
+        float msec = this.deltaTime * 1000f;
+        float fps = 1.0f / deltaTime;
         string text9 = string.Empty;
         string text10 = string.Empty;
         string text3 = "Camera(" + FengCustomInputs.Inputs.inputString[InputCode.camera] + "):" + IN_GAME_MAIN_CAMERA.cameraMode.ToString();
         string str8 = "\n" + level + ": " + str6;
-        if (num3 < 30f)
+        if (fps < 30f)
         {
-            text9 = ((num3 < 20f) ? "[ff1c1c]" : "[ffc700]");
+            text9 = ((fps < 20f) ? "[ff1c1c]" : "[ffc700]");
             text10 = "[-]";
         }
-        string text11 = string.Format("\n{0:0.0} MS ({1:0.} FPS)", num4, num3);
+        string text11 = string.Format("\n{0:0.0} MS ({1:0.} FPS)", msec, fps);
         GUI.Label(new Rect(10f, 557f, 185f, 40f), text11, "Label");
         return content = string.Concat(new string[]
         {
@@ -17445,11 +17383,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void tryKick(KickState tmp)
     {
-        this.sendChatContentInfo(string.Concat(new object[] { "kicking #", tmp.name, ", ", tmp.getKickCount(), "/", (int)(PhotonNetwork.playerList.Length * 0.5f), "vote" }));
-        if (tmp.getKickCount() >= ((int)(PhotonNetwork.playerList.Length * 0.5f)))
-        {
-            this.kickPhotonPlayer(tmp.name.ToString());
-        }
+        this.kickPhotonPlayer(tmp.name.ToString());
     }
 
     public void unloadAssets()
@@ -17481,10 +17415,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     {
         if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && (GameObject.Find("LabelNetworkStatus") != null))
         {
-            if (PhotonNetwork.networkingPeer.SocketImplementationConfig.ContainsKey(ExitGames.Client.Photon.ConnectionProtocol.WebSocket))
-                PhotonNetwork.networkingPeer.SocketImplementationConfig[ExitGames.Client.Photon.ConnectionProtocol.WebSocket] = typeof(ExitGames.Client.Photon.SocketWebTcp);
+            if (PhotonNetwork.networkingPeer.SocketImplementationConfig.ContainsKey(ConnectionProtocol.WebSocket))
+                PhotonNetwork.networkingPeer.SocketImplementationConfig[ConnectionProtocol.WebSocket] = typeof(ExitGames.Client.Photon.SocketWebTcp);
             else
-                PhotonNetwork.networkingPeer.SocketImplementationConfig.Add(ExitGames.Client.Photon.ConnectionProtocol.WebSocket, typeof(ExitGames.Client.Photon.SocketWebTcp));
+                PhotonNetwork.networkingPeer.SocketImplementationConfig.Add(ConnectionProtocol.WebSocket, typeof(ExitGames.Client.Photon.SocketWebTcp));
             //string protocol = "none";
             //if (PhotonNetwork.networkingPeer.UsedProtocol == ConnectionProtocol.Tcp) protocol = "TCP";
             //else if (PhotonNetwork.networkingPeer.UsedProtocol == ConnectionProtocol.Udp) protocol = "UDP";
@@ -17497,23 +17431,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             }
             else component.text = "Welcome," + LoginFengKAI.player.name;
         }
-        //if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
-        //{
-        //    if (FengGameManagerMKII.LabelNetworkStatus != null)
-        //    {
-        //        FengGameManagerMKII.LabelNetworkStatus.text = PhotonNetwork.connectionStateDetailed.ToString();
-        //        if (PhotonNetwork.connected)
-        //        {
-        //            UILabel expr_53 = FengGameManagerMKII.LabelNetworkStatus;
-        //            expr_53.text = expr_53.text + " ping:" + PhotonNetwork.GetPing();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        FengGameManagerMKII.LabelNetworkStatus = LoginFengKAI.Log.output.GetComponent<UILabel>();
-        //        //BRM.CacheGameObject.Find("LabelNetworkStatus").GetComponent<UILabel>()
-        //    }
-        //}
         if (gameStart)
         {
             foreach (HERO hERO in heroes)
