@@ -7,7 +7,7 @@ public class SupportLogger : MonoBehaviour
 
     public void Start()
     {
-        if (BRM.CacheGameObject.Find("PunSupportLogger") == null)
+        if (CLEARSKIES.CacheGameObject.Find("PunSupportLogger") == null)
         {
             GameObject target = new GameObject("PunSupportLogger");
             UnityEngine.Object.DontDestroyOnLoad(target);

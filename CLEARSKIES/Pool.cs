@@ -6,7 +6,7 @@ using System.IO;
 using UnityEngine;
 using Photon;
 
-namespace BRM
+namespace CLEARSKIES
 {
     public class Pool
     {

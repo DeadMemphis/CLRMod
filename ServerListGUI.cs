@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x02000019 RID: 25
     internal class ServerListGUI : MonoBehaviour/*, MenuGUI*/

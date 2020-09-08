@@ -7,7 +7,7 @@ public class SettingReciveInput : MonoBehaviour
 
     private void OnClick()
     {
-        BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().startListening(this.id);
+        CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().startListening(this.id);
         base.transform.Find("Label").gameObject.GetComponent<UILabel>().text = "*wait for input";
     }
 

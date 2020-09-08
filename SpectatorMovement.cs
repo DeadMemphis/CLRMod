@@ -9,7 +9,7 @@ public class SpectatorMovement : MonoBehaviour
 
     private void Start()
     {
-        this.inputManager = BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
+        this.inputManager = CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
     }
 
     private void Update()

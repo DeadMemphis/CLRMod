@@ -42,12 +42,12 @@ public class BTN_choose_human : MonoBehaviour
 
     private void OnClick()
     {
-        string selection = BRM.CacheGameObject.Find("PopupListCharacterHUMAN").GetComponent<UIPopupList>().selection;
-        NGUITools.SetActive(BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0], true);
+        string selection = CLEARSKIES.CacheGameObject.Find("PopupListCharacterHUMAN").GetComponent<UIPopupList>().selection;
+        NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0], true);
         FengGameManagerMKII.instance.needChooseSide = false;
         if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_CAPTURE)
         {
-            FengGameManagerMKII.instance.checkpoint = BRM.CacheGameObject.Find("PVPchkPtH");
+            FengGameManagerMKII.instance.checkpoint = CLEARSKIES.CacheGameObject.Find("PVPchkPtH");
         }
         if (!PhotonNetwork.isMasterClient && (FengGameManagerMKII.instance.roundTime > 60f))
         {
@@ -77,7 +77,7 @@ public class BTN_choose_human : MonoBehaviour
         {
             FengGameManagerMKII.instance.SpawnPlayer(selection, "playerRespawn");
         }
-        UIReferArray uireferArray = BRM.CacheGameObject.Find<UIReferArray>("UI_IN_GAME");
+        UIReferArray uireferArray = CLEARSKIES.CacheGameObject.Find<UIReferArray>("UI_IN_GAME");
         NGUITools.SetActive(uireferArray.panels[1], false);
         NGUITools.SetActive(uireferArray.panels[2], false);
         NGUITools.SetActive(uireferArray.panels[3], false);

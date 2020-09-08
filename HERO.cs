@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using Xft;
-using BRM;
+using CLEARSKIES;
 using CLEARSKIES;
 
 public class HERO : MONO
@@ -1165,7 +1165,7 @@ public class HERO : MONO
             FengGameManagerMKII.instance.gameLose2();
             this.falseAttack();
             this.hasDied = true;
-            GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hitMeat2"));
+            GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hitMeat2"));
             obj2.transform.position = baseT.position;
             UnityEngine.Object.Destroy(baseG);
         }
@@ -1288,7 +1288,7 @@ public class HERO : MONO
         }
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
         {
-            this.eren_titan = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("TITAN_EREN"), baseT.position, baseT.rotation);
+            this.eren_titan = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("TITAN_EREN"), baseT.position, baseT.rotation);
         }
         else
         {
@@ -2771,7 +2771,7 @@ public class HERO : MONO
             this.useGas(0f);
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
             {
-                this.LBullet = (this.bulletLeft = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hook"))).GetComponent<Bullet>();
+                this.LBullet = (this.bulletLeft = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hook"))).GetComponent<Bullet>();
                 this.bulletLT = this.bulletLeft.transform;
             }
             else if (basePV.isMine)
@@ -2795,7 +2795,7 @@ public class HERO : MONO
             this.useGas(0f);
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
             {
-                this.RBullet = (this.bulletRight = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hook"))).GetComponent<Bullet>();
+                this.RBullet = (this.bulletRight = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hook"))).GetComponent<Bullet>();
                 this.bulletRT = this.bulletRight.transform;
             }
             else if (basePV.isMine)
@@ -2924,7 +2924,7 @@ public class HERO : MONO
     {
         if (this.hasspawn)
         {
-            BRM.StatsTab.AddLine("==> HERO loadskin URL: " + url, StatsTab.DebugType.LOG);
+            CLEARSKIES.StatsTab.AddLine("==> HERO loadskin URL: " + url, StatsTab.DebugType.LOG);
             bool mipmap = true;
             bool iteratorVariable1 = false;
             if (((int)FengGameManagerMKII.settings[0x3f]) == 1)
@@ -3501,7 +3501,7 @@ public class HERO : MONO
 
     public IEnumerator loadskinE(int horse, string url)
     {
-        BRM.StatsTab.AddLine("==> HERO loadskin URL: " + url, StatsTab.DebugType.LOG);
+        CLEARSKIES.StatsTab.AddLine("==> HERO loadskin URL: " + url, StatsTab.DebugType.LOG);
         while (!this.hasspawn)
         {
             yield return null;
@@ -4370,7 +4370,7 @@ public class HERO : MONO
         }
         else
         {
-            obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hitMeat2"));
+            obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hitMeat2"));
         }      
         if (basePV.isMine)
         {
@@ -5026,10 +5026,10 @@ public class HERO : MONO
 
     public void setSkillHUDPosition()
     {
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillId);
+        this.skillCD = CLEARSKIES.CacheGameObject.Find("skill_cd_" + this.skillId);
         if (this.skillCD != null)
         {
-            this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+            this.skillCD.transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
         }
         if (this.useGun)
         {
@@ -5039,10 +5039,10 @@ public class HERO : MONO
 
     public void setSkillHUDPosition2()
     {
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
+        this.skillCD = CLEARSKIES.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
         if (this.skillCD != null)
         {
-            this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+            this.skillCD.transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
         }
         if (this.useGun && (GameSettings.bombMode == 0))
         {
@@ -5112,28 +5112,28 @@ public class HERO : MONO
         this.totalGas = this.currentGas = this.setup.myCostume.stat.GAS;
         this.totalBladeSta = this.currentBladeSta = this.setup.myCostume.stat.BLA;
         baseR.mass = 0.5f - ((this.setup.myCostume.stat.ACL - 100) * 0.001f);
-        BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition = new Vector3(0f, (-Screen.height * 0.5f) + 5f, 0f);
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillId);
-        this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
-        BRM.CacheGameObject.Find("GasUI").transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+        CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition = new Vector3(0f, (-Screen.height * 0.5f) + 5f, 0f);
+        this.skillCD = CLEARSKIES.CacheGameObject.Find("skill_cd_" + this.skillId);
+        this.skillCD.transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+        CLEARSKIES.CacheGameObject.Find("GasUI").transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
         if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL1").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR1").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL2").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR2").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL3").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR3").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL4").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR4").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL5").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR5").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL6").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR6").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL7").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR7").enabled = false;
         }
         if (this.setup.myCostume.uniform_type == UNIFORM_TYPE.CasualAHSS)
         {
@@ -5147,34 +5147,34 @@ public class HERO : MONO
             this.setTeam(2);
             if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
             {
-                BRM.CacheGameObject.Find<UISprite>("bladeCL").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladeCR").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladeCL").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladeCR").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel1").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader1").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel2").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader2").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel3").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader3").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel4").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader4").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel5").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader5").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL1").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR1").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL2").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR2").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL3").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR3").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL4").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR4").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL5").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR5").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL6").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR6").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL7").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR7").enabled = true;
                 this.skillCD.transform.localPosition = (Vector3)(Vector3.up * 5000f);
             }
         }
@@ -5252,28 +5252,28 @@ public class HERO : MONO
         this.totalGas = this.currentGas = this.setup.myCostume.stat.GAS;
         this.totalBladeSta = this.currentBladeSta = this.setup.myCostume.stat.BLA;
         baseR.mass = 0.5f - ((this.setup.myCostume.stat.ACL - 100) * 0.001f);
-        BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition = new Vector3(0f, (-Screen.height * 0.5f) + 5f, 0f);
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
-        this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
-        BRM.CacheGameObject.Find("GasUI").transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+        CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition = new Vector3(0f, (-Screen.height * 0.5f) + 5f, 0f);
+        this.skillCD = CLEARSKIES.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
+        this.skillCD.transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+        CLEARSKIES.CacheGameObject.Find("GasUI").transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
         if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL1").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR1").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL2").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR2").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL3").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR3").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL4").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR4").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL5").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR5").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL6").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR6").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL7").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR7").enabled = false;
         }
         if (this.setup.myCostume.uniform_type == UNIFORM_TYPE.CasualAHSS)
         {
@@ -5287,34 +5287,34 @@ public class HERO : MONO
             this.setTeam2(2);
             if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
             {
-                BRM.CacheGameObject.Find<UISprite>("bladeCL").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladeCR").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladeCL").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladeCR").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel1").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader1").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel2").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader2").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel3").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader3").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel4").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader4").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel5").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader5").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL1").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR1").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL2").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR2").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL3").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR3").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL4").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR4").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL5").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR5").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL6").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR6").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL7").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR7").enabled = true;
                 if (this.skillId != "bomb")
                 {
                     this.skillCD.transform.localPosition = (Vector3)(Vector3.up * 5000f);
@@ -5384,7 +5384,7 @@ public class HERO : MONO
         {
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
             {
-                GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/flareBullet" + type), baseT.position, baseT.rotation);
+                GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/flareBullet" + type), baseT.position, baseT.rotation);
                 obj2.GetComponent<FlareMovement>().dontShowHint();
                 UnityEngine.Object.Destroy(obj2, 25f);
             }
@@ -5427,7 +5427,7 @@ public class HERO : MONO
             {
                 RaycastHit hit2;
                 //GameObject obj9 = BRM.CacheGameObject.Find("cross1");
-                GameObject obj10 = BRM.CacheGameObject.Find("cross2");
+                GameObject obj10 = CLEARSKIES.CacheGameObject.Find("cross2");
                 crossT1.localPosition = Input.mousePosition;
                 //Transform transform = obj9.transform;
                 crossT1.localPosition -= new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
@@ -5485,12 +5485,12 @@ public class HERO : MONO
                 }
                 if (Physics.Linecast(baseT.position + vector3, (baseT.position + vector3) + vector5, out hit2, mask3.value))
                 {
-                    GameObject obj14 = BRM.CacheGameObject.Find("crossR1");
+                    GameObject obj14 = CLEARSKIES.CacheGameObject.Find("crossR1");
                     obj14.transform.localPosition = Camera.main.WorldToScreenPoint(hit2.point);
                     Transform transform8 = obj14.transform;
                     transform8.localPosition -= new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
                     obj14.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(obj14.transform.localPosition.y - (Input.mousePosition.y - (Screen.height * 0.5f)), obj14.transform.localPosition.x - (Input.mousePosition.x - (Screen.width * 0.5f))) * 57.29578f);
-                    GameObject obj15 = BRM.CacheGameObject.Find("crossR2");
+                    GameObject obj15 = CLEARSKIES.CacheGameObject.Find("crossR2");
                     obj15.transform.localPosition = obj14.transform.localPosition;
                     obj15.transform.localRotation = obj14.transform.localRotation;
                     if (hit2.distance > 120f)
@@ -5656,110 +5656,110 @@ public class HERO : MONO
     {
         float num = this.currentGas / this.totalGas;
         float num2 = this.currentBladeSta / this.totalBladeSta;
-        BRM.CacheGameObject.Find("gasL1").GetComponent<UISprite>().fillAmount = this.currentGas / this.totalGas;
-        BRM.CacheGameObject.Find("gasR1").GetComponent<UISprite>().fillAmount = this.currentGas / this.totalGas;
+        CLEARSKIES.CacheGameObject.Find("gasL1").GetComponent<UISprite>().fillAmount = this.currentGas / this.totalGas;
+        CLEARSKIES.CacheGameObject.Find("gasR1").GetComponent<UISprite>().fillAmount = this.currentGas / this.totalGas;
         if (!this.useGun)
         {
-            BRM.CacheGameObject.Find("bladeCL").GetComponent<UISprite>().fillAmount = this.currentBladeSta / this.totalBladeSta;
-            BRM.CacheGameObject.Find("bladeCR").GetComponent<UISprite>().fillAmount = this.currentBladeSta / this.totalBladeSta;
+            CLEARSKIES.CacheGameObject.Find("bladeCL").GetComponent<UISprite>().fillAmount = this.currentBladeSta / this.totalBladeSta;
+            CLEARSKIES.CacheGameObject.Find("bladeCR").GetComponent<UISprite>().fillAmount = this.currentBladeSta / this.totalBladeSta;
             if (num <= 0f)
             {
-                BRM.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.red;
-                BRM.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.red;
+                CLEARSKIES.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.red;
+                CLEARSKIES.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.red;
             }
             else if (num < 0.3f)
             {
-                BRM.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.yellow;
-                BRM.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.yellow;
+                CLEARSKIES.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.yellow;
+                CLEARSKIES.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.yellow;
             }
             else
             {
-                BRM.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.white;
-                BRM.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.white;
+                CLEARSKIES.CacheGameObject.Find("gasL").GetComponent<UISprite>().color = Color.white;
+                CLEARSKIES.CacheGameObject.Find("gasR").GetComponent<UISprite>().color = Color.white;
             }
             if (num2 <= 0f)
             {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.red;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.red;
+                CLEARSKIES.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.red;
+                CLEARSKIES.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.red;
             }
             else if (num2 < 0.3f)
             {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.yellow;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.yellow;
+                CLEARSKIES.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.yellow;
+                CLEARSKIES.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.yellow;
             }
             else
             {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.white;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.white;
+                CLEARSKIES.CacheGameObject.Find("bladel1").GetComponent<UISprite>().color = Color.white;
+                CLEARSKIES.CacheGameObject.Find("blader1").GetComponent<UISprite>().color = Color.white;
             }
             if (this.currentBladeNum <= 4)
             {
-                BRM.CacheGameObject.Find("bladel5").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader5").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("bladel5").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("blader5").GetComponent<UISprite>().enabled = false;
             }
             else
             {
-                BRM.CacheGameObject.Find("bladel5").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader5").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("bladel5").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("blader5").GetComponent<UISprite>().enabled = true;
             }
             if (this.currentBladeNum <= 3)
             {
-                BRM.CacheGameObject.Find("bladel4").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader4").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("bladel4").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("blader4").GetComponent<UISprite>().enabled = false;
             }
             else
             {
-                BRM.CacheGameObject.Find("bladel4").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader4").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("bladel4").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("blader4").GetComponent<UISprite>().enabled = true;
             }
             if (this.currentBladeNum <= 2)
             {
-                BRM.CacheGameObject.Find("bladel3").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader3").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("bladel3").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("blader3").GetComponent<UISprite>().enabled = false;
             }
             else
             {
-                BRM.CacheGameObject.Find("bladel3").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader3").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("bladel3").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("blader3").GetComponent<UISprite>().enabled = true;
             }
             if (this.currentBladeNum <= 1)
             {
-                BRM.CacheGameObject.Find("bladel2").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader2").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("bladel2").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("blader2").GetComponent<UISprite>().enabled = false;
             }
             else
             {
-                BRM.CacheGameObject.Find("bladel2").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader2").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("bladel2").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("blader2").GetComponent<UISprite>().enabled = true;
             }
             if (this.currentBladeNum <= 0)
             {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().enabled = false;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("bladel1").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("blader1").GetComponent<UISprite>().enabled = false;
             }
             else
             {
-                BRM.CacheGameObject.Find("bladel1").GetComponent<UISprite>().enabled = true;
-                BRM.CacheGameObject.Find("blader1").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("bladel1").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("blader1").GetComponent<UISprite>().enabled = true;
             }
         }
         else
         {
             if (this.leftGunHasBullet)
             {
-                BRM.CacheGameObject.Find("bulletL").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("bulletL").GetComponent<UISprite>().enabled = true;
             }
             else
             {
-                BRM.CacheGameObject.Find("bulletL").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("bulletL").GetComponent<UISprite>().enabled = false;
             }
             if (this.rightGunHasBullet)
             {
-                BRM.CacheGameObject.Find("bulletR").GetComponent<UISprite>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("bulletR").GetComponent<UISprite>().enabled = true;
             }
             else
             {
-                BRM.CacheGameObject.Find("bulletR").GetComponent<UISprite>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("bulletR").GetComponent<UISprite>().enabled = false;
             }
         }
     }
@@ -6002,8 +6002,8 @@ public class HERO : MONO
                     FengGameManagerMKII.heroHash.Add(iD, this);
                 }
             }
-            GameObject obj2 = BRM.CacheGameObject.Find("UI_IN_GAME");
-            this.myNetWorkName = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/LabelNameOverHead"));
+            GameObject obj2 = CLEARSKIES.CacheGameObject.Find("UI_IN_GAME");
+            this.myNetWorkName = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/LabelNameOverHead"));
             this.myNetWorkName.name = "LabelNameOverHead";
             this.myNetWorkNameT = this.myNetWorkName.transform;
             this.myNetWorkNameT.parent = obj2.GetComponent<UIReferArray>().panels[0].transform;
@@ -6086,7 +6086,7 @@ public class HERO : MONO
             baseG.layer = LayerMask.NameToLayer("NetworkObject");
             if (IN_GAME_MAIN_CAMERA.dayLight == DayLight.Night)
             {
-                Transform obj3 = ((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("flashlight"))).transform;
+                Transform obj3 = ((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("flashlight"))).transform;
                 obj3.parent = baseT;
                 obj3.position = baseT.position + Vector3.up;
                 obj3.rotation = Quaternion.Euler(353f, 0f, 0f);
@@ -6143,8 +6143,8 @@ public class HERO : MONO
     {
         Transform transform = this.setup.part_blade_l.transform;
         Transform transform2 = this.setup.part_blade_r.transform;
-        GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_blade_l"), transform.position, transform.rotation);
-        GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_blade_r"), transform2.position, transform2.rotation);
+        GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_blade_l"), transform.position, transform.rotation);
+        GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_blade_r"), transform2.position, transform2.rotation);
         obj2.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
         obj3.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
         Vector3 force = (baseT.forward + ((Vector3)(baseT.up * 2f))) - baseT.right;
@@ -7794,7 +7794,7 @@ public class HERO : MONO
             bool flag = !(bool)FengGameManagerMKII.settings[6] || UnityEngine.Random.Range(0, 10) < 2;
             if ((animation.IsPlaying("horse_idle") || animation.IsPlaying("horse_run")) && target != null && targetHERO.horse != null)
             {
-                BRM.StatsTab.AddLine("load to (animation.IsPlaying(horse_idle) || animation.IsPlaying(horse_run)) && target != null && target.horse != null", StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("load to (animation.IsPlaying(horse_idle) || animation.IsPlaying(horse_run)) && target != null && target.horse != null", StatsTab.DebugType.LOG);
                 Horse horse = targetHERO.horse;
                 Transform transform = horse.transform;
                 Rigidbody rigidbody = horse.rigidbody;
@@ -7832,7 +7832,7 @@ public class HERO : MONO
             }
             else if (target != null)
             {
-                BRM.StatsTab.AddLine("load to target != null", StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("load to target != null", StatsTab.DebugType.LOG);
                 if (myHeroRlocal.velocity.magnitude < 20f && Vector3.Angle(myHeroTlocal.position + myHeroRlocal.velocity, this.rockT.position) < 130f && this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2 * 0.25f))
                 {
                     launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
@@ -7844,7 +7844,7 @@ public class HERO : MONO
             }
             else if ((bool)FengGameManagerMKII.settings[10])
             {
-                BRM.StatsTab.AddLine("load to (bool)FengGameManagerMKII.settings[10]", StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("load to (bool)FengGameManagerMKII.settings[10]", StatsTab.DebugType.LOG);
                 if (UnityEngine.Random.Range(0, 5) < 2 && myHeroRlocal.velocity.magnitude < 20f && Vector3.Angle(myHeroTlocal.position + myHeroRlocal.velocity, this.rockT.position) < 130f && this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2 * 0.25f))
                 {
                     launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
@@ -7875,7 +7875,7 @@ public class HERO : MONO
             }
             else if ((int)FengGameManagerMKII.settings[113] == 4)
             {
-                BRM.StatsTab.AddLine("load to (int)FengGameManagerMKII.settings[113] == 4", StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("load to (int)FengGameManagerMKII.settings[113] == 4", StatsTab.DebugType.LOG);
                 if (UnityEngine.Random.Range(0, 5) < 2 && myHeroRlocal.velocity.magnitude < 20f && Vector3.Angle(myHeroTlocal.position + myHeroRlocal.velocity, this.rockT.position) < 130f && this.IsNearingGround(myHeroTlocal.position + myHeroRlocal.velocity, num2 * 0.25f))
                 {
                     launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
@@ -7906,7 +7906,7 @@ public class HERO : MONO
             }
             else
             {
-                BRM.StatsTab.AddLine("load to else", StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("load to else", StatsTab.DebugType.LOG);
                 if (UnityEngine.Random.Range(0, 10) < 5)
                 {
                     launch = new Vector3(launch.x, num4 - 0.5f * num, launch.z);
@@ -7928,7 +7928,7 @@ public class HERO : MONO
         }
         else
         {
-            BRM.StatsTab.AddLine("load to end else", StatsTab.DebugType.LOG);
+            CLEARSKIES.StatsTab.AddLine("load to end else", StatsTab.DebugType.LOG);
             launch = this.baseT.forward * 60f + Vector3.up * 10f;
         }
     }
@@ -8799,7 +8799,7 @@ public class HERO : MONO
                                         }
                                         else
                                         {
-                                            obj4 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load(prefabName), (Vector3)((baseT.position + (baseT.up * 0.8f)) - (baseT.right * 0.1f)), baseT.rotation);
+                                            obj4 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load(prefabName), (Vector3)((baseT.position + (baseT.up * 0.8f)) - (baseT.right * 0.1f)), baseT.rotation);
                                         }
                                     }
                                     if (baseA[this.attackAnimation].normalizedTime >= 1f)
@@ -8823,7 +8823,7 @@ public class HERO : MONO
                                         {
                                             this.setup.part_blade_l.SetActive(false);
                                             Transform transform = this.setup.part_blade_l.transform;
-                                            GameObject obj5 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_l"), transform.position, transform.rotation);
+                                            GameObject obj5 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_l"), transform.position, transform.rotation);
                                             obj5.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
                                             Vector3 force = ((Vector3)((-baseT.forward * 10f) + (baseT.up * 5f))) - baseT.right;
                                             obj5.rigidbody.AddForce(force, ForceMode.Impulse);
@@ -8834,7 +8834,7 @@ public class HERO : MONO
                                         {
                                             this.setup.part_blade_r.SetActive(false);
                                             Transform transform5 = this.setup.part_blade_r.transform;
-                                            GameObject obj6 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_r"), transform5.position, transform5.rotation);
+                                            GameObject obj6 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_r"), transform5.position, transform5.rotation);
                                             obj6.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
                                             Vector3 vector3 = ((Vector3)((-baseT.forward * 10f) + (baseT.up * 5f))) + baseT.right;
                                             obj6.rigidbody.AddForce(vector3, ForceMode.Impulse);
@@ -9221,11 +9221,11 @@ public class HERO : MONO
     {
         for (int i = 1; i <= this.bulletMAX; i++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletL" + i).enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL" + i).enabled = false;
         }
         for (int j = 1; j <= this.leftBulletLeft; j++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletL" + j).enabled = true;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL" + j).enabled = true;
         }
     }
 
@@ -9233,11 +9233,11 @@ public class HERO : MONO
     {
         for (int i = 1; i <= this.bulletMAX; i++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletR" + i).enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR" + i).enabled = false;
         }
         for (int j = 1; j <= this.rightBulletLeft; j++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletR" + j).enabled = true;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR" + j).enabled = true;
         }
     }
 

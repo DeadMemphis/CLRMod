@@ -31,8 +31,8 @@ public class TITAN_CONTROLLER : MonoBehaviour
 
     private void Start()
     {
-        this.inputManager = BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
-        this.currentCamera = BRM.CacheGameObject.Find("MainCamera").GetComponent<Camera>();
+        this.inputManager = CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
+        this.currentCamera = CLEARSKIES.CacheGameObject.Find("MainCamera").GetComponent<Camera>();
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
         {
             base.enabled = false;

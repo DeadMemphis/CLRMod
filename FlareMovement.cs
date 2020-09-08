@@ -33,7 +33,7 @@ public class FlareMovement : MonoBehaviour
         this.hero = IN_GAME_MAIN_CAMERA.main_object;
         if (!this.nohint && (this.hero != null))
         {
-            this.hintT = ( this.hint = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/" + this.color + "FlareHint"))).transform;
+            this.hintT = ( this.hint = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/" + this.color + "FlareHint"))).transform;
             if (this.color == "Black")
             {
                 this.offY = (Vector3) (Vector3.up * 0.4f);

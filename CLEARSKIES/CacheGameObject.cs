@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BRM
+namespace CLEARSKIES
 {
-    // Token: 0x02000078 RID: 120
     public static class CacheGameObject
     {
-        // Token: 0x060003C8 RID: 968 RVA: 0x00027FD8 File Offset: 0x000261D8
+        private static Dictionary<string, GameObject> cache = new Dictionary<string, GameObject>();
+        private static Dictionary<string, Component> cacheType = new Dictionary<string, Component>();
+
         public static T Find<T>(string name) where T : Component
         {
             string key = name + typeof(T).FullName;
@@ -36,7 +37,6 @@ namespace BRM
             return default(T);
         }
 
-        // Token: 0x060003C9 RID: 969 RVA: 0x000280C8 File Offset: 0x000262C8
         public static GameObject Find(string name)
         {
             string text = name.ToLower().Trim();
@@ -74,11 +74,5 @@ namespace BRM
             }
             return gameObject;
         }
-
-        // Token: 0x0400030F RID: 783
-        private static System.Collections.Generic.Dictionary<string, GameObject> cache = new System.Collections.Generic.Dictionary<string, GameObject>();
-
-        // Token: 0x04000310 RID: 784
-        private static System.Collections.Generic.Dictionary<string, Component> cacheType = new System.Collections.Generic.Dictionary<string, Component>();
     }
 }

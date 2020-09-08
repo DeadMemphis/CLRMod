@@ -92,7 +92,7 @@ public class Localization : MonoBehaviour
                             index++;
                         }
                     }
-                    TextAsset asset2 = BRM.CacheResources.Load(value, typeof(TextAsset)) as TextAsset;
+                    TextAsset asset2 = CLEARSKIES.CacheResources.Load(value, typeof(TextAsset)) as TextAsset;
                     if (asset2 != null)
                     {
                         this.Load(asset2);

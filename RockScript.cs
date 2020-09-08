@@ -35,7 +35,7 @@ public class RockScript : MonoBehaviour
                 {
                     if (FengGameManagerMKII.LAN)
                     {
-                        Network.Instantiate(BRM.CacheResources.Load("FX/boom1_CT_KICK"), base.transform.position + ((Vector3) (Vector3.up * 30f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                        Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom1_CT_KICK"), base.transform.position + ((Vector3) (Vector3.up * 30f)), Quaternion.Euler(270f, 0f, 0f), 0);
                     }
                     else
                     {
@@ -44,7 +44,7 @@ public class RockScript : MonoBehaviour
                 }
                 else
                 {
-                    UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom1_CT_KICK"), base.transform.position + ((Vector3) (Vector3.up * 30f)), Quaternion.Euler(270f, 0f, 0f));
+                    UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom1_CT_KICK"), base.transform.position + ((Vector3) (Vector3.up * 30f)), Quaternion.Euler(270f, 0f, 0f));
                 }
                 this.disable = true;
             }

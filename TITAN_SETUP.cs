@@ -39,7 +39,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
         this.hairType = hair;
         if (this.hair.hair != string.Empty)
         {
-            GameObject iteratorVariable1 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+            GameObject iteratorVariable1 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
             iteratorVariable1.transform.parent = this.hair_go_ref.transform.parent;
             iteratorVariable1.transform.position = this.hair_go_ref.transform.position;
             iteratorVariable1.transform.rotation = this.hair_go_ref.transform.rotation;
@@ -118,7 +118,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
             this.hair = CostumeHair.hairsM[9];
             this.hairType = 9;
         }
-        this.part_hair = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+        this.part_hair = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
         this.part_hair.transform.parent = this.hair_go_ref.transform.parent;
         this.part_hair.transform.position = this.hair_go_ref.transform.position;
         this.part_hair.transform.rotation = this.hair_go_ref.transform.rotation;
@@ -208,7 +208,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
                 this.hair = CostumeHair.hairsM[9];
                 this.hairType = 9;
             }
-            this.part_hair = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+            this.part_hair = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
             this.part_hair.transform.parent = this.hair_go_ref.transform.parent;
             this.part_hair.transform.position = this.hair_go_ref.transform.position;
             this.part_hair.transform.rotation = this.hair_go_ref.transform.rotation;
@@ -233,7 +233,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
         this.hairType = type;
         if (this.hair.hair != string.Empty)
         {
-            GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+            GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
             obj2.transform.parent = this.hair_go_ref.transform.parent;
             obj2.transform.position = this.hair_go_ref.transform.position;
             obj2.transform.rotation = this.hair_go_ref.transform.rotation;
@@ -259,7 +259,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
         UnityEngine.Object.Destroy(this.part_hair);
         this.hair = CostumeHair.hairsM[3];
         this.hairType = 3;
-        GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+        GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
         obj2.transform.parent = this.hair_go_ref.transform.parent;
         obj2.transform.position = this.hair_go_ref.transform.position;
         obj2.transform.rotation = this.hair_go_ref.transform.rotation;

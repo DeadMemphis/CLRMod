@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace BRM
+namespace CLEARSKIES
 {
     [System.Runtime.InteropServices.ComVisible(true)]
 	[System.Serializable]

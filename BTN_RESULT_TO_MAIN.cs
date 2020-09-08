@@ -14,8 +14,8 @@ public class BTN_RESULT_TO_MAIN : MonoBehaviour
         FengGameManagerMKII.gameStart = false;
         Screen.lockCursor = false;
         Screen.showCursor = true;
-        BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = false;
-        UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("MultiplayerManager"));
+        CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().menuOn = false;
+        UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("MultiplayerManager"));
         Application.LoadLevel("menu");
     }
 }

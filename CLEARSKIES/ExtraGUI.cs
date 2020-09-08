@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x020000DD RID: 221
     internal class ExtraGUI : MonoBehaviour

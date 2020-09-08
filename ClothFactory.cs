@@ -41,7 +41,7 @@ public static class ClothFactory
             go.AddComponent<SkinnedMeshRenderer>();
         }
         Transform[] bones = go.GetComponent<SkinnedMeshRenderer>().bones;
-        SkinnedMeshRenderer component = ((GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load(res))).GetComponent<SkinnedMeshRenderer>();
+        SkinnedMeshRenderer component = ((GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load(res))).GetComponent<SkinnedMeshRenderer>();
         component.transform.localScale = Vector3.one;
         component.bones = bones;
         component.quality = SkinQuality.Bone4;

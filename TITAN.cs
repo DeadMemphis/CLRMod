@@ -1,4 +1,4 @@
-﻿using BRM;
+﻿using CLEARSKIES;
 using ExitGames.Client.Photon;
 using Photon;
 using System;
@@ -970,7 +970,7 @@ public class TITAN : MONO
             }
             else
             {
-                obj2 = (Transform)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("bloodExplore"), this.head.position + ((Vector3) ((Vector3.up * 1f) * this.myLevel)), Quaternion.Euler(270f, 0f, 0f));
+                obj2 = (Transform)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("bloodExplore"), this.head.position + ((Vector3) ((Vector3.up * 1f) * this.myLevel)), Quaternion.Euler(270f, 0f, 0f));
             }
             obj2.localScale =baseT.localScale;
             if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && basePV.isMine)
@@ -979,7 +979,7 @@ public class TITAN : MONO
             }
             else
             {
-                obj2 = (Transform) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("bloodsplatter"), this.head.position, Quaternion.Euler(270f + this.neck.rotation.eulerAngles.x, this.neck.rotation.eulerAngles.y, this.neck.rotation.eulerAngles.z));
+                obj2 = (Transform) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("bloodsplatter"), this.head.position, Quaternion.Euler(270f + this.neck.rotation.eulerAngles.x, this.neck.rotation.eulerAngles.y, this.neck.rotation.eulerAngles.z));
             }
             obj2.localScale =baseT.localScale;
             obj2.parent = this.neck;
@@ -989,7 +989,7 @@ public class TITAN : MONO
             }
             else
             {
-                obj2 = (Transform) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/justSmoke"), this.neck.position, Quaternion.Euler(270f, 0f, 0f));
+                obj2 = (Transform) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/justSmoke"), this.neck.position, Quaternion.Euler(270f, 0f, 0f));
             }
             obj2.parent = this.neck;
             if (basePV.isMine)
@@ -3347,7 +3347,7 @@ public class TITAN : MONO
         else if (type == AbnormalType.TYPE_CRAWLER)
         {
             num = 3;
-            if ((BRM.CacheGameObject.Find("Crawler") != null) && (UnityEngine.Random.Range(0, 0x3e8) > 5))
+            if ((CLEARSKIES.CacheGameObject.Find("Crawler") != null) && (UnityEngine.Random.Range(0, 0x3e8) > 5))
             {
                 num = 2;
             }
@@ -3458,7 +3458,7 @@ public class TITAN : MONO
         else if (type == AbnormalType.TYPE_CRAWLER)
         {
             num = 3;
-            if ((BRM.CacheGameObject.Find("Crawler") != null) && (UnityEngine.Random.Range(0, 0x3e8) > 5))
+            if ((CLEARSKIES.CacheGameObject.Find("Crawler") != null) && (UnityEngine.Random.Range(0, 0x3e8) > 5))
             {
                 num = 2;
             }
@@ -5740,7 +5740,7 @@ public class TITAN : MONO
                     }
                     if (!IN_GAME_MAIN_CAMERA.isPausing)
                     {
-                        BRM.CacheGameObject.Find("stamina_titan").transform.localScale = new Vector3(this.stamina, 16f);
+                        CLEARSKIES.CacheGameObject.Find("stamina_titan").transform.localScale = new Vector3(this.stamina, 16f);
                     }
                 }
                 if (this.state == TitanState.laugh)
@@ -6058,7 +6058,7 @@ public class TITAN : MONO
                         }
                         else
                         {
-                            transform = (gameObject = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation)).transform;
+                            transform = (gameObject = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation)).transform;
                         }
                         EnemyfxIDcontainer component = gameObject.GetComponent<EnemyfxIDcontainer>();
                         if (this.nonAI)
@@ -6094,7 +6094,7 @@ public class TITAN : MONO
                             }
                             else
                             {
-                                this.throwRock = (RockThrow) UnityEngine.Object.Instantiate(BRM.CacheResources.Load<RockThrow>("FX/rockThrow"), this.hand_R_001.position, this.hand_R_001.rotation);
+                                this.throwRock = (RockThrow) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load<RockThrow>("FX/rockThrow"), this.hand_R_001.position, this.hand_R_001.rotation);
                             }
                             this.rockT = this.throwRock.transform;
                             this.rockT.localScale = baseT.localScale;
@@ -6266,7 +6266,7 @@ public class TITAN : MONO
                             }
                             else
                             {
-                                obj11 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom2"), this.fxPosition, this.fxRotation);
+                                obj11 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom2"), this.fxPosition, this.fxRotation);
                             }
                             obj11.transform.localScale = (Vector3) (baseT.localScale * 1.6f);
                             float num23 = 1f - (Vector3.Distance(this.camT.position, obj11.transform.position) * 0.05f);

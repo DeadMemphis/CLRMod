@@ -15,9 +15,9 @@ namespace CLEARSKIES
         {
             Action threadAction = () =>
             {
-                BRM.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), BRM.StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), CLEARSKIES.StatsTab.DebugType.LOG);
                 method();
-                BRM.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", BRM.StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", CLEARSKIES.StatsTab.DebugType.LOG);
                 return;
             };
             Execute(threadAction); 
@@ -26,9 +26,9 @@ namespace CLEARSKIES
         {
             Action threadAction = () =>
             {
-                BRM.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), BRM.StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), CLEARSKIES.StatsTab.DebugType.LOG);
                 method(val);
-                BRM.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", BRM.StatsTab.DebugType.LOG);//BRM.StatsTab.AddLine("State thread: " + _thread.ThreadState.ToString(), BRM.StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", CLEARSKIES.StatsTab.DebugType.LOG);//BRM.StatsTab.AddLine("State thread: " + _thread.ThreadState.ToString(), BRM.StatsTab.DebugType.LOG);
                 return;
             };
             Execute(threadAction);
@@ -37,9 +37,9 @@ namespace CLEARSKIES
         {
             Action threadAction = () =>
             {
-                BRM.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), BRM.StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("==> begin action in thread: " + method.ToString(), CLEARSKIES.StatsTab.DebugType.LOG);
                 method(val, val2);
-                BRM.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", BRM.StatsTab.DebugType.LOG);
+                CLEARSKIES.StatsTab.AddLine("==> the action in thread: " + method.ToString() + "is end.", CLEARSKIES.StatsTab.DebugType.LOG);
                 return;
             };
             Execute(threadAction);

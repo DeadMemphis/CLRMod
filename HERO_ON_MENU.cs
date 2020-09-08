@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using BRM;
+using CLEARSKIES;
 using CLEARSKIES.Pooling;
 
 public class HERO_ON_MENU : Photon.MonoBehaviour
@@ -44,7 +44,7 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
             //}
             this.time += Time.fixedDeltaTime;
             this.time2 += Time.fixedDeltaTime;
-            if (this.time > Mathf.Min(UnityEngine.Random.Range(0.25f, 1.55f), 0.89f))
+            if (this.time > Mathf.Min(UnityEngine.Random.Range(5f, 15f), 10f))
             {
                 this.time = 0f;               
                 UnityEngine.Object.Instantiate(thunder, ThunderPos, ThunderQuat * Quaternion.Inverse(this.mainCameraT.rotation));                

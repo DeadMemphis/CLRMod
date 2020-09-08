@@ -21,7 +21,7 @@ public static class PhotonNetwork
     private static Room offlineModeRoom = null;
     public static EventCallback OnEventCall;
     internal static readonly PhotonHandler photonMono;
-    public static ServerSettings PhotonServerSettings = ((ServerSettings) BRM.CacheResources.Load("PhotonServerSettings", typeof(ServerSettings)));
+    public static ServerSettings PhotonServerSettings = ((ServerSettings) CLEARSKIES.CacheResources.Load("PhotonServerSettings", typeof(ServerSettings)));
     public static float precisionForFloatSynchronization = 0.01f;
     public static float precisionForQuaternionSynchronization = 1f;
     public static float precisionForVectorSynchronization = 9.9E-05f;
@@ -438,11 +438,11 @@ public static class PhotonNetwork
         T t;
         if (prefabName.StartsWith("RCAsset/"))
         {
-            t = BRM.CacheResources.RCLoad<T>(prefabName.Substring(8));
+            t = CLEARSKIES.CacheResources.RCLoad<T>(prefabName.Substring(8));
         }
         else
         {
-            t = BRM.CacheResources.Load<T>(prefabName);
+            t = CLEARSKIES.CacheResources.Load<T>(prefabName);
         }
         if (t == null)
         {
@@ -463,7 +463,7 @@ public static class PhotonNetwork
         return PhotonNetwork.networkingPeer.DoInstantiate<T>(PhotonNetwork.networkingPeer.SendInstantiate(prefabName, position, rotation, group, array, data, false), NetworkingPeer.instance.mLocalActor, t);
     }
 
-    public static void PoolDisable(this BRM.Pool pool, GameObject GO)
+    public static void PoolDisable(this CLEARSKIES.Pool pool, GameObject GO)
     {
         if (pool != null && GO != null && pool.Contains(GO))
         {
@@ -477,7 +477,7 @@ public static class PhotonNetwork
             GO.SetActive(false);
         }
     }
-    public static T PoolEnable<T>(this BRM.Pool pool, string prefabName, Vector3 position, Quaternion rotation, int group = 0, object[] data = null) where T : Component
+    public static T PoolEnable<T>(this CLEARSKIES.Pool pool, string prefabName, Vector3 position, Quaternion rotation, int group = 0, object[] data = null) where T : Component
     {
         if (!PhotonNetwork.connected || (PhotonNetwork.InstantiateInRoomOnly && !PhotonNetwork.inRoom))
         {
@@ -514,7 +514,7 @@ public static class PhotonNetwork
         PhotonNetwork.networkingPeer.photonViewList[component.viewID] = component;
         return t;
     }
-    public static GameObject PoolEnable(this BRM.Pool pool, string prefabName, Vector3 position, Quaternion rotation, int group = 0, object[] data = null)
+    public static GameObject PoolEnable(this CLEARSKIES.Pool pool, string prefabName, Vector3 position, Quaternion rotation, int group = 0, object[] data = null)
     {
         if (!PhotonNetwork.connected || (PhotonNetwork.InstantiateInRoomOnly && !PhotonNetwork.inRoom))
         {
@@ -551,7 +551,7 @@ public static class PhotonNetwork
         PhotonNetwork.networkingPeer.photonViewList[component.viewID] = component;
         return gameObject;
     }
-    public static T PoolEventEnable<T>(this BRM.Pool pool, string prefabName, Vector3 position, Quaternion rotation, RaiseEventOptions options) where T : Component
+    public static T PoolEventEnable<T>(this CLEARSKIES.Pool pool, string prefabName, Vector3 position, Quaternion rotation, RaiseEventOptions options) where T : Component
     {
         if (!PhotonNetwork.connected || (PhotonNetwork.InstantiateInRoomOnly && !PhotonNetwork.inRoom))
         {
@@ -588,7 +588,7 @@ public static class PhotonNetwork
         PhotonNetwork.networkingPeer.photonViewList[component.viewID] = component;
         return t;
     }
-    public static GameObject PoolEventEnable(this BRM.Pool pool, string prefabName, Vector3 position, Quaternion rotation, RaiseEventOptions options)
+    public static GameObject PoolEventEnable(this CLEARSKIES.Pool pool, string prefabName, Vector3 position, Quaternion rotation, RaiseEventOptions options)
     {
         if (!PhotonNetwork.connected || (PhotonNetwork.InstantiateInRoomOnly && !PhotonNetwork.inRoom))
         {
@@ -635,11 +635,11 @@ public static class PhotonNetwork
         }
         if (prefabName.StartsWith("RCAsset/"))
         {
-            obj2 = BRM.CacheResources.RCLoad<GameObject>(prefabName.Substring(8));
+            obj2 = CLEARSKIES.CacheResources.RCLoad<GameObject>(prefabName.Substring(8));
         }
         else
         {
-            obj2 = BRM.CacheResources.Load<GameObject>(prefabName);
+            obj2 = CLEARSKIES.CacheResources.Load<GameObject>(prefabName);
         }
         //if (!UsePrefabCache || !PrefabCache.TryGetValue(prefabName, out obj2))
         //{
@@ -689,7 +689,7 @@ public static class PhotonNetwork
             return null;
         }
 
-        obj2 = (GameObject) BRM.CacheResources.Load(prefabName, typeof(GameObject));
+        obj2 = (GameObject) CLEARSKIES.CacheResources.Load(prefabName, typeof(GameObject));
 
         if (obj2 == null)
         {

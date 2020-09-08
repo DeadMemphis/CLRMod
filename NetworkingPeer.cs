@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using BRM;
+using CLEARSKIES;
 using CLEARSKIES;
 using System.Linq;
 
@@ -2466,7 +2466,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             view2.isLocal.ToString(),
                             view2.gameObject.name
                         });
-                        BRM.StatsTab.AddLine("==> had to lookup view that wasn't in dict: " + content, StatsTab.DebugType.WARNING);
+                        CLEARSKIES.StatsTab.AddLine("==> had to lookup view that wasn't in dict: " + content, StatsTab.DebugType.WARNING);
                         this.photonViewList[view2.viewID] = view2;
                     }
                     return view2;

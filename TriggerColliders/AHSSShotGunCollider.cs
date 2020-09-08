@@ -339,7 +339,7 @@ public class AHSSShotGunCollider : MonoBehaviour
         }
         else
         {
-            obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("redCross1"));
+            obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("redCross1"));
         }
         obj2.transform.position = position;
     }

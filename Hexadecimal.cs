@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x020001DC RID: 476
     public static class Hexadecimal

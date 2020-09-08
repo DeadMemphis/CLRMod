@@ -4,11 +4,11 @@ using System;
 using System.CodeDom;
 using System.Linq;
 using System.Collections.Generic;
-using BRM;
+using CLEARSKIES;
 using CLEARSKIES;
 using System.Collections;
 
-namespace BRM
+namespace CLEARSKIES
 {
     public class StatsTab : Photon.MonoBehaviour
     {

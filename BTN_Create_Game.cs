@@ -6,7 +6,7 @@ public class BTN_Create_Game : MonoBehaviour
     private void OnClick()
     {
         NGUITools.SetActive(base.transform.parent.gameObject, false);
-        NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiSet, true);
+        NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiSet, true);
     }
 }
 

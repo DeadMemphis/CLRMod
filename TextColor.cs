@@ -1,5 +1,5 @@
 ﻿using System;
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x020001DE RID: 478
     public enum TextColor : byte

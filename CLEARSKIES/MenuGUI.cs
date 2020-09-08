@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x02000018 RID: 24
     internal interface MenuGUI

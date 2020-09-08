@@ -43,8 +43,8 @@ public class BTN_ToJoin : MonoBehaviour
     {
         Vector3 vector;
         NGUITools.SetActive(base.transform.parent.gameObject, false);
-        NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().PanelMultiJoinPrivate, true);
-        Transform transform = BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().PanelMultiJoinPrivate.transform;
+        NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().PanelMultiJoinPrivate, true);
+        Transform transform = CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().PanelMultiJoinPrivate.transform;
         Transform transform2 = transform.Find("ButtonJOIN");
         if (transform2.GetComponent<BTN_Join_LAN>() == null)
         {

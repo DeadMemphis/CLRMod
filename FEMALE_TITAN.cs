@@ -1136,7 +1136,7 @@ public class FEMALE_TITAN : MONO
         {
             if (this.healthLabel == null)
             {
-                this.healthLabel = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/LabelNameOverHead"));
+                this.healthLabel = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/LabelNameOverHead"));
                 this.healthLabel.name = "LabelNameOverHead";
                 this.healthLabel.transform.parent = base.transform;
                 this.healthLabel.transform.localPosition = new Vector3(0f, 52f, 0f);
@@ -1310,7 +1310,7 @@ public class FEMALE_TITAN : MONO
 
     private void OnDestroy()
     {
-        if (BRM.CacheGameObject.Find("MultiplayerManager") != null)
+        if (CLEARSKIES.CacheGameObject.Find("MultiplayerManager") != null)
         {
             FengGameManagerMKII.instance.removeFT(this);
         }
@@ -1403,7 +1403,7 @@ public class FEMALE_TITAN : MONO
         base.name = "Female Titan";
         this.grabTF = new GameObject();
         this.grabTF.name = "titansTmpGrabTF";
-        this.currentCamera = BRM.CacheGameObject.Find("MainCamera");
+        this.currentCamera = CLEARSKIES.CacheGameObject.Find("MainCamera");
         this.oldCorePosition = base.transform.position - base.transform.Find("Amarture/Core").position;
         if (this.myHero == null)
         {
@@ -1555,7 +1555,7 @@ public class FEMALE_TITAN : MONO
                     this.hasDieSteam = true;
                     if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                     {
-                        GameObject obj3 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/FXtitanDie1"));
+                        GameObject obj3 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanDie1"));
                         obj3.transform.position = base.transform.Find("Amarture/Core/Controller_Body/hip").position;
                         obj3.transform.localScale = base.transform.localScale;
                     }
@@ -1568,7 +1568,7 @@ public class FEMALE_TITAN : MONO
                 {
                     if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                     {
-                        GameObject obj5 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/FXtitanDie"));
+                        GameObject obj5 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanDie"));
                         obj5.transform.position = base.transform.Find("Amarture/Core/Controller_Body/hip").position;
                         obj5.transform.localScale = base.transform.localScale;
                         UnityEngine.Object.Destroy(base.gameObject);
@@ -1676,7 +1676,7 @@ public class FEMALE_TITAN : MONO
                         }
                         else
                         {
-                            obj7 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation);
+                            obj7 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation);
                         }
                         obj7.transform.localScale = base.transform.localScale;
                         float b = 1f - (Vector3.Distance(this.currentCamera.transform.position, obj7.transform.position) * 0.05f);

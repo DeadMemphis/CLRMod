@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x02000087 RID: 135
     internal class F2GUI : MonoBehaviour

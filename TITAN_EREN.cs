@@ -108,7 +108,7 @@ private string attackAnimation;
         this.playSound("snd_eren_shift");
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
         {
-            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/Thunder"), base.transform.position + ((Vector3) (Vector3.up * 23f)), Quaternion.Euler(270f, 0f, 0f));
+            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/Thunder"), base.transform.position + ((Vector3) (Vector3.up * 23f)), Quaternion.Euler(270f, 0f, 0f));
         }
         else if (base.photonView.isMine)
         {
@@ -237,7 +237,7 @@ private string attackAnimation;
                             zero = base.rigidbody.velocity;
                             if (base.animation.IsPlaying("jump_air"))
                             {
-                                GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom2_eren"), base.transform.position, Quaternion.Euler(270f, 0f, 0f));
+                                GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom2_eren"), base.transform.position, Quaternion.Euler(270f, 0f, 0f));
                                 obj2.transform.localScale = (Vector3) (Vector3.one * 1.5f);
                                 if (this.needRoar)
                                 {
@@ -368,7 +368,7 @@ private string attackAnimation;
                 }
                 else
                 {
-                    obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("bloodExplore"), transform.position + ((Vector3) ((Vector3.up * 1f) * 4f)), Quaternion.Euler(270f, 0f, 0f));
+                    obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("bloodExplore"), transform.position + ((Vector3) ((Vector3.up * 1f) * 4f)), Quaternion.Euler(270f, 0f, 0f));
                 }
                 obj2.transform.localScale = base.transform.localScale;
                 if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && PhotonNetwork.isMasterClient)
@@ -377,7 +377,7 @@ private string attackAnimation;
                 }
                 else
                 {
-                    obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("bloodsplatter"), transform.position, Quaternion.Euler(90f + transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+                    obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("bloodsplatter"), transform.position, Quaternion.Euler(90f + transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
                 }
                 obj2.transform.localScale = base.transform.localScale;
                 obj2.transform.parent = transform;
@@ -387,7 +387,7 @@ private string attackAnimation;
                 }
                 else
                 {
-                    obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/justSmoke"), transform.position, Quaternion.Euler(270f, 0f, 0f));
+                    obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/justSmoke"), transform.position, Quaternion.Euler(270f, 0f, 0f));
                 }
                 obj2.transform.parent = transform;
             }
@@ -566,7 +566,7 @@ private string attackAnimation;
 
     private void OnDestroy()
     {
-        if (BRM.CacheGameObject.Find("MultiplayerManager") != null)
+        if (CLEARSKIES.CacheGameObject.Find("MultiplayerManager") != null)
         {
             FengGameManagerMKII.instance.removeET(this);
         }
@@ -723,7 +723,7 @@ private string attackAnimation;
                                 this.targetCheckPt = vector6;
                                 this.checkPoints.RemoveAt(0);
                                 GameObject[] objArray = GameObject.FindGameObjectsWithTag("titanRespawn2");
-                                GameObject obj2 = BRM.CacheGameObject.Find("titanRespawnTrost" + (7 - this.checkPoints.Count));
+                                GameObject obj2 = CLEARSKIES.CacheGameObject.Find("titanRespawnTrost" + (7 - this.checkPoints.Count));
                                 if (obj2 != null)
                                 {
                                     foreach (GameObject obj3 in objArray)
@@ -811,7 +811,7 @@ private string attackAnimation;
                         }
                         else
                         {
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom1_CT_KICK"), new Vector3(0f, 30f, 684f), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom1_CT_KICK"), new Vector3(0f, 30f, 684f), Quaternion.Euler(270f, 0f, 0f));
                         }
                     }
                 }
@@ -821,7 +821,7 @@ private string attackAnimation;
 
     public void setRoute()
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("routeTrost");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("routeTrost");
         this.checkPoints = new ArrayList();
         for (int i = 1; i <= 7; i++)
         {
@@ -832,13 +832,13 @@ private string attackAnimation;
 
     private void showAimUI()
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("cross1");
-        GameObject obj3 = BRM.CacheGameObject.Find("cross2");
-        GameObject obj4 = BRM.CacheGameObject.Find("crossL1");
-        GameObject obj5 = BRM.CacheGameObject.Find("crossL2");
-        GameObject obj6 = BRM.CacheGameObject.Find("crossR1");
-        GameObject obj7 = BRM.CacheGameObject.Find("crossR2");
-        GameObject obj8 = BRM.CacheGameObject.Find("LabelDistance");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("cross1");
+        GameObject obj3 = CLEARSKIES.CacheGameObject.Find("cross2");
+        GameObject obj4 = CLEARSKIES.CacheGameObject.Find("crossL1");
+        GameObject obj5 = CLEARSKIES.CacheGameObject.Find("crossL2");
+        GameObject obj6 = CLEARSKIES.CacheGameObject.Find("crossR1");
+        GameObject obj7 = CLEARSKIES.CacheGameObject.Find("crossR2");
+        GameObject obj8 = CLEARSKIES.CacheGameObject.Find("LabelDistance");
         Vector3 vector = (Vector3) (Vector3.up * 10000f);
         obj7.transform.localPosition = vector;
         obj6.transform.localPosition = vector;
@@ -851,7 +851,7 @@ private string attackAnimation;
 
     private void showSkillCD()
     {
-        BRM.CacheGameObject.Find("skill_cd_eren").GetComponent<UISprite>().fillAmount = this.lifeTime / this.lifeTimeMax;
+        CLEARSKIES.CacheGameObject.Find("skill_cd_eren").GetComponent<UISprite>().fillAmount = this.lifeTime / this.lifeTimeMax;
     }
 
     private void Start()
@@ -860,13 +860,13 @@ private string attackAnimation;
         FengGameManagerMKII.instance.addET(this);
         if (this.rockLift)
         {
-            this.rock = BRM.CacheGameObject.Find("rock");
+            this.rock = CLEARSKIES.CacheGameObject.Find("rock");
             this.rock.animation["lift"].speed = 0f;
         }
         else
         {
-            this.currentCamera = BRM.CacheGameObject.Find("MainCamera").GetComponent<Camera>();
-            this.inputManager = BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
+            this.currentCamera = CLEARSKIES.CacheGameObject.Find("MainCamera").GetComponent<Camera>();
+            this.inputManager = CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>();
             this.oldCorePosition = base.transform.position - base.transform.Find("Amarture/Core").position;
             this.myR = this.sqrt2 * 6f;
             base.animation["hit_annie_1"].speed = 0.8f;
@@ -921,7 +921,7 @@ private string attackAnimation;
                             this.hasDieSteam = true;
                             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                             {
-                                GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/FXtitanDie1"));
+                                GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanDie1"));
                                 obj2.transform.position = base.transform.Find("Amarture/Core/Controller_Body/hip").position;
                                 obj2.transform.localScale = base.transform.localScale;
                             }
@@ -934,7 +934,7 @@ private string attackAnimation;
                         {
                             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                             {
-                                GameObject obj4 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/FXtitanDie"));
+                                GameObject obj4 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanDie"));
                                 obj4.transform.position = base.transform.Find("Amarture/Core/Controller_Body/hip").position;
                                 obj4.transform.localScale = base.transform.localScale;
                                 UnityEngine.Object.Destroy(base.gameObject);
@@ -1186,7 +1186,7 @@ private string attackAnimation;
                                         }
                                         else
                                         {
-                                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hitMeatBIG"), (Vector3) ((colliderArray[i].transform.position + this.attackBox.position) * 0.5f), Quaternion.Euler(270f, 0f, 0f));
+                                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hitMeatBIG"), (Vector3) ((colliderArray[i].transform.position + this.attackBox.position) * 0.5f), Quaternion.Euler(270f, 0f, 0f));
                                         }
                                     }
                                 }

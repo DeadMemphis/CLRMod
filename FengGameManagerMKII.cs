@@ -11,7 +11,7 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 //using ExitGames.Client.Photon.Lite;
-using BRM;
+using CLEARSKIES;
 using CLEARSKIES;
 using System.Threading;
 //using System.Threading.Tasks;
@@ -3169,7 +3169,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         this.ShowHUDInfoCenter(string.Empty);
                         this.startRacing = true;
                         this.endRacing = false;
-                        BRM.CacheGameObject.Find("door").SetActive(false);
+                        CLEARSKIES.CacheGameObject.Find("door").SetActive(false);
                     }
                 }
                 else
@@ -4814,7 +4814,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     {
                         if (strArray[1].StartsWith("disablebounds"))
                         {
-                            UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("gameobjectOutSide"));
+                            UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("gameobjectOutSide"));
                             UnityEngine.Object.Instantiate(CacheResources.RCLoad<GameObject>("outside"));
                         }
                     }
@@ -5215,7 +5215,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 {
                     if (strArray[1].StartsWith("disablebounds"))
                     {
-                        UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("gameobjectOutSide"));
+                        UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("gameobjectOutSide"));
                         UnityEngine.Object.Instantiate(CacheResources.RCLoad<GameObject>("outside"));
                     }
                 }
@@ -5319,7 +5319,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 if (content[0] == "loadcached")
                 {
                     //base.StartCoroutine(this.customlevelcache());
-                    BRM.StatsTab.AddLine("customlevelRPC = loadcached");
+                    CLEARSKIES.StatsTab.AddLine("customlevelRPC = loadcached");
                     logicLoaded = true;
                     customLevelLoaded = true;
                     scriptcache = string.Empty;
@@ -5328,7 +5328,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
                 if (content[0] == "loadempty")
                 {
-                    BRM.StatsTab.AddLine("customlevelRPC = loadempty");
+                    CLEARSKIES.StatsTab.AddLine("customlevelRPC = loadempty");
                     currentLevel = string.Empty;
                     scriptcache = string.Empty;
                     this.levelCache.Clear();
@@ -5358,7 +5358,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 string script = string.Join(";\r\n", content);
                 if (script != scriptcache)
                 {
-                    BRM.StatsTab.AddLine("customlevelRPC = load customlevelclientE");
+                    CLEARSKIES.StatsTab.AddLine("customlevelRPC = load customlevelclientE");
                     scriptcache = script;
                     base.StartCoroutine(this.customlevelclientE(content, true));
                     //Yield.Begin(new Action<string[], bool>((string[] CONTETNT, bool UPDATE) => 
@@ -5459,7 +5459,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             string[] strArray2 = new string[] { "Flare", "LabelInfoBottomRight" };
             foreach (string str2 in strArray2)
             {
-                GameObject item = BRM.CacheGameObject.Find(str2);
+                GameObject item = CLEARSKIES.CacheGameObject.Find(str2);
                 if (item != null)
                 {
                     if (!this.spectateSprites.Contains(item))
@@ -5511,9 +5511,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         }
         else
         {
-            if (BRM.CacheGameObject.Find("cross1") != null)
+            if (CLEARSKIES.CacheGameObject.Find("cross1") != null)
             {
-                BRM.CacheGameObject.Find("cross1").transform.localPosition = (Vector3)(Vector3.up * 5000f);
+                CLEARSKIES.CacheGameObject.Find("cross1").transform.localPosition = (Vector3)(Vector3.up * 5000f);
             }
             if (this.spectateSprites != null)
             {
@@ -5526,9 +5526,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
             }
             this.spectateSprites = new List<GameObject>();
-            NGUITools.SetActive(BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[1], false);
-            NGUITools.SetActive(BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[2], false);
-            NGUITools.SetActive(BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[3], false);
+            NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[1], false);
+            NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[2], false);
+            NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[3], false);
             instance.needChooseSide = true;
             IN_GAME_MAIN_CAMERA.mainCamera.setMainObject(null, true, false);
             IN_GAME_MAIN_CAMERA.mainCamera.setSpectorMode(true);
@@ -6837,12 +6837,12 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     UnityEngine.Object.Destroy(obj2);
                 }
             }
-            BRM.CacheGameObject.Find("Cube_001").renderer.material.mainTexture = CacheResources.RCLoad<Material>("grass").mainTexture;
+            CLEARSKIES.CacheGameObject.Find("Cube_001").renderer.material.mainTexture = CacheResources.RCLoad<Material>("grass").mainTexture;
             UnityEngine.Object.Instantiate(RCassets.Load("spawnPlayer"), new Vector3(-10f, 1f, -10f), new Quaternion(0f, 0f, 0f, 1f));
             for (num = 0; num < strArray2.Length; num++)
             {
                 string name = strArray2[num];
-                GameObject obj3 = BRM.CacheGameObject.Find(name);
+                GameObject obj3 = CLEARSKIES.CacheGameObject.Find(name);
                 if (obj3 != null)
                 {
                     UnityEngine.Object.Destroy(obj3);
@@ -6893,7 +6893,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             this.allowedToCannon = new Dictionary<int, CannonValues>();
             if ((!level.StartsWith("Custom") && (((int)settings[2]) == 1)) && ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || PhotonNetwork.isMasterClient))
             {
-                obj4 = BRM.CacheGameObject.Find("aot_supply");
+                obj4 = CLEARSKIES.CacheGameObject.Find("aot_supply");
                 if ((obj4 != null) && (Minimap.instance != null))
                 {
                     Minimap.instance.TrackGameObjectOnMinimap(obj4, Color.white, false, true, Minimap.IconStyle.SUPPLY);
@@ -8474,7 +8474,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         {
             if (isAssetLoaded)
             {
-                string text = BRM.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text;
+                string text = CLEARSKIES.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text;
                 if (text != null)
                 {
                     if (text.StartsWith("Verifying"))
@@ -8658,26 +8658,26 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(FengGameManagerMKII.Colr("Single"), GUILayout.MaxWidth(100f)))
                 {
-                    NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelSingleSet, true);
+                    NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelSingleSet, true);
                     ShowMenuButtonGUI = false;
                 }
                 if (GUILayout.Button(FengGameManagerMKII.Colr("Multiplayer"), GUILayout.MaxWidth(100f)))
                 {
 
-                    NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiStart, true);
+                    NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiStart, true);
 
                     ShowMenuButtonGUI = false;
                 }
                 if (GUILayout.Button(FengGameManagerMKII.Colr("Options"), GUILayout.MaxWidth(100f)))
                 {
-                    NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelOption, true);
+                    NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelOption, true);
                     FengCustomInputs.Inputs.showKeyMap();
                     FengCustomInputs.Inputs.menuOn = true;
                     ShowMenuButtonGUI = false;
                 }
                 if (GUILayout.Button(FengGameManagerMKII.Colr("Credits"), GUILayout.MaxWidth(100f)))
                 {
-                    NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelCredits, true);
+                    NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelCredits, true);
                     ShowMenuButtonGUI = false;
                 }
                 if (GUILayout.Button(FengGameManagerMKII.Colr("Quit"), GUILayout.MaxWidth(100f)))
@@ -8803,11 +8803,11 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 {
                                     if (strArray2.Length < 15)
                                     {
-                                        obj3 = (GameObject)UnityEngine.Object.Instantiate((GameObject)BRM.CacheResources.Load(strArray2[1]), new Vector3(Convert.ToSingle(strArray2[2]), Convert.ToSingle(strArray2[3]), Convert.ToSingle(strArray2[4])), new Quaternion(Convert.ToSingle(strArray2[5]), Convert.ToSingle(strArray2[6]), Convert.ToSingle(strArray2[7]), Convert.ToSingle(strArray2[8])));
+                                        obj3 = (GameObject)UnityEngine.Object.Instantiate((GameObject)CLEARSKIES.CacheResources.Load(strArray2[1]), new Vector3(Convert.ToSingle(strArray2[2]), Convert.ToSingle(strArray2[3]), Convert.ToSingle(strArray2[4])), new Quaternion(Convert.ToSingle(strArray2[5]), Convert.ToSingle(strArray2[6]), Convert.ToSingle(strArray2[7]), Convert.ToSingle(strArray2[8])));
                                     }
                                     else
                                     {
-                                        obj3 = (GameObject)UnityEngine.Object.Instantiate((GameObject)BRM.CacheResources.Load(strArray2[1]), new Vector3(Convert.ToSingle(strArray2[12]), Convert.ToSingle(strArray2[13]), Convert.ToSingle(strArray2[14])), new Quaternion(Convert.ToSingle(strArray2[15]), Convert.ToSingle(strArray2[0x10]), Convert.ToSingle(strArray2[0x11]), Convert.ToSingle(strArray2[0x12])));
+                                        obj3 = (GameObject)UnityEngine.Object.Instantiate((GameObject)CLEARSKIES.CacheResources.Load(strArray2[1]), new Vector3(Convert.ToSingle(strArray2[12]), Convert.ToSingle(strArray2[13]), Convert.ToSingle(strArray2[14])), new Quaternion(Convert.ToSingle(strArray2[15]), Convert.ToSingle(strArray2[0x10]), Convert.ToSingle(strArray2[0x11]), Convert.ToSingle(strArray2[0x12])));
                                     }
                                 }
                                 else if (strArray2[0].StartsWith("misc"))
@@ -8820,7 +8820,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                     {
                                         obj3 = (GameObject)UnityEngine.Object.Instantiate((GameObject)RCassets.Load("regionEditor"));
                                         obj3.transform.position = new Vector3(Convert.ToSingle(strArray2[6]), Convert.ToSingle(strArray2[7]), Convert.ToSingle(strArray2[8]));
-                                        obj4 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/LabelNameOverHead"));
+                                        obj4 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/LabelNameOverHead"));
                                         obj4.name = "RegionLabel";
                                         obj4.transform.parent = obj3.transform;
                                         num14 = 1f;
@@ -8945,7 +8945,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         Screen.showCursor = true;
                         IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
                         FengCustomInputs.Inputs.menuOn = false;
-                        UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("MultiplayerManager"));
+                        UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("MultiplayerManager"));
                         Application.LoadLevel("menu");
                     }
                     else if (GUI.Button(new Rect(15f, 70f, 115f, 30f), "Copy to Clipboard"))
@@ -9284,7 +9284,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     if (GUI.Button(new Rect(num11 + 27f, 179f, 64f, 60f), "Supply"))
                     {
                         flag2 = true;
-                        obj5 = (GameObject)BRM.CacheResources.Load("aot_supply");
+                        obj5 = (GameObject)CLEARSKIES.CacheResources.Load("aot_supply");
                         this.selectedObj = (GameObject)UnityEngine.Object.Instantiate(obj5);
                         this.selectedObj.name = "base,aot_supply";
                     }
@@ -9368,7 +9368,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             flag3 = true;
                             obj6 = (GameObject)RCassets.Load("regionEditor");
                             this.selectedObj = (GameObject)UnityEngine.Object.Instantiate(obj6);
-                            obj4 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/LabelNameOverHead"));
+                            obj4 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/LabelNameOverHead"));
                             obj4.name = "RegionLabel";
                             if (!float.TryParse((string)settings[0x47], out num31))
                             {
@@ -12015,9 +12015,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         Screen.showCursor = true;
                         IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
                         gameStart = false;
-                        BRM.CacheGameObject.Find<FengCustomInputs>("InputManagerController").menuOn = false;
+                        CLEARSKIES.CacheGameObject.Find<FengCustomInputs>("InputManagerController").menuOn = false;
                         this.DestroyAllExistingCloths();
-                        UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("MultiplayerManager"));
+                        UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("MultiplayerManager"));
                         Application.LoadLevel("menu");
                     }
                 }
@@ -12064,7 +12064,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         FengGameManagerMKII.gameStart = false;
                         CacheGameObject.Find<FengCustomInputs>("InputManagerController").menuOn = false;
                         this.DestroyAllExistingCloths();
-                        UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("MultiplayerManager"));
+                        UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("MultiplayerManager"));
                         Application.LoadLevel("menu");
                     }
                 }
@@ -12074,9 +12074,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     public void OnJoinedLobby()
     {
-        NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiStart, false);
+        NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiStart, false);
 
-        NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().PanelMultiJoinPrivate, false);
+        NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().PanelMultiJoinPrivate, false);
         //UnityEngine.MonoBehaviour.print("OnJoinedLobby");
         //UIMainReferences uIRefer = UIMainReferences.UIRefer;
         //NGUITools.SetActive(uIRefer.panelMultiStart, false);
@@ -12086,7 +12086,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             ServerListGUI.serverlistGUI.enabled = true;
             //return;
         }
-        else NGUITools.SetActive(BRM.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiROOM, true);
+        else NGUITools.SetActive(CLEARSKIES.CacheGameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiROOM, true);
         //NGUITools.SetActive(UIMainReferences.UIRefer.panelMultiROOM, true);
     }
 
@@ -12249,7 +12249,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             Screen.showCursor = true;
             FengCustomInputs.Inputs.menuOn = false;
             this.DestroyAllExistingCloths();
-            UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("MultiplayerManager"));
+            UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("MultiplayerManager"));
             Application.LoadLevel("menu");
             ShowMenuButtonGUI = true;
             ExtraGUI.enable = false;
@@ -12272,8 +12272,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             this.isWinning = false;
             gameStart = true;
             this.ShowHUDInfoCenter(string.Empty);
-            GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("MainCamera_mono"), BRM.CacheGameObject.Find("cameraDefaultPosition").transform.position, BRM.CacheGameObject.Find("cameraDefaultPosition").transform.rotation);
-            UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("cameraDefaultPosition"));
+            GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("MainCamera_mono"), CLEARSKIES.CacheGameObject.Find("cameraDefaultPosition").transform.position, CLEARSKIES.CacheGameObject.Find("cameraDefaultPosition").transform.rotation);
+            UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("cameraDefaultPosition"));
             obj3.name = "MainCamera";
             Screen.lockCursor = true;
             Screen.showCursor = true;
@@ -12332,8 +12332,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
                 else if (levelinfo.type == GAMEMODE.BOSS_FIGHT_CT)
                 {
-                    BRM.CacheGameObject.Find("playerRespawnTrost").SetActive(false);
-                    UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("playerRespawnTrost"));
+                    CLEARSKIES.CacheGameObject.Find("playerRespawnTrost").SetActive(false);
+                    UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("playerRespawnTrost"));
                 }
                 if (this.needChooseSide)
                 {
@@ -12353,11 +12353,11 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     {
                         if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.isTitan]) == 2)
                         {
-                            this.checkpoint = BRM.CacheGameObject.Find("PVPchkPtT");
+                            this.checkpoint = CLEARSKIES.CacheGameObject.Find("PVPchkPtT");
                         }
                         else
                         {
-                            this.checkpoint = BRM.CacheGameObject.Find("PVPchkPtH");
+                            this.checkpoint = CLEARSKIES.CacheGameObject.Find("PVPchkPtH");
                         }
                     }
                     if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.isTitan]) == 2)
@@ -12371,7 +12371,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
                 if (levelinfo.type == GAMEMODE.BOSS_FIGHT_CT)
                 {
-                    UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("rock"));
+                    UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("rock"));
                 }
                 if (PhotonNetwork.isMasterClient)
                 {
@@ -12386,7 +12386,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 rate = 70;
                             }
                             GameObject[] objArray2 = GameObject.FindGameObjectsWithTag("titanRespawn");
-                            GameObject obj4 = BRM.CacheGameObject.Find("titanRespawnTrost");
+                            GameObject obj4 = CLEARSKIES.CacheGameObject.Find("titanRespawnTrost");
                             if (obj4 != null)
                             {
                                 foreach (GameObject obj5 in objArray2)
@@ -12410,7 +12410,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     {
                         if ((levelinfo.name == "Annie") || (levelinfo.name == "Annie II"))
                         {
-                            PhotonNetwork.Instantiate("FEMALE_TITAN", BRM.CacheGameObject.Find("titanRespawn").transform.position, BRM.CacheGameObject.Find("titanRespawn").transform.rotation, 0);
+                            PhotonNetwork.Instantiate("FEMALE_TITAN", CLEARSKIES.CacheGameObject.Find("titanRespawn").transform.position, CLEARSKIES.CacheGameObject.Find("titanRespawn").transform.rotation, 0);
                         }
                         else
                         {
@@ -12437,7 +12437,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
                 if (!levelinfo.supply)
                 {
-                    UnityEngine.Object.Destroy(BRM.CacheGameObject.Find("aot_supply"));
+                    UnityEngine.Object.Destroy(CLEARSKIES.CacheGameObject.Find("aot_supply"));
                 }
                 if (!PhotonNetwork.isMasterClient)
                 {
@@ -12445,9 +12445,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
                 if (levelinfo.lavaMode)
                 {
-                    UnityEngine.Object.Instantiate(BRM.CacheResources.Load("levelBottom"), new Vector3(0f, -29.5f, 0f), Quaternion.Euler(0f, 0f, 0f));
-                    BRM.CacheGameObject.Find("aot_supply").transform.position = BRM.CacheGameObject.Find("aot_supply_lava_position").transform.position;
-                    BRM.CacheGameObject.Find("aot_supply").transform.rotation = BRM.CacheGameObject.Find("aot_supply_lava_position").transform.rotation;
+                    UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("levelBottom"), new Vector3(0f, -29.5f, 0f), Quaternion.Euler(0f, 0f, 0f));
+                    CLEARSKIES.CacheGameObject.Find("aot_supply").transform.position = CLEARSKIES.CacheGameObject.Find("aot_supply_lava_position").transform.position;
+                    CLEARSKIES.CacheGameObject.Find("aot_supply").transform.rotation = CLEARSKIES.CacheGameObject.Find("aot_supply_lava_position").transform.rotation;
                 }
                 if (((int)settings[0xf5]) == 1)
                 {
@@ -13960,7 +13960,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.endRacing = endRacin;
         if (this.startRacing)
         {
-            GameObject door = BRM.CacheGameObject.Find("door");
+            GameObject door = CLEARSKIES.CacheGameObject.Find("door");
             door.SetActive(false);
         }
     }
@@ -15094,7 +15094,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 //if (PhotonNetwork.isMasterClient) ActiveGameModes.Add("<b><color=#b5ceff>Minimaps are </color></b> <color=#7b001c><i>not allowed.</i></color>");
                 if ((int)hash["globalDisableMinimap"] == 0)
                 {
-                    GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoTopRight");
+                    GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoTopRight");
                     obj2.transform.localPosition = new Vector3((float)((int)(Screen.width * 0.35f)), (float)((int)(Screen.height * 0.5f)), 0f);
                 }
 
@@ -16104,17 +16104,17 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         {
             this.chatContent.RemoveAt(0);
         }
-        BRM.CacheGameObject.Find("LabelChatContent").GetComponent<UILabel>().text = string.Empty;
+        CLEARSKIES.CacheGameObject.Find("LabelChatContent").GetComponent<UILabel>().text = string.Empty;
         for (int i = 0; i < this.chatContent.Count; i++)
         {
-            UILabel component = BRM.CacheGameObject.Find("LabelChatContent").GetComponent<UILabel>();
+            UILabel component = CLEARSKIES.CacheGameObject.Find("LabelChatContent").GetComponent<UILabel>();
             component.text = component.text + this.chatContent[i];
         }
     }
 
     public void ShowHUDInfoCenter(string content)
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoCenter");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoCenter");
         if (obj2 != null)
         {
             obj2.GetComponent<UILabel>().text = content;
@@ -16123,7 +16123,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     public void ShowHUDInfoCenterADD(string content)
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoCenter");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoCenter");
         if (obj2 != null)
         {
             UILabel component = obj2.GetComponent<UILabel>();
@@ -16133,7 +16133,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     public void ShowHUDInfoTopCenter(string content)
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoTopCenter");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoTopCenter");
         if (obj2 != null)
         {
             obj2.GetComponent<UILabel>().text = content;
@@ -16142,7 +16142,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void ShowHUDInfoTopCenterADD(string content)
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoTopCenter");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoTopCenter");
         if (obj2 != null)
         {
             UILabel component = obj2.GetComponent<UILabel>();
@@ -16152,7 +16152,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void ShowHUDInfoTopLeft(string content)
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoTopLeft");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoTopLeft");
         if (obj2 != null)
         {
             obj2.GetComponent<UILabel>().text = content;
@@ -16199,17 +16199,17 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         if ((this.gameTimesUp && t.sender.isMasterClient) || t.sender.isMasterClient)
         {
             this.gameTimesUp = true;
-            GameObject obj2 = BRM.CacheGameObject.Find("UI_IN_GAME");
+            GameObject obj2 = CLEARSKIES.CacheGameObject.Find("UI_IN_GAME");
             NGUITools.SetActive(obj2.GetComponent<UIReferArray>().panels[0], false);
             NGUITools.SetActive(obj2.GetComponent<UIReferArray>().panels[1], false);
             NGUITools.SetActive(obj2.GetComponent<UIReferArray>().panels[2], true);
             NGUITools.SetActive(obj2.GetComponent<UIReferArray>().panels[3], false);
-            BRM.CacheGameObject.Find("LabelName").GetComponent<UILabel>().text = text0;
-            BRM.CacheGameObject.Find("LabelKill").GetComponent<UILabel>().text = text1;
-            BRM.CacheGameObject.Find("LabelDead").GetComponent<UILabel>().text = text2;
-            BRM.CacheGameObject.Find("LabelMaxDmg").GetComponent<UILabel>().text = text3;
-            BRM.CacheGameObject.Find("LabelTotalDmg").GetComponent<UILabel>().text = text4;
-            BRM.CacheGameObject.Find("LabelResultTitle").GetComponent<UILabel>().text = text6;
+            CLEARSKIES.CacheGameObject.Find("LabelName").GetComponent<UILabel>().text = text0;
+            CLEARSKIES.CacheGameObject.Find("LabelKill").GetComponent<UILabel>().text = text1;
+            CLEARSKIES.CacheGameObject.Find("LabelDead").GetComponent<UILabel>().text = text2;
+            CLEARSKIES.CacheGameObject.Find("LabelMaxDmg").GetComponent<UILabel>().text = text3;
+            CLEARSKIES.CacheGameObject.Find("LabelTotalDmg").GetComponent<UILabel>().text = text4;
+            CLEARSKIES.CacheGameObject.Find("LabelResultTitle").GetComponent<UILabel>().text = text6;
             Screen.lockCursor = false;
             Screen.showCursor = true;
             IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
@@ -16224,7 +16224,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void SingleShowHUDInfoTopCenter(string content)
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoTopCenter");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoTopCenter");
         if (obj2 != null)
         {
             obj2.GetComponent<UILabel>().text = content;
@@ -16233,7 +16233,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void SingleShowHUDInfoTopLeft(string content)
     {
-        GameObject obj2 = BRM.CacheGameObject.Find("LabelInfoTopLeft");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("LabelInfoTopLeft");
         if (obj2 != null)
         {
             content = content.Replace("[0]", "[*^_^*]");
@@ -16411,11 +16411,11 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         {
             if (IN_GAME_MAIN_CAMERA.singleCharacter == "TITAN_EREN")
             {
-                IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("TITAN_EREN"), pos.transform.position, pos.transform.rotation), true, false);
+                IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("TITAN_EREN"), pos.transform.position, pos.transform.rotation), true, false);
             }
             else
             {
-                HERO component = IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("AOTTG_HERO 1"), pos.transform.position, pos.transform.rotation), true, false).GetComponent<HERO>();
+                HERO component = IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("AOTTG_HERO 1"), pos.transform.position, pos.transform.rotation), true, false).GetComponent<HERO>();
                 HERO_SETUP component2 = component.GetComponent<HERO_SETUP>();
                 if (((IN_GAME_MAIN_CAMERA.singleCharacter == "SET 1") || (IN_GAME_MAIN_CAMERA.singleCharacter == "SET 2")) || (IN_GAME_MAIN_CAMERA.singleCharacter == "SET 3"))
                 {
@@ -16548,7 +16548,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     {
         if (!logicLoaded || !customLevelLoaded)
         {
-            BRM.StatsTab.AddLine("SpawnPlayerAt2, if (!logicLoaded(" + logicLoaded.ToString() + ")|| !customLevelLoaded(" + customLevelLoaded.ToString() + "))", StatsTab.DebugType.LOG);
+            CLEARSKIES.StatsTab.AddLine("SpawnPlayerAt2, if (!logicLoaded(" + logicLoaded.ToString() + ")|| !customLevelLoaded(" + customLevelLoaded.ToString() + "))", StatsTab.DebugType.LOG);
             this.NOTSpawnPlayerRC(id);
         }
         else
@@ -16593,11 +16593,11 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             {
                 if (IN_GAME_MAIN_CAMERA.singleCharacter == "TITAN_EREN")
                 {
-                    IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("TITAN_EREN"), pos.transform.position, pos.transform.rotation), true, false);
+                    IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("TITAN_EREN"), pos.transform.position, pos.transform.rotation), true, false);
                 }
                 else
                 {
-                    HERO component = IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("AOTTG_HERO 1"), pos.transform.position, pos.transform.rotation), true, false).GetComponent<HERO>();
+                    HERO component = IN_GAME_MAIN_CAMERA.mainCamera.setMainObject((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("AOTTG_HERO 1"), pos.transform.position, pos.transform.rotation), true, false).GetComponent<HERO>();
                     HERO_SETUP component2 = component.GetComponent<HERO_SETUP>();
                     if (((IN_GAME_MAIN_CAMERA.singleCharacter == "SET 1") || (IN_GAME_MAIN_CAMERA.singleCharacter == "SET 2")) || (IN_GAME_MAIN_CAMERA.singleCharacter == "SET 3"))
                     {
@@ -16891,7 +16891,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         }
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
         {
-            obj3 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/FXtitanSpawn"), obj2.transform.position, Quaternion.Euler(-90f, 0f, 0f));
+            obj3 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanSpawn"), obj2.transform.position, Quaternion.Euler(-90f, 0f, 0f));
         }
         else
         {
@@ -17171,7 +17171,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     {
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
         {
-            return (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("TITAN_VER3.1"), position, rotation);
+            return (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("TITAN_VER3.1"), position, rotation);
         }
         return PhotonNetwork.Instantiate("TITAN_VER3.1", position, rotation, 0);
     }
@@ -17544,10 +17544,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             {
                 cOLOSSAL_TITAN.update();
             }
-            if (IN_GAME_MAIN_CAMERA.isReady)
-            {
-                IN_GAME_MAIN_CAMERA.mainCamera.update();
-            }
+            //if (IN_GAME_MAIN_CAMERA.isReady)
+            //{
+            //    IN_GAME_MAIN_CAMERA.mainCamera.update();
+            //}
         }
     }
 
@@ -17556,8 +17556,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     private void updateKillInfo(bool t1, string killer, bool t2, string victim, int dmg)
     {
         GameObject obj4;
-        GameObject obj2 = BRM.CacheGameObject.Find("UI_IN_GAME");
-        GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/KillInfo"));
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("UI_IN_GAME");
+        GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/KillInfo"));
         for (int i = 0; i < this.killInfoGO.Count; i++)
         {
             obj4 = (GameObject)this.killInfoGO[i];

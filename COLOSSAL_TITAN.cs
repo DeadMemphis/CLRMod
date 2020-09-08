@@ -121,7 +121,7 @@ public class COLOSSAL_TITAN : MONO
             string[] strArray = new string[] { "TITAN_VER3.1" };
             if (FengGameManagerMKII.LAN)
             {
-                obj4 = (GameObject) Network.Instantiate(BRM.CacheResources.Load(strArray[UnityEngine.Random.Range(0, strArray.Length)]), obj3.transform.position, obj3.transform.rotation, 0);
+                obj4 = (GameObject) Network.Instantiate(CLEARSKIES.CacheResources.Load(strArray[UnityEngine.Random.Range(0, strArray.Length)]), obj3.transform.position, obj3.transform.rotation, 0);
             }
             else
             {
@@ -176,7 +176,7 @@ public class COLOSSAL_TITAN : MONO
             }
             if (FengGameManagerMKII.LAN)
             {
-                GameObject obj6 = (GameObject) Network.Instantiate(BRM.CacheResources.Load("FX/FXtitanSpawn"), obj4.transform.position, Quaternion.Euler(-90f, 0f, 0f), 0);
+                GameObject obj6 = (GameObject) Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanSpawn"), obj4.transform.position, Quaternion.Euler(-90f, 0f, 0f), 0);
                 obj6.transform.localScale = obj4.transform.localScale;
             }
             else
@@ -353,7 +353,7 @@ public class COLOSSAL_TITAN : MONO
         {
             if (this.healthLabel == null)
             {
-                this.healthLabel = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/LabelNameOverHead"));
+                this.healthLabel = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/LabelNameOverHead"));
                 this.healthLabel.name = "LabelNameOverHead";
                 this.healthLabel.transform.parent = base.transform;
                 this.healthLabel.transform.localPosition = new Vector3(0f, 430f, 0f);
@@ -509,9 +509,9 @@ public class COLOSSAL_TITAN : MONO
 
     private void OnDestroy()
     {
-        if (BRM.CacheGameObject.Find("MultiplayerManager") != null)
+        if (CLEARSKIES.CacheGameObject.Find("MultiplayerManager") != null)
         {
-            BRM.CacheGameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().removeCT(this);
+            CLEARSKIES.CacheGameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().removeCT(this);
         }
     }
 
@@ -632,7 +632,7 @@ public class COLOSSAL_TITAN : MONO
 
     private void startMain()
     {
-        BRM.CacheGameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().addCT(this);
+        CLEARSKIES.CacheGameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().addCT(this);
         if (this.myHero == null)
         {
             this.findNearestHero();
@@ -675,8 +675,8 @@ public class COLOSSAL_TITAN : MONO
         {
             base.GetComponent<NetworkView>().enabled = false;
         }
-        this.door_broken = BRM.CacheGameObject.Find("door_broke");
-        this.door_closed = BRM.CacheGameObject.Find("door_fine");
+        this.door_broken = CLEARSKIES.CacheGameObject.Find("door_broke");
+        this.door_closed = CLEARSKIES.CacheGameObject.Find("door_fine");
         this.door_broken.SetActiveRecursively(false);
         this.door_closed.SetActiveRecursively(true);
     }
@@ -1115,7 +1115,7 @@ public class COLOSSAL_TITAN : MONO
                 if (this.waitTime <= 0f)
                 {
                     base.transform.position = new Vector3(30f, 0f, 784f);
-                    UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/ThunderCT"), base.transform.position + ((Vector3) (Vector3.up * 350f)), Quaternion.Euler(270f, 0f, 0f));
+                    UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/ThunderCT"), base.transform.position + ((Vector3) (Vector3.up * 350f)), Quaternion.Euler(270f, 0f, 0f));
                     Camera.main.GetComponent<IN_GAME_MAIN_CAMERA>().flashBlind();
                     if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                     {
@@ -1191,8 +1191,8 @@ public class COLOSSAL_TITAN : MONO
                         {
                             if (FengGameManagerMKII.LAN)
                             {
-                                Network.Instantiate(BRM.CacheResources.Load("FX/boom1_CT_KICK"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(270f, 0f, 0f), 0);
-                                Network.Instantiate(BRM.CacheResources.Load("rock"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(0f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom1_CT_KICK"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("rock"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(0f, 0f, 0f), 0);
                             }
                             else
                             {
@@ -1202,8 +1202,8 @@ public class COLOSSAL_TITAN : MONO
                         }
                         else
                         {
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom1_CT_KICK"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(270f, 0f, 0f));
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("rock"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(0f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom1_CT_KICK"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("rock"), (Vector3) ((base.transform.position + (base.transform.forward * 120f)) + (base.transform.right * 30f)), Quaternion.Euler(0f, 0f, 0f));
                         }
                     }
                     if (base.animation[this.actionName].normalizedTime >= 1f)
@@ -1223,7 +1223,7 @@ public class COLOSSAL_TITAN : MONO
                         {
                             if (FengGameManagerMKII.LAN)
                             {
-                                obj4 = (GameObject) Network.Instantiate(BRM.CacheResources.Load("FX/boom1"), this.checkHitCapsuleStart.position, Quaternion.Euler(270f, 0f, 0f), 0);
+                                obj4 = (GameObject) Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom1"), this.checkHitCapsuleStart.position, Quaternion.Euler(270f, 0f, 0f), 0);
                             }
                             else
                             {
@@ -1236,7 +1236,7 @@ public class COLOSSAL_TITAN : MONO
                         }
                         else
                         {
-                            obj4 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom1"), this.checkHitCapsuleStart.position, Quaternion.Euler(270f, 0f, 0f));
+                            obj4 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom1"), this.checkHitCapsuleStart.position, Quaternion.Euler(270f, 0f, 0f));
                         }
                         obj4.transform.localScale = new Vector3(5f, 5f, 5f);
                     }
@@ -1256,9 +1256,9 @@ public class COLOSSAL_TITAN : MONO
                         {
                             if (FengGameManagerMKII.LAN)
                             {
-                                Network.Instantiate(BRM.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.up * 185f)), Quaternion.Euler(270f, 0f, 0f), 0);
-                                Network.Instantiate(BRM.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.up * 303f)), Quaternion.Euler(270f, 0f, 0f), 0);
-                                Network.Instantiate(BRM.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.up * 50f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.up * 185f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.up * 303f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.up * 50f)), Quaternion.Euler(270f, 0f, 0f), 0);
                             }
                             else
                             {
@@ -1269,9 +1269,9 @@ public class COLOSSAL_TITAN : MONO
                         }
                         else
                         {
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.forward * 185f)), Quaternion.Euler(270f, 0f, 0f));
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.forward * 303f)), Quaternion.Euler(270f, 0f, 0f));
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.forward * 50f)), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.forward * 185f)), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.forward * 303f)), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam"), base.transform.position + ((Vector3) (base.transform.forward * 50f)), Quaternion.Euler(270f, 0f, 0f));
                         }
                     }
                     if (base.animation[this.actionName].normalizedTime >= 1f)
@@ -1280,9 +1280,9 @@ public class COLOSSAL_TITAN : MONO
                         {
                             if (FengGameManagerMKII.LAN)
                             {
-                                Network.Instantiate(BRM.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.up * 185f)), Quaternion.Euler(270f, 0f, 0f), 0);
-                                Network.Instantiate(BRM.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.up * 303f)), Quaternion.Euler(270f, 0f, 0f), 0);
-                                Network.Instantiate(BRM.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.up * 50f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.up * 185f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.up * 303f)), Quaternion.Euler(270f, 0f, 0f), 0);
+                                Network.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.up * 50f)), Quaternion.Euler(270f, 0f, 0f), 0);
                             }
                             else
                             {
@@ -1305,9 +1305,9 @@ public class COLOSSAL_TITAN : MONO
                         }
                         else
                         {
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.forward * 185f)), Quaternion.Euler(270f, 0f, 0f));
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.forward * 303f)), Quaternion.Euler(270f, 0f, 0f));
-                            UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.forward * 50f)), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.forward * 185f)), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.forward * 303f)), Quaternion.Euler(270f, 0f, 0f));
+                            UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/colossal_steam_dmg"), base.transform.position + ((Vector3) (base.transform.forward * 50f)), Quaternion.Euler(270f, 0f, 0f));
                         }
                         if (this.hasDie)
                         {
@@ -1325,7 +1325,7 @@ public class COLOSSAL_TITAN : MONO
                             {
                                 PhotonNetwork.Destroy(base.photonView);
                             }
-                            BRM.CacheGameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().gameWin2();
+                            CLEARSKIES.CacheGameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().gameWin2();
                         }
                         this.findNearestHero();
                         this.idle();
