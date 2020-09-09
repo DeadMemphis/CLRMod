@@ -46,6 +46,7 @@
     <Compile Include="CLEARSKIES\Pooling\SetUpPooling.cs" />
     <Compile Include="CLEARSKIES\Triplet.cs" />
     <Compile Include="CLEARSKIES\Yield.cs" />
+    <Compile Include="GUIHelpers.cs" />
     <Compile Include="Photon\CustomYieldInstruction.cs" />
     <Compile Include="Photon\EventCaching.cs" />
     <Compile Include="FunctionComparer.cs" />
