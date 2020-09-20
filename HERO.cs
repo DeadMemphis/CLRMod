@@ -1279,6 +1279,7 @@ public class HERO : MONO
         return obj2;
     }
 
+    private float reelAxis = 0f;
     private void FixedUpdate()
     {
         //GameObject dmgsmoke = new GameObject();
@@ -1827,78 +1828,34 @@ public class HERO : MONO
                             this.crossFade("onWall", 0.3f);
                         }
                     }
+
+                    Vector3 someCurrent = Vector3.zero;
                     if (flag3 && flag4)
                     {
-                        float num14 = this.currentSpeed + 0.1f;
-                        baseR.AddForce(-baseR.velocity, ForceMode.VelocityChange);
-                        Vector3 vector13 = ((Vector3)((this.bulletRT.position + this.bulletLT.position) * 0.5f)) - baseT.position;
-                        float num15 = 0f;
-                        if ((((int)FengGameManagerMKII.settings[0x61]) == 1) && FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelin))
-                        {
-                            num15 = -1f;
-                        }
-                        else if ((((int)FengGameManagerMKII.settings[0x74]) == 1) && FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelout))
-                        {
-                            num15 = 1f;
-                        }
-                        else
-                        {
-                            num15 = Input.GetAxis("Mouse ScrollWheel") * 5555f;
-                        }
-                        num15 = Mathf.Clamp(num15, -0.8f, 0.8f);
-                        float num16 = 1f + num15;
-                        Vector3 vector14 = Vector3.RotateTowards(vector13, baseR.velocity, 1.53938f * num16, 1.53938f * num16);
-                        vector14.Normalize();
-                        baseR.velocity = (Vector3)(vector14 * num14);
+                        someCurrent = ((Vector3)((this.bulletRT.position + this.bulletLT.position) * 0.5f)) - baseT.position;
                     }
-                    else if (flag3)
+                    else if (flag3 && !flag4)
                     {
-                        float num17 = this.currentSpeed + 0.1f;
-                        baseR.AddForce(-baseR.velocity, ForceMode.VelocityChange);
-                        Vector3 vector15 = this.bulletLT.position - baseT.position;
-                        float num18 = 0f;
-                        if ((((int)FengGameManagerMKII.settings[0x61]) == 1) && FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelin))
-                        {
-                            num18 = -1f;
-                        }
-                        else if ((((int)FengGameManagerMKII.settings[0x74]) == 1) && FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelout))
-                        {
-                            num18 = 1f;
-                        }
-                        else
-                        {
-                            num18 = Input.GetAxis("Mouse ScrollWheel") * 5555f;
-                        }
-                        num18 = Mathf.Clamp(num18, -0.8f, 0.8f);
-                        float num19 = 1f + num18;
-                        Vector3 vector16 = Vector3.RotateTowards(vector15, baseR.velocity, 1.53938f * num19, 1.53938f * num19);
-                        vector16.Normalize();
-                        baseR.velocity = (Vector3)(vector16 * num17);
+                        someCurrent = this.bulletLT.position - baseT.position;
                     }
-                    else if (flag4)
+                    else if (flag4 && !flag3)
                     {
-                        float num20 = this.currentSpeed + 0.1f;
-                        baseR.AddForce(-baseR.velocity, ForceMode.VelocityChange);
-                        Vector3 vector17 = this.bulletRT.position - baseT.position;
-                        float num21 = 0f;
-                        if ((((int)FengGameManagerMKII.settings[0x61]) == 1) && FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelin))
-                        {
-                            num21 = -1f;
-                        }
-                        else if ((((int)FengGameManagerMKII.settings[0x74]) == 1) && FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelout))
-                        {
-                            num21 = 1f;
-                        }
-                        else
-                        {
-                            num21 = Input.GetAxis("Mouse ScrollWheel") * 5555f;
-                        }
-                        num21 = Mathf.Clamp(num21, -0.8f, 0.8f);
-                        float num22 = 1f + num21;
-                        Vector3 vector18 = Vector3.RotateTowards(vector17, baseR.velocity, 1.53938f * num22, 1.53938f * num22);
-                        vector18.Normalize();
-                        baseR.velocity = (Vector3)(vector18 * num20);
+                        someCurrent = this.bulletRT.position - baseT.position;
                     }
+                    if (flag3 || flag4)
+                    {
+                        baseR.AddForce(-baseR.velocity, ForceMode.VelocityChange);
+                        reelAxis = Input.GetAxis("Mouse ScrollWheel") * 5555f;
+                        if (FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelin))
+                            reelAxis = -1f;
+                        else if (FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.reelout))
+                            reelAxis = 1f;
+
+                        float idk = 1.53938f * (1f + Mathf.Clamp(reelAxis, -0.8f, 0.8f));
+                        reelAxis = 0f;
+                        this.baseR.velocity = Vector3.RotateTowards(someCurrent, this.baseR.velocity, idk, idk).normalized * (this.currentSpeed + 0.1f);
+                    }
+
                     if (((this.state == HERO_STATE.Attack) && ((this.attackAnimation == "attack5") || (this.attackAnimation == "special_petra"))) && ((baseA[this.attackAnimation].normalizedTime > 0.4f) && !this.attackMove))
                     {
                         this.attackMove = true;
@@ -5762,6 +5719,49 @@ public class HERO : MONO
                                 return;
                             }
                         }
+
+                        var checkAxis = Input.GetAxis("Mouse ScrollWheel");
+                        if (checkAxis != 0f)
+                        {
+                            var flag2 = false;
+                            var flag3 = false;
+                            if (isLaunchLeft && bulletLeft != null && this.LBullet.isHooked())
+                            {
+                                isLeftHandHooked = true;
+                                var vector5 = bulletLT.position - baseT.position;
+                                vector5.Normalize();
+                                vector5 *= 10f;
+                                if (!isLaunchRight) vector5 *= 2f;
+                                if (Vector3.Angle(baseR.velocity, vector5) > 90f && FengCustomInputs.Inputs.isInput[InputCode.jump]) flag2 = true;
+                            }
+
+                            if (isLaunchRight && bulletRight != null && this.RBullet.isHooked())
+                            {
+                                isRightHandHooked = true;
+                                var vector6 = bulletRT.position - baseT.position;
+                                vector6.Normalize();
+                                vector6 *= 10f;
+                                if (!isLaunchLeft) vector6 *= 2f;
+                                if (Vector3.Angle(baseR.velocity, vector6) > 90f && FengCustomInputs.Inputs.isInput[InputCode.jump]) flag3 = true;
+                            }
+
+                            var current = Vector3.zero;
+                            if (flag2 && flag3)
+                                current = (bulletRT.position + bulletLT.position) * 0.5f - baseT.position;
+                            else if (flag2 && !flag3)
+                                current = bulletLT.position - baseT.position;
+                            else if (flag3 && !flag2) current = bulletRT.position - baseT.position;
+                            if (flag2 || flag3)
+                            {
+                                baseR.AddForce(-baseR.velocity, ForceMode.VelocityChange);
+                                var idk = 1.53938f * (1f + Mathf.Clamp(checkAxis > 0 ? 1f : -1f, -0.8f, 0.8f));
+                                reelAxis = 0f;
+                                baseR.velocity = Vector3.RotateTowards(current, baseR.velocity, idk, idk).normalized *
+                                                 (currentSpeed + 0.1f);
+                            }
+                        }
+
+
                         switch (state)
                         {
                             case HERO_STATE.Idle:

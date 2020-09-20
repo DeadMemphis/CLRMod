@@ -136,7 +136,7 @@ public class Minimap : MonoBehaviour
 
     private void CheckUserInput()
     {
-        if ((((int) FengGameManagerMKII.settings[0xe7]) == 1) && (GameSettings.globalDisableMinimap == 0))
+        if ((((int) FengGameManagerMKII.settings[0xe7]) == 1) && (GameSettings.globalDisableMinimap == 0) && GameSettings.bombMode == 0)
         {
             if (this.minimapIsCreated)
             {

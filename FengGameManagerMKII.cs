@@ -147,13 +147,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     public static ExitGames.Client.Photon.Hashtable stringVariables;
     private int[] teamScores;
     private int teamWinner;
-    public Texture2D textureBackgroundPitchBlack;
     public Texture2D textureBackgroundBlack;
     public Texture2D textureBackgroundBlue;
-    public Texture2D textureBackgroundYellow;
-    public Texture2D textureBackgroundDarkGrey;
-    public Texture2D textureBackgroundGrey;
-    public Texture2D textureBackgroundWhite;
     public int time = 600;
     private float timeElapse;
     private float timeTotalServer;
