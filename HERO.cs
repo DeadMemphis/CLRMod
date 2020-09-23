@@ -3268,11 +3268,11 @@ public class HERO : MONO
                 string url = str12 + "," + str2 + "," + str3 + "," + str4 + "," + str5 + "," + str6 + "," + str7 + "," + str8 + "," + str9 + "," + str10 + "," + str11 + "," + str + "," + str13;
                 if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                 {
-                    //base.StartCoroutine(this.loadskinE(-1, url));
-                    AsyncHelper.BeginInBackground(new Action<int, string>((int horse, string URL) =>
-                    {
-                        loadskin(horse, URL);
-                    }), -1, url);
+                    base.StartCoroutine(this.loadskinE(-1, url));
+                    //AsyncHelper.BeginInBackground(new Action<int, string>((int horse, string URL) =>
+                    //{
+                    //    loadskin(horse, URL);
+                    //}), -1, url);
                 }
                 else
                 {
@@ -3872,23 +3872,6 @@ public class HERO : MONO
         if (((int)FengGameManagerMKII.settings[0]) == 1)
         {
             base.StartCoroutine(this.loadskinE(horse, url));
-            //AsyncHelper.BeginInBackground(new Action<int, string>((int HORSE, string URL) =>
-            //{
-            //    loadskin(HORSE, URL);
-            //}), horse, url);
-
-
-            //AsyncHelper.BeginInBackground(new Action (() =>
-            //{
-            //    using (System.IO.StreamWriter write = new System.IO.StreamWriter(Application.dataPath + "/MAMAKAKPIZDETSKINY.txt", false, System.Text.Encoding.Default))
-            //    {
-            //        string text = string.Format("Name{0}, Skin URLs:{1}", new object[] {
-            //            sender.sender.uiname,
-            //            url
-            //        });
-            //        write.WriteLine(text);
-            //    }
-            //}));
         }
     }
 
