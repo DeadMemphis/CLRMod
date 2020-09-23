@@ -3269,7 +3269,7 @@ public class HERO : MONO
                 if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                 {
                     base.StartCoroutine(this.loadskinE(-1, url));
-                    //AsyncHelper.BeginInBackground(new Action<int, string>((int horse, string URL) =>
+                   //AsyncHelper.BeginInBackground(new Action<int, string>((int horse, string URL) =>
                     //{
                     //    loadskin(horse, URL);
                     //}), -1, url);
