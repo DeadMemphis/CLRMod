@@ -1,4 +1,4 @@
-﻿using BRM;
+﻿using CLEARSKIES;
 using ExitGames.Client.Photon;
 using Photon;
 using System;
@@ -136,7 +136,7 @@ public class TITAN : MONO
     private GameObject mycurrenthero;
     private HERO grabbedTarget;
     private Transform rockT;
-    private RockThrow throwRock;
+    private /*RockThrow*/ GameObject throwRock;
     private UILabel healthLabel;
     private Transform healthLabelT;
     public GameObject myHero
@@ -764,7 +764,7 @@ public class TITAN : MONO
             }
             else
             {
-                obj2 = (Transform)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("bloodExplore"), this.head.position + ((Vector3) ((Vector3.up * 1f) * this.myLevel)), Quaternion.Euler(270f, 0f, 0f));
+                obj2 = (Transform)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("bloodExplore"), this.head.position + ((Vector3) ((Vector3.up * 1f) * this.myLevel)), Quaternion.Euler(270f, 0f, 0f));
             }
             obj2.localScale =baseT.localScale;
             if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && basePV.isMine)
@@ -773,7 +773,7 @@ public class TITAN : MONO
             }
             else
             {
-                obj2 = (Transform) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("bloodsplatter"), this.head.position, Quaternion.Euler(270f + this.neck.rotation.eulerAngles.x, this.neck.rotation.eulerAngles.y, this.neck.rotation.eulerAngles.z));
+                obj2 = (Transform) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("bloodsplatter"), this.head.position, Quaternion.Euler(270f + this.neck.rotation.eulerAngles.x, this.neck.rotation.eulerAngles.y, this.neck.rotation.eulerAngles.z));
             }
             obj2.localScale =baseT.localScale;
             obj2.parent = this.neck;
@@ -783,7 +783,7 @@ public class TITAN : MONO
             }
             else
             {
-                obj2 = (Transform) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/justSmoke"), this.neck.position, Quaternion.Euler(270f, 0f, 0f));
+                obj2 = (Transform) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/justSmoke"), this.neck.position, Quaternion.Euler(270f, 0f, 0f));
             }
             obj2.parent = this.neck;
             if (basePV.isMine)
@@ -1758,12 +1758,32 @@ public class TITAN : MONO
     }
 
     [RPC]
+    public void grabbedTargetEscape(PhotonMessageInfo info)
+    {
+        if (info.sender != this.grabbedTarget.photonView.owner && PhotonNetwork.isMasterClient)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "false target escape");
+            return;
+        }
+        this.grabbedTargetEscape();
+    }
+
     public void grabbedTargetEscape()
     {
         this.grabbedTarget = null;
     }
 
     [RPC]
+    public void grabToLeft(PhotonMessageInfo info)
+    {
+        if (PhotonNetwork.isMasterClient && info.sender != base.networkView.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "false grab");
+            return;
+        }
+        this.grabToLeft();
+    }
+
     public void grabToLeft()
     {
         Transform transform = this.grabTF.transform;
@@ -1773,10 +1793,20 @@ public class TITAN : MONO
         transform.localPosition -= Vector3.right * this.hand_L_001Sphere.radius * 0.3f;
         transform.localPosition -= Vector3.up * this.hand_L_001Sphere.radius * 0.51f;
         transform.localPosition -= Vector3.forward * this.hand_L_001Sphere.radius * 0.3f;
-        transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y + 180f, transform.localRotation.eulerAngles.z + 180f);
+        this.grabTF.transform.localRotation = Quaternion.Euler(this.grabTF.transform.localRotation.eulerAngles.x, this.grabTF.transform.localRotation.eulerAngles.y + 180f, this.grabTF.transform.localRotation.eulerAngles.z + 180f);
     }
 
     [RPC]
+    public void grabToRight(PhotonMessageInfo info)
+    {
+        if (PhotonNetwork.isMasterClient && info.sender != base.networkView.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "false grab");
+            return;
+        }
+        this.grabToRight();
+    }
+
     public void grabToRight()
     {
         Transform transform = this.grabTF.transform;
@@ -1786,10 +1816,10 @@ public class TITAN : MONO
         transform.localPosition -= Vector3.right * this.hand_R_001Sphere.radius * 0.3f;
         transform.localPosition += Vector3.up * this.hand_R_001Sphere.radius * 0.51f;
         transform.localPosition -= Vector3.forward * this.hand_R_001Sphere.radius * 0.3f;
-        transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y + 180f, transform.localRotation.eulerAngles.z);
+        this.grabTF.transform.localRotation = Quaternion.Euler(this.grabTF.transform.localRotation.eulerAngles.x, this.grabTF.transform.localRotation.eulerAngles.y + 180f, this.grabTF.transform.localRotation.eulerAngles.z);
     }
 
-  
+
     public void headMovement2()
     {
         if (!this.hasDie)
@@ -2352,56 +2382,62 @@ public class TITAN : MONO
                 }
                 else if ((eye.EndsWith(".jpg") || eye.EndsWith(".png")) || eye.EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(eye))
+                    if (RCextensions.CheckIP(eye))
                     {
-                        WWW link = new WWW(eye);
-                        yield return link;
-                        Texture2D iteratorVariable4 = RCextensions.loadimage(link, mipmap, 0x30d40);
-                        link.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(eye))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable2.material.mainTextureScale = new Vector2(iteratorVariable2.material.mainTextureScale.x * 4f, iteratorVariable2.material.mainTextureScale.y * 8f);
-                            iteratorVariable2.material.mainTextureOffset = new Vector2(0f, 0f);
-                            iteratorVariable2.material.mainTexture = iteratorVariable4;
-                            FengGameManagerMKII.linkHash[0].Add(eye, iteratorVariable2.material);
-                            iteratorVariable2.material = (Material) FengGameManagerMKII.linkHash[0][eye];
+                            WWW link = new WWW(eye);
+                            yield return link;
+                            Texture2D iteratorVariable4 = RCextensions.loadimage(link, mipmap, 0x30d40);
+                            link.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(eye))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable2.material.mainTextureScale = new Vector2(iteratorVariable2.material.mainTextureScale.x * 4f, iteratorVariable2.material.mainTextureScale.y * 8f);
+                                iteratorVariable2.material.mainTextureOffset = new Vector2(0f, 0f);
+                                iteratorVariable2.material.mainTexture = iteratorVariable4;
+                                FengGameManagerMKII.linkHash[0].Add(eye, iteratorVariable2.material);
+                                iteratorVariable2.material = (Material)FengGameManagerMKII.linkHash[0][eye];
+                            }
+                            else
+                            {
+                                iteratorVariable2.material = (Material)FengGameManagerMKII.linkHash[0][eye];
+                            }
                         }
                         else
                         {
-                            iteratorVariable2.material = (Material) FengGameManagerMKII.linkHash[0][eye];
+                            iteratorVariable2.material = (Material)FengGameManagerMKII.linkHash[0][eye];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable2.material = (Material) FengGameManagerMKII.linkHash[0][eye];
                     }
                 }
             }
             else if ((iteratorVariable2.name == "hair") && ((body.EndsWith(".jpg") || body.EndsWith(".png")) || body.EndsWith(".jpeg")))
             {
-                if (!FengGameManagerMKII.linkHash[2].ContainsKey(body))
+                if (RCextensions.CheckIP(body))
                 {
-                    WWW iteratorVariable5 = new WWW(body);
-                    yield return iteratorVariable5;
-                    Texture2D iteratorVariable6 = RCextensions.loadimage(iteratorVariable5, mipmap, 0xf4240);
-                    iteratorVariable5.Dispose();
                     if (!FengGameManagerMKII.linkHash[2].ContainsKey(body))
                     {
-                        iteratorVariable1 = true;
-                        iteratorVariable2.material = this.mainMaterial.GetComponent<SkinnedMeshRenderer>().material;
-                        iteratorVariable2.material.mainTexture = iteratorVariable6;
-                        FengGameManagerMKII.linkHash[2].Add(body, iteratorVariable2.material);
-                        iteratorVariable2.material = (Material) FengGameManagerMKII.linkHash[2][body];
+                        WWW iteratorVariable5 = new WWW(body);
+                        yield return iteratorVariable5;
+                        Texture2D iteratorVariable6 = RCextensions.loadimage(iteratorVariable5, mipmap, 0xf4240);
+                        iteratorVariable5.Dispose();
+                        if (!FengGameManagerMKII.linkHash[2].ContainsKey(body))
+                        {
+                            iteratorVariable1 = true;
+                            iteratorVariable2.material = this.mainMaterial.GetComponent<SkinnedMeshRenderer>().material;
+                            iteratorVariable2.material.mainTexture = iteratorVariable6;
+                            FengGameManagerMKII.linkHash[2].Add(body, iteratorVariable2.material);
+                            iteratorVariable2.material = (Material)FengGameManagerMKII.linkHash[2][body];
+                        }
+                        else
+                        {
+                            iteratorVariable2.material = (Material)FengGameManagerMKII.linkHash[2][body];
+                        }
                     }
                     else
                     {
-                        iteratorVariable2.material = (Material) FengGameManagerMKII.linkHash[2][body];
+                        iteratorVariable2.material = (Material)FengGameManagerMKII.linkHash[2][body];
                     }
-                }
-                else
-                {
-                    iteratorVariable2.material = (Material) FengGameManagerMKII.linkHash[2][body];
                 }
             }
         }
@@ -2644,8 +2680,16 @@ public class TITAN : MONO
     }
 
     [RPC]
-    private void netSetLevel(float level, int AI, int skinColor)
+    private void netSetLevel(float level, int AI, int skinColor, PhotonMessageInfo info)
     {
+        if (!info.sender.isMasterClient && !info.sender.isLocal)
+        {
+            if (this.basePV.owner != info.sender)
+            {
+                FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "messing w/ titans");
+                return;
+            }
+        }
         this.setLevel2(level, AI, skinColor);
         if (level > 5f)
         {
@@ -2906,7 +2950,7 @@ public class TITAN : MONO
         else if (type == AbnormalType.TYPE_CRAWLER)
         {
             num = 3;
-            if ((BRM.CacheGameObject.Find("Crawler") != null) && (UnityEngine.Random.Range(0, 0x3e8) > 5))
+            if ((CLEARSKIES.CacheGameObject.Find("Crawler") != null) && (UnityEngine.Random.Range(0, 0x3e8) > 5))
             {
                 num = 2;
             }
@@ -3135,7 +3179,7 @@ public class TITAN : MONO
         {
             Minimap.instance.TrackGameObjectOnMinimap(this.baseG, Color.yellow, false, true, Minimap.IconStyle.CIRCLE);
         }
-        //this.currentCamera = BRM.CacheGameObject.Find("MainCamera");
+        //this.currentCamera = CLEARSKIES.CacheGameObject.Find("MainCamera");
         this.runAnimation = "run_walk";
         this.grabTF = new GameObject();
         this.grabTF.name = "titansTmpGrabTF";
@@ -3360,7 +3404,7 @@ public class TITAN : MONO
     //                this.hasDieSteam = true;
     //                if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
     //                {
-    //                    GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/FXtitanDie1"));
+    //                    GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanDie1"));
     //                    obj2.transform.position =baseT.Find("Amarture/Core/Controller_Body/hip").position;
     //                    obj2.transform.localScale =baseT.localScale;
     //                }
@@ -3373,7 +3417,7 @@ public class TITAN : MONO
     //            {
     //                if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
     //                {
-    //                    GameObject obj4 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/FXtitanDie"));
+    //                    GameObject obj4 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/FXtitanDie"));
     //                    obj4.transform.position =baseT.Find("Amarture/Core/Controller_Body/hip").position;
     //                    obj4.transform.localScale =baseT.localScale;
     //                    UnityEngine.Object.Destroy(this.baseG);
@@ -3454,7 +3498,7 @@ public class TITAN : MONO
     //                }
     //                if (!IN_GAME_MAIN_CAMERA.isPausing)
     //                {
-    //                    BRM.CacheGameObject.Find("stamina_titan").transform.localScale = new Vector3(this.stamina, 16f);
+    //                    CLEARSKIES.CacheGameObject.Find("stamina_titan").transform.localScale = new Vector3(this.stamina, 16f);
     //                }
     //            }
     //            if (this.state == TitanState.laugh)
@@ -3772,7 +3816,7 @@ public class TITAN : MONO
     //                    }
     //                    else
     //                    {
-    //                        obj11 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation);
+    //                        obj11 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation);
     //                    }
     //                    if (this.nonAI)
     //                    {
@@ -3807,7 +3851,7 @@ public class TITAN : MONO
     //                        }
     //                        else
     //                        {
-    //                            this.throwRock = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/rockThrow"), transform.position, transform.rotation);
+    //                            this.throwRock = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/rockThrow"), transform.position, transform.rotation);
     //                        }
     //                        this.throwRock.transform.localScale =baseT.localScale;
     //                        Transform transform1 = this.throwRock.transform;
@@ -3978,7 +4022,7 @@ public class TITAN : MONO
     //                        }
     //                        else
     //                        {
-    //                            obj13 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom2"), this.fxPosition, this.fxRotation);
+    //                            obj13 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom2"), this.fxPosition, this.fxRotation);
     //                        }
     //                        obj13.transform.localScale = (Vector3) (base.transform.localScale * 1.6f);
     //                        float num23 = 1f - (Vector3.Distance(this.camT.position, obj13.transform.position) * 0.05f);
@@ -4461,7 +4505,7 @@ public class TITAN : MONO
                     }
                     if (!IN_GAME_MAIN_CAMERA.isPausing)
                     {
-                        BRM.CacheGameObject.Find("stamina_titan").transform.localScale = new Vector3(this.stamina, 16f);
+                        CLEARSKIES.CacheGameObject.Find("stamina_titan").transform.localScale = new Vector3(this.stamina, 16f);
                     }
                 }
                 if (this.state == TitanState.laugh)
@@ -4779,7 +4823,7 @@ public class TITAN : MONO
                         }
                         else
                         {
-                            transform = (gameObject = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation)).transform;
+                            transform = (gameObject = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/" + this.fxName), this.fxPosition, this.fxRotation)).transform;
                         }
                         EnemyfxIDcontainer component = gameObject.GetComponent<EnemyfxIDcontainer>();
                         if (this.nonAI)
@@ -4808,15 +4852,25 @@ public class TITAN : MONO
                         if (!this.attacked && (baseA["attack_" + this.attackAnimation].normalizedTime >= 0.11f))
                         {
                             this.attacked = true;
-                            
-                            if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && basePV.isMine)
+
+                            Transform transform = base.hand_R_001;
+                            if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && this.basePV.isMine)
                             {
-                                this.throwRock = PhotonNetwork.Instantiate<RockThrow>("FX/rockThrow", this.hand_R_001.position, this.hand_R_001.rotation, 0);
+                                this.throwRock = PhotonNetwork.Instantiate("FX/rockThrow", transform.position, transform.rotation, 0);
                             }
                             else
                             {
-                                this.throwRock = (RockThrow) UnityEngine.Object.Instantiate(BRM.CacheResources.Load<RockThrow>("FX/rockThrow"), this.hand_R_001.position, this.hand_R_001.rotation);
+                                this.throwRock = (GameObject)UnityEngine.Object.Instantiate(CacheResources.Load("FX/rockThrow"), transform.position, transform.rotation);
                             }
+
+                            //if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && basePV.isMine)
+                            //{
+                            //        this.throwRock = PhotonNetwork.Instantiate<RockThrow>("FX/rockThrow", this.hand_R_001.position, this.hand_R_001.rotation, 0); //here
+                            //}
+                            //else
+                            //{
+                            //    this.throwRock = (RockThrow) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load<RockThrow>("FX/rockThrow"), this.hand_R_001.position, this.hand_R_001.rotation);
+                            //}
                             this.rockT = this.throwRock.transform;
                             this.rockT.localScale = baseT.localScale;
                             this.rockT.position -= (Vector3) ((this.rockT.forward * 2.5f) * this.myLevel);
@@ -4857,7 +4911,8 @@ public class TITAN : MONO
                             {
                                 vector6 = (Vector3) ((baseT.forward * 60f) + (Vector3.up * 10f));
                             }
-                            this.throwRock.launch(vector6, this.baseG.name, -1);
+                            this.throwRock.GetComponent<RockThrow>().launch(vector6);
+                            //this.throwRock.launch(vector6, this.baseG.name, -1);
                             this.rockT.parent = null;
                             //this.throwRock = null;
                         }
@@ -4987,7 +5042,7 @@ public class TITAN : MONO
                             }
                             else
                             {
-                                obj11 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom2"), this.fxPosition, this.fxRotation);
+                                obj11 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom2"), this.fxPosition, this.fxRotation);
                             }
                             obj11.transform.localScale = (Vector3) (baseT.localScale * 1.6f);
                             float num23 = 1f - (Vector3.Distance(this.camT.position, obj11.transform.position) * 0.05f);

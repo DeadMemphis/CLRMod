@@ -30,8 +30,8 @@ public class PanelSingleSet : MonoBehaviour
             this.label_BACK.GetComponent<UILabel>().text = Language.btn_back[Language.type];
             this.label_camera.GetComponent<UILabel>().text = Language.camera_type[Language.type];
             this.label_original.GetComponent<UILabel>().text = Language.camera_original[Language.type];
-            this.label_wow.GetComponent<UILabel>().text = "Old_TPS";
-            this.label_tps.GetComponent<UILabel>().text = Language.camera_tps[Language.type];
+            this.label_wow.GetComponent<UILabel>().text = "TPS";
+            this.label_tps.GetComponent<UILabel>().text = "New_TPS"; //Language.camera_tps[Language.type];
             this.label_choose_character.GetComponent<UILabel>().text = Language.choose_character[Language.type];
             this.label_difficulty.GetComponent<UILabel>().text = Language.difficulty[Language.type];
             this.label_choose_map.GetComponent<UILabel>().text = Language.choose_map[Language.type];

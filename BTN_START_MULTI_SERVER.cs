@@ -1,5 +1,5 @@
 ﻿using System;
-using BRM;
+using CLEARSKIES;
 using UnityEngine;
 
 public class BTN_START_MULTI_SERVER : MonoBehaviour
@@ -51,11 +51,11 @@ public class BTN_START_MULTI_SERVER : MonoBehaviour
     }
     //private void OnClick()
     //{
-    //    string text = BRM.CacheGameObject.Find("InputServerName").GetComponent<UIInput>().label.text;
-    //    int maxPlayers = int.Parse(BRM.CacheGameObject.Find("InputMaxPlayer").GetComponent<UIInput>().label.text);
-    //    int num2 = int.Parse(BRM.CacheGameObject.Find("InputMaxTime").GetComponent<UIInput>().label.text);
-    //    string selection = BRM.CacheGameObject.Find("PopupListMap").GetComponent<UIPopupList>().selection;
-    //    string str3 = !BRM.CacheGameObject.Find("CheckboxHard").GetComponent<UICheckbox>().isChecked ? (!BRM.CacheGameObject.Find("CheckboxAbnormal").GetComponent<UICheckbox>().isChecked ? "normal" : "abnormal") : "hard";
+    //    string text = CLEARSKIES.CacheGameObject.Find("InputServerName").GetComponent<UIInput>().label.text;
+    //    int maxPlayers = int.Parse(CLEARSKIES.CacheGameObject.Find("InputMaxPlayer").GetComponent<UIInput>().label.text);
+    //    int num2 = int.Parse(CLEARSKIES.CacheGameObject.Find("InputMaxTime").GetComponent<UIInput>().label.text);
+    //    string selection = CLEARSKIES.CacheGameObject.Find("PopupListMap").GetComponent<UIPopupList>().selection;
+    //    string str3 = !CLEARSKIES.CacheGameObject.Find("CheckboxHard").GetComponent<UICheckbox>().isChecked ? (!CLEARSKIES.CacheGameObject.Find("CheckboxAbnormal").GetComponent<UICheckbox>().isChecked ? "normal" : "abnormal") : "hard";
     //    string str4 = string.Empty;
     //    if (IN_GAME_MAIN_CAMERA.dayLight == DayLight.Day)
     //    {
@@ -69,7 +69,7 @@ public class BTN_START_MULTI_SERVER : MonoBehaviour
     //    {
     //        str4 = "night";
     //    }
-    //    string unencrypted = BRM.CacheGameObject.Find("InputStartServerPWD").GetComponent<UIInput>().label.text;
+    //    string unencrypted = CLEARSKIES.CacheGameObject.Find("InputStartServerPWD").GetComponent<UIInput>().label.text;
     //    if (unencrypted.Length > 0)
     //    {
     //        unencrypted = new SimpleAES().Encrypt(unencrypted);

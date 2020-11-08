@@ -193,7 +193,7 @@ public class PhotonView : Photon.MonoBehaviour
         {
             return new int[0];
         }
-        GameObject gameObject = BRM.CacheResources.Load<GameObject>(path);
+        GameObject gameObject = CLEARSKIES.CacheResources.Load<GameObject>(path);
         if (gameObject == null)
         {
             return new int[0];

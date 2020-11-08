@@ -19,7 +19,7 @@ public class InstantiateTracker
         {
             if ((num3 <= num) || (num3 >= num2))
             {
-                if (PhotonNetwork.isMasterClient)
+                /*if (PhotonNetwork.isMasterClient)*/ if (!photonPlayer.isMasterClient) //ye not just if ur mc pls
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "spawning invalid photon view.");
                 }
@@ -99,10 +99,8 @@ public class InstantiateTracker
 
             case "rcasset/cannonwallprop":
             case "rcasset/cannongroundprop":
-                if (PhotonNetwork.isMasterClient)
-                {
+                /* if (PhotonNetwork.isMasterClient)*/  if (!photonPlayer.isMasterClient)
                     FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "spawning MC item (" + key + ").");
-                }
                 return false;
 
             case "titan_eren":
@@ -118,7 +116,7 @@ public class InstantiateTracker
                     }
                     return this.Instantiated(photonPlayer, GameResource.general);
                 }
-                if (PhotonNetwork.isMasterClient)
+                /*if (PhotonNetwork.isMasterClient)*/ if (!photonPlayer.isMasterClient)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "spawning titan eren (" + key + ").");
                 }
@@ -142,7 +140,7 @@ public class InstantiateTracker
                     }
                     return this.Instantiated(photonPlayer, GameResource.effect);
                 }
-                if (PhotonNetwork.isMasterClient)
+                /*if (PhotonNetwork.isMasterClient)*/ if (!photonPlayer.isMasterClient)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "spawning eren effect (" + key + ").");
                 }
@@ -259,7 +257,7 @@ public class InstantiateTracker
             if (this.players[num].IsThingExcessive(type))
             {
                 PhotonPlayer player = owner;
-                if ((player != null) && PhotonNetwork.isMasterClient)
+                if ((player != null) && /*PhotonNetwork.isMasterClient*/!player.isMasterClient)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(player, true, "spamming instantiate (" + type.ToString() + ").");
                 }

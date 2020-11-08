@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using Xft;
-using BRM;
 using CLEARSKIES;
 
 
@@ -343,6 +342,16 @@ public class HERO : MONO
     [RPC]
     public void blowAway(Vector3 force, PhotonMessageInfo info = null)
     {
+        if (Math.Abs(force.x) > 500 || Math.Abs(force.y) > 500 || Math.Abs(force.z) > 500)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "blue screen");
+            return;
+        }
+        else if (!info.sender.isLocal && !info.sender.isMasterClient && (Convert.ToInt32(info.sender.customProperties[PhotonPlayerProperty.isTitan]) == 1 || Convert.ToBoolean(info.sender.customProperties[PhotonPlayerProperty.dead])))
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "blowaway invalid sender");
+            return;
+        }
         if (info != null && (info.sender == PhotonNetwork.player || info.sender.isMasterClient) || Vector3.Distance(force, new Vector3(0f, 0f, 0f)) <= 18f && Vector3.Distance(force, new Vector3(0f, 0f, 0f)) >= -18f)
         {
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE || photonView.isMine)
@@ -490,14 +499,14 @@ public class HERO : MONO
     //    GameObject obj8;
     //    GameObject obj9;
     //    GameObject obj10;
-    //    GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
+    //    GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
     //    obj2.gameObject.GetComponent<HERO_SETUP>().myCostume = this.setup.myCostume;
     //    obj2.GetComponent<HERO_DEAD_BODY_SETUP>().init(this.currentAnimation, baseA[this.currentAnimation].normalizedTime, BODY_PARTS.ARM_R);
     //    if (!isBite)
     //    {
-    //        GameObject gO = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
-    //        GameObject obj4 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
-    //        GameObject obj5 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
+    //        GameObject gO = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
+    //        GameObject obj4 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
+    //        GameObject obj5 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/AOTTG_HERO_body"), baseT.position, baseT.rotation);
     //        gO.gameObject.GetComponent<HERO_SETUP>().myCostume = this.setup.myCostume;
     //        obj4.gameObject.GetComponent<HERO_SETUP>().myCostume = this.setup.myCostume;
     //        obj5.gameObject.GetComponent<HERO_SETUP>().myCostume = this.setup.myCostume;
@@ -521,19 +530,19 @@ public class HERO : MONO
     //    Transform transform2 = baseT.Find("Amarture/Controller_Body/hip/spine/chest/shoulder_R/upper_arm_R/forearm_R/hand_R").transform;
     //    if (this.useGun)
     //    {
-    //        obj6 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_l"), transform.position, transform.rotation);
-    //        obj7 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_r"), transform2.position, transform2.rotation);
-    //        obj8 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_3dmg_2"), baseT.position, baseT.rotation);
-    //        obj9 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_mag_l"), baseT.position, baseT.rotation);
-    //        obj10 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_mag_r"), baseT.position, baseT.rotation);
+    //        obj6 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_l"), transform.position, transform.rotation);
+    //        obj7 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_r"), transform2.position, transform2.rotation);
+    //        obj8 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_3dmg_2"), baseT.position, baseT.rotation);
+    //        obj9 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_mag_l"), baseT.position, baseT.rotation);
+    //        obj10 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_mag_r"), baseT.position, baseT.rotation);
     //    }
     //    else
     //    {
-    //        obj6 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_blade_l"), transform.position, transform.rotation);
-    //        obj7 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_blade_r"), transform2.position, transform2.rotation);
-    //        obj8 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_3dmg"), baseT.position, baseT.rotation);
-    //        obj9 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_3dmg_gas_l"), baseT.position, baseT.rotation);
-    //        obj10 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_3dmg_gas_r"), baseT.position, baseT.rotation);
+    //        obj6 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_blade_l"), transform.position, transform.rotation);
+    //        obj7 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_blade_r"), transform2.position, transform2.rotation);
+    //        obj8 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_3dmg"), baseT.position, baseT.rotation);
+    //        obj9 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_3dmg_gas_l"), baseT.position, baseT.rotation);
+    //        obj10 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_3dmg_gas_r"), baseT.position, baseT.rotation);
     //    }
     //    obj6.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
     //    obj7.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
@@ -1045,8 +1054,7 @@ public class HERO : MONO
             Quaternion quaternion = Quaternion.Euler(0f, this.facingDirection, 0f);
             baseR.rotation = quaternion;
             this.targetRotation = quaternion;
-            UnityEngine.Object.Instantiate(CacheResources.Load("FX/boost_smoke"), baseT.position, baseT.rotation);
-          //  PhotonNetwork.Instantiate("FX/boost_smoke", base.transform.position, base.transform.rotation, 0);
+            PhotonNetwork.Instantiate("FX/boost_smoke", base.transform.position, base.transform.rotation, 0);
             this.dashTime = 0.5f;
             this.crossFade("dash", 0.1f);
             baseA["dash"].time = 0.1f;
@@ -1121,7 +1129,7 @@ public class HERO : MONO
             FengGameManagerMKII.instance.gameLose2();
             this.falseAttack();
             this.hasDied = true;
-            GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hitMeat2"));
+            GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hitMeat2"));
             obj2.transform.position = baseT.position;
             UnityEngine.Object.Destroy(baseG);
         }
@@ -1191,7 +1199,7 @@ public class HERO : MONO
         }
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
         {
-            this.eren_titan = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("TITAN_EREN"), baseT.position, baseT.rotation);
+            this.eren_titan = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("TITAN_EREN"), baseT.position, baseT.rotation);
         }
         else
         {
@@ -2202,7 +2210,7 @@ public class HERO : MONO
     [RPC]
     private void killObject()
     {
-        UnityEngine.Object.Destroy(base.gameObject);
+      //  UnityEngine.Object.Destroy(base.gameObject);
     }
 
     //public void lateUpdate()
@@ -2214,7 +2222,7 @@ public class HERO : MONO
     //            this.myNetWorkName.transform.localPosition = (Vector3) ((Vector3.up * Screen.height) * 2f);
     //        }
     //        Vector3 start = new Vector3(baseT.position.x, baseT.position.y + 2f, baseT.position.z);
-    //        GameObject obj2 = BRM.CacheGameObject.Find("MainCamera");
+    //        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("MainCamera");
     //        LayerMask mask = ((int) 1) << LayerMask.NameToLayer("Ground");
     //        LayerMask mask2 = ((int) 1) << LayerMask.NameToLayer("EnemyBox");
     //        LayerMask mask3 = mask2 | mask;
@@ -2224,7 +2232,7 @@ public class HERO : MONO
     //        }
     //        else
     //        {
-    //            Vector2 vector5 = BRM.CacheGameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(start);
+    //            Vector2 vector5 = CLEARSKIES.CacheGameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(start);
     //            this.myNetWorkName.transform.localPosition = new Vector3((float) ((int) (vector5.x - (Screen.width * 0.5f))), (float) ((int) (vector5.y - (Screen.height * 0.5f))), 0f);
     //        }
     //    }
@@ -2256,20 +2264,20 @@ public class HERO : MONO
     //            {
     //                vector8 = (Vector3) ((zero + position) * 0.5f);
     //            }
-    //            Vector3 from = Vector3.Project(vector8 - baseT.position, BRM.CacheGameObject.Find("MainCamera").transform.up);
-    //            Vector3 vector10 = Vector3.Project(vector8 - baseT.position, BRM.CacheGameObject.Find("MainCamera").transform.right);
+    //            Vector3 from = Vector3.Project(vector8 - baseT.position, CLEARSKIES.CacheGameObject.Find("MainCamera").transform.up);
+    //            Vector3 vector10 = Vector3.Project(vector8 - baseT.position, CLEARSKIES.CacheGameObject.Find("MainCamera").transform.right);
     //            if (vector8.magnitude > 0f)
     //            {
     //                Vector3 to = from + vector10;
     //                float num = Vector3.Angle(vector8 - baseT.position, baseR.velocity) * 0.005f;
-    //                Vector3 vector14 = BRM.CacheGameObject.Find("MainCamera").transform.right + vector10.normalized;
-    //                quaternion3 = Quaternion.Euler(BRM.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.x, BRM.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.y, (vector14.magnitude >= 1f) ? (-Vector3.Angle(from, to) * num) : (Vector3.Angle(from, to) * num));
+    //                Vector3 vector14 = CLEARSKIES.CacheGameObject.Find("MainCamera").transform.right + vector10.normalized;
+    //                quaternion3 = Quaternion.Euler(CLEARSKIES.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.x, CLEARSKIES.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.y, (vector14.magnitude >= 1f) ? (-Vector3.Angle(from, to) * num) : (Vector3.Angle(from, to) * num));
     //            }
     //            else
     //            {
-    //                quaternion3 = Quaternion.Euler(BRM.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.x, BRM.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.y, 0f);
+    //                quaternion3 = Quaternion.Euler(CLEARSKIES.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.x, CLEARSKIES.CacheGameObject.Find("MainCamera").transform.rotation.eulerAngles.y, 0f);
     //            }
-    //            BRM.CacheGameObject.Find("MainCamera").transform.rotation = Quaternion.Lerp(BRM.CacheGameObject.Find("MainCamera").transform.rotation, quaternion3, Time.deltaTime * 2f);
+    //            CLEARSKIES.CacheGameObject.Find("MainCamera").transform.rotation = Quaternion.Lerp(CLEARSKIES.CacheGameObject.Find("MainCamera").transform.rotation, quaternion3, Time.deltaTime * 2f);
     //        }
     //        if ((this.state == HERO_STATE.Grab) && (this.titanWhoGrabMe != null))
     //        {
@@ -2557,7 +2565,7 @@ public class HERO : MONO
             this.useGas(0f);
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
             {
-                this.LBullet = (this.bulletLeft = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hook"))).GetComponent<Bullet>();
+                this.LBullet = (this.bulletLeft = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hook"))).GetComponent<Bullet>();
                 this.bulletLT = this.bulletLeft.transform;
             }
             else if (basePV.isMine)
@@ -2581,7 +2589,7 @@ public class HERO : MONO
             this.useGas(0f);
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
             {
-                this.RBullet = (this.bulletRight = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hook"))).GetComponent<Bullet>();
+                this.RBullet = (this.bulletRight = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hook"))).GetComponent<Bullet>();
                 this.bulletRT = this.bulletRight.transform;
             }
             else if (basePV.isMine)
@@ -3315,36 +3323,39 @@ public class HERO : MONO
         {
             iteratorVariable5 = true;
         }
-        if (this.setup.part_hair_1 != null)
+        if (this.setup.part_hair_1 != null) //hair
         {
             Renderer renderer = this.setup.part_hair_1.renderer;
             if ((iteratorVariable2[1].EndsWith(".jpg") || iteratorVariable2[1].EndsWith(".png")) || iteratorVariable2[1].EndsWith(".jpeg"))
             {
-                if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
+                if (RCextensions.CheckIP(iteratorVariable2[1]))
                 {
-                    WWW link = new WWW(iteratorVariable2[1]);
-                    yield return link;
-                    Texture2D iteratorVariable8 = RCextensions.loadimage(link, mipmap, 0x30d40);
-                    link.Dispose();
                     if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
                     {
-                        iteratorVariable1 = true;
-                        if (this.setup.myCostume.hairInfo.id >= 0)
+                        WWW link = new WWW(iteratorVariable2[1]);
+                        yield return link;
+                        Texture2D iteratorVariable8 = RCextensions.loadimage(link, mipmap, 0x30d40);
+                        link.Dispose();
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
                         {
-                            renderer.material = CharacterMaterials.materials[this.setup.myCostume.hairInfo.texture];
+                            iteratorVariable1 = true;
+                            if (this.setup.myCostume.hairInfo.id >= 0)
+                            {
+                                renderer.material = CharacterMaterials.materials[this.setup.myCostume.hairInfo.texture];
+                            }
+                            renderer.material.mainTexture = iteratorVariable8;
+                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[1], renderer.material);
+                            renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
                         }
-                        renderer.material.mainTexture = iteratorVariable8;
-                        FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[1], renderer.material);
-                        renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                        else
+                        {
+                            renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                        }
                     }
                     else
                     {
                         renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
                     }
-                }
-                else
-                {
-                    renderer.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
                 }
             }
             else if (iteratorVariable2[1].ToLower() == "transparent")
@@ -3352,32 +3363,35 @@ public class HERO : MONO
                 renderer.enabled = false;
             }
         }
-        if (this.setup.part_cape != null)
+        if (this.setup.part_cape != null) //cape
         {
             Renderer iteratorVariable9 = this.setup.part_cape.renderer;
             if ((iteratorVariable2[7].EndsWith(".jpg") || iteratorVariable2[7].EndsWith(".png")) || iteratorVariable2[7].EndsWith(".jpeg"))
             {
-                if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                if (RCextensions.CheckIP(iteratorVariable2[7]))
                 {
-                    WWW iteratorVariable10 = new WWW(iteratorVariable2[7]);
-                    yield return iteratorVariable10;
-                    Texture2D iteratorVariable11 = RCextensions.loadimage(iteratorVariable10, mipmap, 0x30d40);
-                    iteratorVariable10.Dispose();
                     if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
                     {
-                        iteratorVariable1 = true;
-                        iteratorVariable9.material.mainTexture = iteratorVariable11;
-                        FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[7], iteratorVariable9.material);
-                        iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                        WWW iteratorVariable10 = new WWW(iteratorVariable2[7]);
+                        yield return iteratorVariable10;
+                        Texture2D iteratorVariable11 = RCextensions.loadimage(iteratorVariable10, mipmap, 0x30d40);
+                        iteratorVariable10.Dispose();
+                        if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                        {
+                            iteratorVariable1 = true;
+                            iteratorVariable9.material.mainTexture = iteratorVariable11;
+                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[7], iteratorVariable9.material);
+                            iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                        }
+                        else
+                        {
+                            iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                        }
                     }
                     else
                     {
                         iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
                     }
-                }
-                else
-                {
-                    iteratorVariable9.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
                 }
             }
             else if (iteratorVariable2[7].ToLower() == "transparent")
@@ -3390,27 +3404,30 @@ public class HERO : MONO
             Renderer iteratorVariable12 = this.setup.part_chest_3.renderer;
             if ((iteratorVariable2[6].EndsWith(".jpg") || iteratorVariable2[6].EndsWith(".png")) || iteratorVariable2[6].EndsWith(".jpeg"))
             {
-                if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                if (RCextensions.CheckIP(iteratorVariable2[6]))
                 {
-                    WWW iteratorVariable13 = new WWW(iteratorVariable2[6]);
-                    yield return iteratorVariable13;
-                    Texture2D iteratorVariable14 = RCextensions.loadimage(iteratorVariable13, mipmap, 0x7a120);
-                    iteratorVariable13.Dispose();
                     if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
                     {
-                        iteratorVariable1 = true;
-                        iteratorVariable12.material.mainTexture = iteratorVariable14;
-                        FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[6], iteratorVariable12.material);
-                        iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                        WWW iteratorVariable13 = new WWW(iteratorVariable2[6]);
+                        yield return iteratorVariable13;
+                        Texture2D iteratorVariable14 = RCextensions.loadimage(iteratorVariable13, mipmap, 0x7a120);
+                        iteratorVariable13.Dispose();
+                        if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                        {
+                            iteratorVariable1 = true;
+                            iteratorVariable12.material.mainTexture = iteratorVariable14;
+                            FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[6], iteratorVariable12.material);
+                            iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                        }
+                        else
+                        {
+                            iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                        }
                     }
                     else
                     {
                         iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
                     }
-                }
-                else
-                {
-                    iteratorVariable12.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
                 }
             }
             else if (iteratorVariable2[6].ToLower() == "transparent")
@@ -3424,31 +3441,34 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[1].EndsWith(".jpg") || iteratorVariable2[1].EndsWith(".png")) || iteratorVariable2[1].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
+                    if (RCextensions.CheckIP(iteratorVariable2[1]))
                     {
-                        WWW iteratorVariable16 = new WWW(iteratorVariable2[1]);
-                        yield return iteratorVariable16;
-                        Texture2D iteratorVariable17 = RCextensions.loadimage(iteratorVariable16, mipmap, 0x30d40);
-                        iteratorVariable16.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
                         {
-                            iteratorVariable1 = true;
-                            if (this.setup.myCostume.hairInfo.id >= 0)
+                            WWW iteratorVariable16 = new WWW(iteratorVariable2[1]);
+                            yield return iteratorVariable16;
+                            Texture2D iteratorVariable17 = RCextensions.loadimage(iteratorVariable16, mipmap, 0x30d40);
+                            iteratorVariable16.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
                             {
-                                iteratorVariable15.material = CharacterMaterials.materials[this.setup.myCostume.hairInfo.texture];
+                                iteratorVariable1 = true;
+                                if (this.setup.myCostume.hairInfo.id >= 0)
+                                {
+                                    iteratorVariable15.material = CharacterMaterials.materials[this.setup.myCostume.hairInfo.texture];
+                                }
+                                iteratorVariable15.material.mainTexture = iteratorVariable17;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[1], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
                             }
-                            iteratorVariable15.material.mainTexture = iteratorVariable17;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[1], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[1]];
                     }
                 }
                 else if (iteratorVariable2[1].ToLower() == "transparent")
@@ -3460,29 +3480,32 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[2].EndsWith(".jpg") || iteratorVariable2[2].EndsWith(".png")) || iteratorVariable2[2].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[2]))
+                    if (RCextensions.CheckIP(iteratorVariable2[2]))
                     {
-                        WWW iteratorVariable18 = new WWW(iteratorVariable2[2]);
-                        yield return iteratorVariable18;
-                        Texture2D iteratorVariable19 = RCextensions.loadimage(iteratorVariable18, mipmap, 0x30d40);
-                        iteratorVariable18.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[2]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
-                            iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
-                            iteratorVariable15.material.mainTexture = iteratorVariable19;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[2], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
+                            WWW iteratorVariable18 = new WWW(iteratorVariable2[2]);
+                            yield return iteratorVariable18;
+                            Texture2D iteratorVariable19 = RCextensions.loadimage(iteratorVariable18, mipmap, 0x30d40);
+                            iteratorVariable18.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[2]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
+                                iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
+                                iteratorVariable15.material.mainTexture = iteratorVariable19;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[2], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[2]];
                     }
                 }
                 else if (iteratorVariable2[2].ToLower() == "transparent")
@@ -3494,29 +3517,32 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[3].EndsWith(".jpg") || iteratorVariable2[3].EndsWith(".png")) || iteratorVariable2[3].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[3]))
+                    if (RCextensions.CheckIP(iteratorVariable2[3]))
                     {
-                        WWW iteratorVariable20 = new WWW(iteratorVariable2[3]);
-                        yield return iteratorVariable20;
-                        Texture2D iteratorVariable21 = RCextensions.loadimage(iteratorVariable20, mipmap, 0x30d40);
-                        iteratorVariable20.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[3]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
-                            iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
-                            iteratorVariable15.material.mainTexture = iteratorVariable21;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[3], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
+                            WWW iteratorVariable20 = new WWW(iteratorVariable2[3]);
+                            yield return iteratorVariable20;
+                            Texture2D iteratorVariable21 = RCextensions.loadimage(iteratorVariable20, mipmap, 0x30d40);
+                            iteratorVariable20.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[3]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
+                                iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
+                                iteratorVariable15.material.mainTexture = iteratorVariable21;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[3], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[3]];
                     }
                 }
                 else if (iteratorVariable2[3].ToLower() == "transparent")
@@ -3528,29 +3554,32 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[4].EndsWith(".jpg") || iteratorVariable2[4].EndsWith(".png")) || iteratorVariable2[4].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[4]))
+                    if (RCextensions.CheckIP(iteratorVariable2[4]))
                     {
-                        WWW iteratorVariable22 = new WWW(iteratorVariable2[4]);
-                        yield return iteratorVariable22;
-                        Texture2D iteratorVariable23 = RCextensions.loadimage(iteratorVariable22, mipmap, 0x30d40);
-                        iteratorVariable22.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[4]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
-                            iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
-                            iteratorVariable15.material.mainTexture = iteratorVariable23;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[4], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
+                            WWW iteratorVariable22 = new WWW(iteratorVariable2[4]);
+                            yield return iteratorVariable22;
+                            Texture2D iteratorVariable23 = RCextensions.loadimage(iteratorVariable22, mipmap, 0x30d40);
+                            iteratorVariable22.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[4]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTextureScale = (Vector2)(iteratorVariable15.material.mainTextureScale * 8f);
+                                iteratorVariable15.material.mainTextureOffset = new Vector2(0f, 0f);
+                                iteratorVariable15.material.mainTexture = iteratorVariable23;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[4], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[4]];
                     }
                 }
                 else if (iteratorVariable2[4].ToLower() == "transparent")
@@ -3562,27 +3591,30 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[5].EndsWith(".jpg") || iteratorVariable2[5].EndsWith(".png")) || iteratorVariable2[5].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[5]))
+                    if (RCextensions.CheckIP(iteratorVariable2[5]))
                     {
-                        WWW iteratorVariable24 = new WWW(iteratorVariable2[5]);
-                        yield return iteratorVariable24;
-                        Texture2D iteratorVariable25 = RCextensions.loadimage(iteratorVariable24, mipmap, 0x30d40);
-                        iteratorVariable24.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[5]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTexture = iteratorVariable25;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[5], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
+                            WWW iteratorVariable24 = new WWW(iteratorVariable2[5]);
+                            yield return iteratorVariable24;
+                            Texture2D iteratorVariable25 = RCextensions.loadimage(iteratorVariable24, mipmap, 0x30d40);
+                            iteratorVariable24.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[5]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable25;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[5], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[5]];
                     }
                 }
                 else if (iteratorVariable2[5].ToLower() == "transparent")
@@ -3594,27 +3626,30 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[6].EndsWith(".jpg") || iteratorVariable2[6].EndsWith(".png")) || iteratorVariable2[6].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                    if (RCextensions.CheckIP(iteratorVariable2[6]))
                     {
-                        WWW iteratorVariable26 = new WWW(iteratorVariable2[6]);
-                        yield return iteratorVariable26;
-                        Texture2D iteratorVariable27 = RCextensions.loadimage(iteratorVariable26, mipmap, 0x7a120);
-                        iteratorVariable26.Dispose();
                         if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTexture = iteratorVariable27;
-                            FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[6], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                            WWW iteratorVariable26 = new WWW(iteratorVariable2[6]);
+                            yield return iteratorVariable26;
+                            Texture2D iteratorVariable27 = RCextensions.loadimage(iteratorVariable26, mipmap, 0x7a120);
+                            iteratorVariable26.Dispose();
+                            if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable27;
+                                FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[6], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[6]];
                     }
                 }
                 else if (iteratorVariable2[6].ToLower() == "transparent")
@@ -3626,27 +3661,30 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[7].EndsWith(".jpg") || iteratorVariable2[7].EndsWith(".png")) || iteratorVariable2[7].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                    if (RCextensions.CheckIP(iteratorVariable2[7]))
                     {
-                        WWW iteratorVariable28 = new WWW(iteratorVariable2[7]);
-                        yield return iteratorVariable28;
-                        Texture2D iteratorVariable29 = RCextensions.loadimage(iteratorVariable28, mipmap, 0x30d40);
-                        iteratorVariable28.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTexture = iteratorVariable29;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[7], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                            WWW iteratorVariable28 = new WWW(iteratorVariable2[7]);
+                            yield return iteratorVariable28;
+                            Texture2D iteratorVariable29 = RCextensions.loadimage(iteratorVariable28, mipmap, 0x30d40);
+                            iteratorVariable28.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable29;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[7], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[7]];
                     }
                 }
                 else if (iteratorVariable2[7].ToLower() == "transparent")
@@ -3658,27 +3696,30 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[8].EndsWith(".jpg") || iteratorVariable2[8].EndsWith(".png")) || iteratorVariable2[8].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[8]))
+                    if (RCextensions.CheckIP(iteratorVariable2[8]))
                     {
-                        WWW iteratorVariable30 = new WWW(iteratorVariable2[8]);
-                        yield return iteratorVariable30;
-                        Texture2D iteratorVariable31 = RCextensions.loadimage(iteratorVariable30, mipmap, 0x7a120);
-                        iteratorVariable30.Dispose();
                         if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[8]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTexture = iteratorVariable31;
-                            FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[8], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
+                            WWW iteratorVariable30 = new WWW(iteratorVariable2[8]);
+                            yield return iteratorVariable30;
+                            Texture2D iteratorVariable31 = RCextensions.loadimage(iteratorVariable30, mipmap, 0x7a120);
+                            iteratorVariable30.Dispose();
+                            if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[8]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable31;
+                                FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[8], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[8]];
                     }
                 }
                 else if (iteratorVariable2[8].ToLower() == "transparent")
@@ -3690,27 +3731,30 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[9].EndsWith(".jpg") || iteratorVariable2[9].EndsWith(".png")) || iteratorVariable2[9].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[9]))
+                    if (RCextensions.CheckIP(iteratorVariable2[9]))
                     {
-                        WWW iteratorVariable32 = new WWW(iteratorVariable2[9]);
-                        yield return iteratorVariable32;
-                        Texture2D iteratorVariable33 = RCextensions.loadimage(iteratorVariable32, mipmap, 0x7a120);
-                        iteratorVariable32.Dispose();
                         if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[9]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTexture = iteratorVariable33;
-                            FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[9], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
+                            WWW iteratorVariable32 = new WWW(iteratorVariable2[9]);
+                            yield return iteratorVariable32;
+                            Texture2D iteratorVariable33 = RCextensions.loadimage(iteratorVariable32, mipmap, 0x7a120);
+                            iteratorVariable32.Dispose();
+                            if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[9]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable33;
+                                FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[9], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[9]];
                     }
                 }
                 else if (iteratorVariable2[9].ToLower() == "transparent")
@@ -3722,27 +3766,30 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[10].EndsWith(".jpg") || iteratorVariable2[10].EndsWith(".png")) || iteratorVariable2[10].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[10]))
+                    if (RCextensions.CheckIP(iteratorVariable2[10]))
                     {
-                        WWW iteratorVariable34 = new WWW(iteratorVariable2[10]);
-                        yield return iteratorVariable34;
-                        Texture2D iteratorVariable35 = RCextensions.loadimage(iteratorVariable34, mipmap, 0x30d40);
-                        iteratorVariable34.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[10]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTexture = iteratorVariable35;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[10], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
+                            WWW iteratorVariable34 = new WWW(iteratorVariable2[10]);
+                            yield return iteratorVariable34;
+                            Texture2D iteratorVariable35 = RCextensions.loadimage(iteratorVariable34, mipmap, 0x30d40);
+                            iteratorVariable34.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[10]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable35;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[10], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[10]];
                     }
                 }
                 else if (iteratorVariable2[10].ToLower() == "transparent")
@@ -3754,27 +3801,30 @@ public class HERO : MONO
             {
                 if ((iteratorVariable2[11].EndsWith(".jpg") || iteratorVariable2[11].EndsWith(".png")) || iteratorVariable2[11].EndsWith(".jpeg"))
                 {
-                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[11]))
+                    if (RCextensions.CheckIP(iteratorVariable2[11]))
                     {
-                        WWW iteratorVariable36 = new WWW(iteratorVariable2[11]);
-                        yield return iteratorVariable36;
-                        Texture2D iteratorVariable37 = RCextensions.loadimage(iteratorVariable36, mipmap, 0x30d40);
-                        iteratorVariable36.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[11]))
                         {
-                            iteratorVariable1 = true;
-                            iteratorVariable15.material.mainTexture = iteratorVariable37;
-                            FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[11], iteratorVariable15.material);
-                            iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
+                            WWW iteratorVariable36 = new WWW(iteratorVariable2[11]);
+                            yield return iteratorVariable36;
+                            Texture2D iteratorVariable37 = RCextensions.loadimage(iteratorVariable36, mipmap, 0x30d40);
+                            iteratorVariable36.Dispose();
+                            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[11]))
+                            {
+                                iteratorVariable1 = true;
+                                iteratorVariable15.material.mainTexture = iteratorVariable37;
+                                FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[11], iteratorVariable15.material);
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
+                            }
+                            else
+                            {
+                                iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
+                            }
                         }
                         else
                         {
                             iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
                         }
-                    }
-                    else
-                    {
-                        iteratorVariable15.material = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[11]];
                     }
                 }
                 else if (iteratorVariable2[11].ToLower() == "transparent")
@@ -3794,27 +3844,30 @@ public class HERO : MONO
                     {
                         if ((iteratorVariable2[0].EndsWith(".jpg") || iteratorVariable2[0].EndsWith(".png")) || iteratorVariable2[0].EndsWith(".jpeg"))
                         {
-                            if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[0]))
+                            if (RCextensions.CheckIP(iteratorVariable2[0]))
                             {
-                                WWW iteratorVariable40 = new WWW(iteratorVariable2[0]);
-                                yield return iteratorVariable40;
-                                Texture2D iteratorVariable41 = RCextensions.loadimage(iteratorVariable40, mipmap, 0x7a120);
-                                iteratorVariable40.Dispose();
                                 if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[0]))
                                 {
-                                    iteratorVariable1 = true;
-                                    iteratorVariable39.material.mainTexture = iteratorVariable41;
-                                    FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[0], iteratorVariable39.material);
-                                    iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
+                                    WWW iteratorVariable40 = new WWW(iteratorVariable2[0]);
+                                    yield return iteratorVariable40;
+                                    Texture2D iteratorVariable41 = RCextensions.loadimage(iteratorVariable40, mipmap, 0x7a120);
+                                    iteratorVariable40.Dispose();
+                                    if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[0]))
+                                    {
+                                        iteratorVariable1 = true;
+                                        iteratorVariable39.material.mainTexture = iteratorVariable41;
+                                        FengGameManagerMKII.linkHash[1].Add(iteratorVariable2[0], iteratorVariable39.material);
+                                        iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
+                                    }
+                                    else
+                                    {
+                                        iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
+                                    }
                                 }
                                 else
                                 {
                                     iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
                                 }
-                            }
-                            else
-                            {
-                                iteratorVariable39.material = (Material)FengGameManagerMKII.linkHash[1][iteratorVariable2[0]];
                             }
                         }
                         else if (iteratorVariable2[0].ToLower() == "transparent")
@@ -3827,22 +3880,32 @@ public class HERO : MONO
         }
         if (iteratorVariable5 && ((iteratorVariable2[12].EndsWith(".jpg") || iteratorVariable2[12].EndsWith(".png")) || iteratorVariable2[12].EndsWith(".jpeg")))
         {
-            if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[12]))
+            if (RCextensions.CheckIP(iteratorVariable2[12]))
             {
-                WWW iteratorVariable42 = new WWW(iteratorVariable2[12]);
-                yield return iteratorVariable42;
-                Texture2D iteratorVariable43 = RCextensions.loadimage(iteratorVariable42, mipmap, 0x30d40);
-                iteratorVariable42.Dispose();
                 if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[12]))
                 {
-                    iteratorVariable1 = true;
-                    this.leftbladetrail.MyMaterial.mainTexture = iteratorVariable43;
-                    this.rightbladetrail.MyMaterial.mainTexture = iteratorVariable43;
-                    FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[12], this.leftbladetrail.MyMaterial);
-                    this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
-                    this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
-                    this.leftbladetrail2.MyMaterial = this.leftbladetrail.MyMaterial;
-                    this.rightbladetrail2.MyMaterial = this.leftbladetrail.MyMaterial;
+                    WWW iteratorVariable42 = new WWW(iteratorVariable2[12]);
+                    yield return iteratorVariable42;
+                    Texture2D iteratorVariable43 = RCextensions.loadimage(iteratorVariable42, mipmap, 0x30d40);
+                    iteratorVariable42.Dispose();
+                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[12]))
+                    {
+                        iteratorVariable1 = true;
+                        this.leftbladetrail.MyMaterial.mainTexture = iteratorVariable43;
+                        this.rightbladetrail.MyMaterial.mainTexture = iteratorVariable43;
+                        FengGameManagerMKII.linkHash[0].Add(iteratorVariable2[12], this.leftbladetrail.MyMaterial);
+                        this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.leftbladetrail2.MyMaterial = this.leftbladetrail.MyMaterial;
+                        this.rightbladetrail2.MyMaterial = this.leftbladetrail.MyMaterial;
+                    }
+                    else
+                    {
+                        this.leftbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.rightbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                        this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
+                    }
                 }
                 else
                 {
@@ -3851,13 +3914,6 @@ public class HERO : MONO
                     this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
                     this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
                 }
-            }
-            else
-            {
-                this.leftbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
-                this.rightbladetrail2.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
-                this.leftbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
-                this.rightbladetrail.MyMaterial = (Material)FengGameManagerMKII.linkHash[0][iteratorVariable2[12]];
             }
         }
         if (iteratorVariable1)
@@ -3891,8 +3947,13 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void net3DMGSMOKE(bool ifON)
+    private void net3DMGSMOKE(bool ifON, PhotonMessageInfo info)
     {
+        if (info.sender != this.basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "Messing w/ smoke");
+            return;
+        }
         if (this.smoke_3dmg != null)
         {
             this.smoke_3dmg.enableEmission = ifON;
@@ -3900,8 +3961,13 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void netContinueAnimation()
+    private void netContinueAnimation(PhotonMessageInfo info)
     {
+        if (info.sender != basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "netContinueAnimation");
+            return;
+        }
         foreach (AnimationState animationState in baseA)
         {
             if (animationState.speed == 1f)
@@ -3915,8 +3981,13 @@ public class HERO : MONO
 
 
     [RPC]
-    private void netCrossFade(string aniName, float time)
+    private void netCrossFade(string aniName, float time, PhotonMessageInfo info)
     {
+        if (info.sender != this.basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "changing animation");
+            return;
+        }
         this.currentAnimation = aniName;
         if (baseA != null)
         {
@@ -4136,7 +4207,7 @@ public class HERO : MONO
         }
         else
         {
-            obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hitMeat2"));
+            obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hitMeat2"));
         }      
         if (basePV.isMine)
         {
@@ -4292,7 +4363,14 @@ public class HERO : MONO
 
     [RPC]
     private void netGrabbed(int id, bool leftHand, PhotonMessageInfo info)
-    {
+    {//  if (!info.sender.isMasterClient && (RCextensions.returnIntFromObject(info.sender.customProperties[PhotonPlayerProperty.isTitan]) != 2 || RCextensions.returnBoolFromObject(sender.customProperties[PhotonPlayerProperty.dead]))  )
+
+        PhotonView view = PhotonView.Find(id);
+        if (info.sender != view?.owner || !(view.gameObject.GetComponent<TITAN>() != null || view.gameObject.GetComponent<FEMALE_TITAN>() != null))
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "invalid netGrabbed");
+            return;
+        }
         if (info.sender.isMasterClient || info.sender.isTitan)
         {
             this.titanWhoGrabMeID = id;
@@ -4301,8 +4379,13 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void netlaughAttack()
+    private void netlaughAttack(PhotonMessageInfo info = null)
     {
+        if (info.sender != basePV.owner && info.sender != null)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "making titans laugh");
+            return;
+        }
         foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("titan"))
         {
             if (((Vector3.Distance(obj2.transform.position, baseT.position) < 50f) && (Vector3.Angle(obj2.transform.forward, baseT.position - obj2.transform.position) < 90f)) && (obj2.GetComponent<TITAN>() != null))
@@ -4313,17 +4396,37 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void netPauseAnimation()
+    private void netPauseAnimation(PhotonMessageInfo info)
     {
+        if (info.sender != basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "netPauseAnimation");
+            return;
+        }
+
         foreach (AnimationState animationState in baseA)
         {
             animationState.speed = 0f;
         }
     }
 
-    [RPC]
     private void netPlayAnimation(string aniName)
     {
+        this.currentAnimation = aniName;
+        if (this.baseA != null)
+        {
+            this.baseA.Play(aniName);
+        }
+    }
+
+    [RPC]
+    private void netPlayAnimation(string aniName, PhotonMessageInfo info)
+    {
+        if (info.sender != this.basePV.owner && aniName != "grabbed")
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "false net play animation");
+            return;
+        }
         this.currentAnimation = aniName;
         if (baseA != null)
         {
@@ -4332,8 +4435,13 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void netPlayAnimationAt(string aniName, float normalizedTime)
+    private void netPlayAnimationAt(string aniName, float normalizedTime, PhotonMessageInfo info)
     {
+        if (info.sender != this.basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "false net play animation");
+            return;
+        }
         this.currentAnimation = aniName;
         if (baseA != null)
         {
@@ -4343,14 +4451,24 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void netSetIsGrabbedFalse()
+    private void netSetIsGrabbedFals(PhotonMessageInfo info)
     {
+        if (info.sender != basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "netSetIsGrabbedFalse");
+            return;
+        }
         this.state = HERO_STATE.Idle;
     }
 
     [RPC]
-    private void netTauntAttack(float tauntTime, float distance = 100f)
+    private void netTauntAttack(float tauntTime, float distance = 100f, PhotonMessageInfo info = null)
     {
+        if (info.sender != basePV.owner && info.sender != null)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "netTauntAttack");
+            return;
+        }
         foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("titan"))
         {
             if ((Vector3.Distance(obj2.transform.position, baseT.position) < distance) && (obj2.GetComponent<TITAN>() != null))
@@ -4710,6 +4828,17 @@ public class HERO : MONO
     [RPC]
     public void SetMyCannon(int viewID, PhotonMessageInfo info)
     {
+        if (info.sender != this.basePV.owner || viewID < 0)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "messing w/ cannons");
+            return;
+        }
+        PhotonView photonView = PhotonView.Find(viewID);
+        if (photonView.owner != info.sender)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "messing w/ cannons2");
+            return;
+        }
         if (info.sender == basePV.owner)
         {
             PhotonView view = PhotonView.Find(viewID);
@@ -4741,15 +4870,18 @@ public class HERO : MONO
     private void setMyTeam(int val)
     {
         this.myTeam = val;
-        if (this.checkBoxLeft != null && this.triggerLeft != null)
-        {
-            this.triggerLeft.myTeam = val;
-        }
-        if (this.checkBoxRight != null && this.triggerRight != null)
-        {
-            this.triggerRight.myTeam = val;
-        }
-        if ((val > 1 && IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && PhotonNetwork.isMasterClient)
+        this.checkBoxLeft.GetComponent<TriggerColliderWeapon>().myTeam = val;
+        this.checkBoxRight.GetComponent<TriggerColliderWeapon>().myTeam = val;
+
+        //if (this.checkBoxLeft != null && this.triggerLeft != null) //reaper
+        //{
+        //    this.triggerLeft.myTeam = val;
+        //}
+        //if (this.checkBoxRight != null && this.triggerRight != null)
+        //{
+        //    this.triggerRight.myTeam = val;
+        //}
+        if ((/*val > 1 && */IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && PhotonNetwork.isMasterClient)
         {
             object[] objArray;
             if (GameSettings.friendlyMode > 0)
@@ -4784,10 +4916,10 @@ public class HERO : MONO
 
     public void setSkillHUDPosition2()
     {
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
+        this.skillCD = CLEARSKIES.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
         if (this.skillCD != null)
         {
-            this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+            this.skillCD.transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
         }
         if (this.useGun && (GameSettings.bombMode == 0))
         {
@@ -4857,28 +4989,28 @@ public class HERO : MONO
         this.totalGas = this.currentGas = this.setup.myCostume.stat.GAS;
         this.totalBladeSta = this.currentBladeSta = this.setup.myCostume.stat.BLA;
         baseR.mass = 0.5f - ((this.setup.myCostume.stat.ACL - 100) * 0.001f);
-        BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition = new Vector3(0f, (-Screen.height * 0.5f) + 5f, 0f);
-        this.skillCD = BRM.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
-        this.skillCD.transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
-        BRM.CacheGameObject.Find("GasUI").transform.localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+        CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition = new Vector3(0f, (-Screen.height * 0.5f) + 5f, 0f);
+        this.skillCD = CLEARSKIES.CacheGameObject.Find("skill_cd_" + this.skillIDHUD);
+        this.skillCD.transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+        CLEARSKIES.CacheGameObject.Find("GasUI").transform.localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
         if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = false;
-            BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL1").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR1").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL2").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR2").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL3").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR3").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL4").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR4").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL5").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR5").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL6").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR6").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL7").enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR7").enabled = false;
         }
         if (this.setup.myCostume.uniform_type == UNIFORM_TYPE.CasualAHSS)
         {
@@ -4892,34 +5024,34 @@ public class HERO : MONO
             this.setTeam2(2);
             if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
             {
-                BRM.CacheGameObject.Find<UISprite>("bladeCL").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladeCR").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader1").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader2").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader3").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader4").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bladel5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("blader5").enabled = false;
-                BRM.CacheGameObject.Find<UISprite>("bulletL").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR1").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR2").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR3").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR4").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR5").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR6").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletL7").enabled = true;
-                BRM.CacheGameObject.Find<UISprite>("bulletR7").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladeCL").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladeCR").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel1").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader1").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel2").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader2").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel3").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader3").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel4").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader4").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bladel5").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("blader5").enabled = false;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL1").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR1").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL2").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR2").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL3").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR3").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL4").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR4").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL5").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR5").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL6").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR6").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL7").enabled = true;
+                CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR7").enabled = true;
                 if (this.skillId != "bomb")
                 {
                     this.skillCD.transform.localPosition = (Vector3)(Vector3.up * 5000f);
@@ -4978,7 +5110,7 @@ public class HERO : MONO
         {
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
             {
-                GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/flareBullet" + type), baseT.position, baseT.rotation);
+                GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/flareBullet" + type), baseT.position, baseT.rotation);
                 obj2.GetComponent<FlareMovement>().dontShowHint();
                 UnityEngine.Object.Destroy(obj2, 25f);
             }
@@ -5237,7 +5369,7 @@ public class HERO : MONO
     [RPC]
     private void showHitDamage()
     {
-        //GameObject target = BRM.CacheGameObject.Find("LabelScore");
+        //GameObject target = CLEARSKIES.CacheGameObject.Find("LabelScore");
         if (FengGameManagerMKII.LabelScore != null)
         {
             this.speed = Mathf.Max(10f, this.speed);
@@ -5360,8 +5492,8 @@ public class HERO : MONO
                     FengGameManagerMKII.heroHash.Add(iD, this);
                 }
             }
-            GameObject obj2 = BRM.CacheGameObject.Find("UI_IN_GAME");
-            this.myNetWorkName = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("UI/LabelNameOverHead"));
+            GameObject obj2 = CLEARSKIES.CacheGameObject.Find("UI_IN_GAME");
+            this.myNetWorkName = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("UI/LabelNameOverHead"));
             this.myNetWorkName.name = "LabelNameOverHead";
             this.myNetWorkNameT = this.myNetWorkName.transform;
             this.myNetWorkNameT.parent = obj2.GetComponent<UIReferArray>().panels[0].transform;
@@ -5444,7 +5576,7 @@ public class HERO : MONO
             baseG.layer = LayerMask.NameToLayer("NetworkObject");
             if (IN_GAME_MAIN_CAMERA.dayLight == DayLight.Night)
             {
-                Transform obj3 = ((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("flashlight"))).transform;
+                Transform obj3 = ((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("flashlight"))).transform;
                 obj3.parent = baseT;
                 obj3.position = baseT.position + Vector3.up;
                 obj3.rotation = Quaternion.Euler(353f, 0f, 0f);
@@ -5498,8 +5630,8 @@ public class HERO : MONO
     {
         Transform transform = this.setup.part_blade_l.transform;
         Transform transform2 = this.setup.part_blade_r.transform;
-        GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_blade_l"), transform.position, transform.rotation);
-        GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_blade_r"), transform2.position, transform2.rotation);
+        GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_blade_l"), transform.position, transform.rotation);
+        GameObject obj3 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_blade_r"), transform2.position, transform2.rotation);
         obj2.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
         obj3.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
         Vector3 force = (baseT.forward + ((Vector3)(baseT.up * 2f))) - baseT.right;
@@ -6398,7 +6530,7 @@ public class HERO : MONO
                                         }
                                         else
                                         {
-                                            obj4 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load(prefabName), (Vector3)((baseT.position + (baseT.up * 0.8f)) - (baseT.right * 0.1f)), baseT.rotation);
+                                            obj4 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load(prefabName), (Vector3)((baseT.position + (baseT.up * 0.8f)) - (baseT.right * 0.1f)), baseT.rotation);
                                         }
                                     }
                                     if (baseA[this.attackAnimation].normalizedTime >= 1f)
@@ -6422,7 +6554,7 @@ public class HERO : MONO
                                         {
                                             this.setup.part_blade_l.SetActive(false);
                                             Transform transform = this.setup.part_blade_l.transform;
-                                            GameObject obj5 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_l"), transform.position, transform.rotation);
+                                            GameObject obj5 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_l"), transform.position, transform.rotation);
                                             obj5.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
                                             Vector3 force = ((Vector3)((-baseT.forward * 10f) + (baseT.up * 5f))) - baseT.right;
                                             obj5.rigidbody.AddForce(force, ForceMode.Impulse);
@@ -6433,7 +6565,7 @@ public class HERO : MONO
                                         {
                                             this.setup.part_blade_r.SetActive(false);
                                             Transform transform5 = this.setup.part_blade_r.transform;
-                                            GameObject obj6 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character_parts/character_gun_r"), transform5.position, transform5.rotation);
+                                            GameObject obj6 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character_parts/character_gun_r"), transform5.position, transform5.rotation);
                                             obj6.renderer.material = CharacterMaterials.materials[this.setup.myCostume._3dmg_texture];
                                             Vector3 vector3 = ((Vector3)((-baseT.forward * 10f) + (baseT.up * 5f))) + baseT.right;
                                             obj6.rigidbody.AddForce(vector3, ForceMode.Impulse);
@@ -6757,11 +6889,11 @@ public class HERO : MONO
     {
         for (int i = 1; i <= this.bulletMAX; i++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletL" + i).enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL" + i).enabled = false;
         }
         for (int j = 1; j <= this.leftBulletLeft; j++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletL" + j).enabled = true;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletL" + j).enabled = true;
         }
     }
 
@@ -6769,11 +6901,11 @@ public class HERO : MONO
     {
         for (int i = 1; i <= this.bulletMAX; i++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletR" + i).enabled = false;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR" + i).enabled = false;
         }
         for (int j = 1; j <= this.rightBulletLeft; j++)
         {
-            BRM.CacheGameObject.Find<UISprite>("bulletR" + j).enabled = true;
+            CLEARSKIES.CacheGameObject.Find<UISprite>("bulletR" + j).enabled = true;
         }
     }
 
@@ -6821,8 +6953,13 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void whoIsMyErenTitan(int id)
+    private void whoIsMyErenTitan(int id, PhotonMessageInfo info)
     {
+        if (info.sender != this.basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "messing w/ eren transform");
+            return;
+        }
         this.eren_titan = PhotonView.Find(id).gameObject;
         this.titanForm = true;
     }

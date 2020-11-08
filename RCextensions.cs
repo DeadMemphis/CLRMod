@@ -8,11 +8,60 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ExitGames.Client.Photon;
 using UnityEngine;
-using BRM;
+using CLEARSKIES;
+using System.ComponentModel;
 
 
 public static class RCextensions
 {
+    [Description("Removes all HTML formatted color codes from string")]
+    public static string StripColor(this string s)
+    {
+        return Regex.Replace(s, @"((<(\/|)(color(?(?=\=).*?)>|b>|size.*?>|i>)))", "", RegexOptions.IgnoreCase);
+    }
+
+    public static bool CheckIP(string url)
+    {
+        if (url != string.Empty)
+        {
+            url = url.StartsWith("https://") ? url.Remove(0, 8) :
+                                              (url.StartsWith("http://") ? url.Remove(0, 7) :
+                                                                           (url.StartsWith("www.") ? url.Remove(0, 4) : url.Remove(0, 0)));
+            string[] validLinks = new string[]
+            {
+                "i.imgur.com/",
+                "imgur.com/",
+                "image.ibb.co/",
+                "i.reddit.it/",
+                "cdn.discordapp.com/attachments/",
+                "media.discordapp.net/attachments/",
+                "images-ext-2.discordapp.net/external/",
+                "i.reddit.it/",
+                "gyazo.com/",
+                "i.gyazo.com",
+                "puu.sh/",
+                "i.postimg.cc/",
+                "postimg./",
+                "deviantart.com/",
+                "photobucket.com/",
+                "aotcorehome.files.wordpress.com/",
+                "s1.ax1x.com/",
+                "s27.postimg.io/",
+                "s19.postimg.org/",
+                "1.bp.blogspot.com/",
+                "tiebapic.baidu.com/",
+                "s25.postimg.gg/",
+                "s25.postimg.org/",
+                "aotcorehome.files.wordpress.com/"
+            };
+
+            foreach (string s in validLinks)
+                if (url.StartsWith(s))
+                    return true;
+        }
+        return false;
+    }
+
     public static void Add<T>(ref T[] source, T value)
     {
         T[] localArray = new T[source.Length + 1];

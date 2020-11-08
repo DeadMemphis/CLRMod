@@ -27,7 +27,7 @@ public class LevelTriggerHint : MonoBehaviour
             {
                 case HintType.MOVE:
                 {
-                    string[] textArray2 = new string[] { "Hello soldier!\nWelcome to Attack On Titan Tribute Game!\n Press [F7D358]", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.up], BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.left], BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.down], BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.right], "[-] to Move." };
+                    string[] textArray2 = new string[] { "Hello soldier!\nWelcome to Attack On Titan Tribute Game!\n Press [F7D358]", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.up], CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.left], CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.down], CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.right], "[-] to Move." };
                     this.content = string.Concat(textArray2);
                     break;
                 }
@@ -37,41 +37,41 @@ public class LevelTriggerHint : MonoBehaviour
 
                 case HintType.CAMA:
                 {
-                    string[] textArray3 = new string[] { "Press [F7D358]", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.camera], "[-] to change camera mode\nPress [F7D358]", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.hideCursor], "[-] to hide or show the cursor." };
+                    string[] textArray3 = new string[] { "Press [F7D358]", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.camera], "[-] to change camera mode\nPress [F7D358]", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.hideCursor], "[-] to hide or show the cursor." };
                     this.content = string.Concat(textArray3);
                     break;
                 }
                 case HintType.JUMP:
-                    this.content = "Press [F7D358]" + BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.jump] + "[-] to Jump.";
+                    this.content = "Press [F7D358]" + CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.jump] + "[-] to Jump.";
                     break;
 
                 case HintType.JUMP2:
-                    this.content = "Press [F7D358]" + BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.up] + "[-] towards a wall to perform a wall-run.";
+                    this.content = "Press [F7D358]" + CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.up] + "[-] towards a wall to perform a wall-run.";
                     break;
 
                 case HintType.HOOK:
                 {
-                    string[] textArray4 = new string[] { "Press and Hold[F7D358] ", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.leftRope], "[-] or [F7D358]", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.rightRope], "[-] to launch your grapple.\nNow Try hooking to the [>3<] box. " };
+                    string[] textArray4 = new string[] { "Press and Hold[F7D358] ", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.leftRope], "[-] or [F7D358]", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.rightRope], "[-] to launch your grapple.\nNow Try hooking to the [>3<] box. " };
                     this.content = string.Concat(textArray4);
                     break;
                 }
                 case HintType.HOOK2:
                 {
-                    string[] textArray5 = new string[] { "Press and Hold[F7D358] ", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.bothRope], "[-] to launch both of your grapples at the same Time.\n\nNow aim between the two black blocks. \nYou will see the mark '<' and '>' appearing on the blocks. \nThen press ", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.bothRope], " to hook the blocks." };
+                    string[] textArray5 = new string[] { "Press and Hold[F7D358] ", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.bothRope], "[-] to launch both of your grapples at the same Time.\n\nNow aim between the two black blocks. \nYou will see the mark '<' and '>' appearing on the blocks. \nThen press ", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.bothRope], " to hook the blocks." };
                     this.content = string.Concat(textArray5);
                     break;
                 }
                 case HintType.SUPPLY:
-                    this.content = "Press [F7D358]" + BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.reload] + "[-] to reload your blades.\n Move to the supply station to refill your gas and blades.";
+                    this.content = "Press [F7D358]" + CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.reload] + "[-] to reload your blades.\n Move to the supply station to refill your gas and blades.";
                     break;
 
                 case HintType.DODGE:
-                    this.content = "Press [F7D358]" + BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.dodge] + "[-] to Dodge.";
+                    this.content = "Press [F7D358]" + CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.dodge] + "[-] to Dodge.";
                     break;
 
                 case HintType.ATTACK:
                 {
-                    string[] textArray1 = new string[] { "Press [F7D358]", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.attack0], "[-] to Attack. \nPress [F7D358]", BRM.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.attack1], "[-] to use special attack.\n***You can only kill a titan by slashing his [FA5858]NAPE[-].***\n\n" };
+                    string[] textArray1 = new string[] { "Press [F7D358]", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.attack0], "[-] to Attack. \nPress [F7D358]", CLEARSKIES.CacheGameObject.Find("InputManagerController").GetComponent<FengCustomInputs>().inputString[InputCode.attack1], "[-] to use special attack.\n***You can only kill a titan by slashing his [FA5858]NAPE[-].***\n\n" };
                     this.content = string.Concat(textArray1);
                     break;
                 }

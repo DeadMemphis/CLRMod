@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x02000016 RID: 22
     public struct RoomData

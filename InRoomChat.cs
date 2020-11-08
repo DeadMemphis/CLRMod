@@ -462,6 +462,20 @@ public class InRoomChat : Photon.MonoBehaviour
                                     this.addLINE("<color=#FFCC00>error: not master client</color>");
                                 }
                             }
+                            else if (this.inputLine.StartsWith("/ignore"))
+                            {
+                                string[] args = inputLine.Split(new char[] { ' ' });
+                                PhotonPlayer player = PhotonPlayer.Find(Convert.ToInt32(args[1]));
+                                FengGameManagerMKII.ignoreList.Add(player.ID);
+                                FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+                            }
+                            else if (this.inputLine.StartsWith("/unignore"))
+                            {
+                                string[] args = inputLine.Split(new char[] { ' ' });
+                                PhotonPlayer player = PhotonPlayer.Find(Convert.ToInt32(args[1]));
+                                FengGameManagerMKII.ignoreList.Remove(player.ID);
+                                FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+                            }
                             else if (this.inputLine.StartsWith("/unban"))
                             {
                                 if (FengGameManagerMKII.OnPrivateServer)

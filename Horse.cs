@@ -1,7 +1,7 @@
 ﻿using Photon;
 using System;
 using UnityEngine;
-using BRM;
+using CLEARSKIES;
 
 public class Horse : MONO
 {
@@ -82,7 +82,7 @@ public class Horse : MONO
         return Physics.Raycast(this.baseGT.position + Vector3.up * 0.1f, -Vector3.up, 0.3f, Layer.GroundEnemy.value);
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         if ((this.myHero == null) && this.basePV.isMine)
         {
@@ -95,11 +95,13 @@ public class Horse : MONO
                 this.unmounted();
                 return;
             }
-
-            this.heroT.position = this.baseT.position + Vector3.up * 1.68f;
-            this.heroT.rotation = this.baseT.rotation;
-            this.heroR.velocity = this.baseR.velocity;
-
+            try
+            {
+                this.heroT.position = this.baseT.position + Vector3.up * 1.68f;
+                this.heroT.rotation = this.baseT.rotation;
+                this.heroR.velocity = this.baseR.velocity;
+            }
+            catch (NullReferenceException) { }
             this.myHero.transform.position = this.baseT.position + ((Vector3)(Vector3.up * 1.68f));
 
             this.myHero.transform.rotation = this.baseT.rotation;
@@ -108,7 +110,7 @@ public class Horse : MONO
 
             if (this.controller.targetDirection != -874f)
             {
-                    this.baseGT.rotation = Quaternion.Lerp(this.baseGT.rotation, Quaternion.Euler(0f, this.controller.targetDirection, 0f), (100f * Time.deltaTime) / (this.baseR.velocity.magnitude + 20f));
+                this.baseGT.rotation = Quaternion.Lerp(this.baseGT.rotation, Quaternion.Euler(0f, this.controller.targetDirection, 0f), (100f * Time.deltaTime) / (this.baseR.velocity.magnitude + 20f));
                 if (this.controller.isWALKDown)
                 {
                     this.baseR.AddForce((Vector3)((this.baseT.forward * this.speed) * 0.6f), ForceMode.Acceleration);
@@ -125,7 +127,7 @@ public class Horse : MONO
                         this.baseR.AddForce((Vector3)(-this.speed * this.baseR.velocity.normalized), ForceMode.Acceleration);
                     }
                 }
-             
+
                 if (this.baseR.velocity.magnitude > 8f)
                 {
                     if (!this.baseA.IsPlaying("horse_Run"))
@@ -160,24 +162,24 @@ public class Horse : MONO
                         this.basePV.RPC("setDust", PhotonTargets.Others, objArray2);
                     }
                 }
-               
+
             }
             else
             {
                 this.toIdleAnimation();
-               
-                    if (this.baseR.velocity.magnitude > 15f)
-                    {
-                        if (!this.heroA.IsPlaying("horse_Run"))
-                        {
-                            this.hero.crossFade("horse_run", 0.1f);
-                        }
 
-                    }
-                    else if (!this.heroA.IsPlaying("horse_idle"))
+                if (this.baseR.velocity.magnitude > 15f)
+                {
+                    if (!this.heroA.IsPlaying("horse_Run"))
                     {
-                        this.hero.crossFade("horse_idle", 0.1f);
+                        this.hero.crossFade("horse_run", 0.1f);
                     }
+
+                }
+                else if (!this.heroA.IsPlaying("horse_idle"))
+                {
+                    this.hero.crossFade("horse_idle", 0.1f);
+                }
             }
 
             if ((this.controller.isAttackDown || this.controller.isAttackIIDown) && this.IsGrounded())
@@ -223,18 +225,18 @@ public class Horse : MONO
             this.baseGT.rotation = Quaternion.Lerp(this.baseGT.rotation, Quaternion.Euler(0f, this.baseGT.rotation.eulerAngles.y + num, 0f), (200f * Time.deltaTime) / (this.baseR.velocity.magnitude + 20f));
             if (Vector3.Distance(this.setPoint, this.baseT.position) < 20f)
             {
-                this.baseR.AddForce((Vector3) ((this.baseT.forward * this.speed) * 0.7f), ForceMode.Acceleration);
+                this.baseR.AddForce((Vector3)((this.baseT.forward * this.speed) * 0.7f), ForceMode.Acceleration);
                 if (this.baseR.velocity.magnitude >= this.speed)
                 {
-                    this.baseR.AddForce((Vector3) ((-this.speed * 0.7f) * this.baseR.velocity.normalized), ForceMode.Acceleration);
+                    this.baseR.AddForce((Vector3)((-this.speed * 0.7f) * this.baseR.velocity.normalized), ForceMode.Acceleration);
                 }
             }
             else
             {
-                this.baseR.AddForce((Vector3) (this.baseT.forward * this.speed), ForceMode.Acceleration);
+                this.baseR.AddForce((Vector3)(this.baseT.forward * this.speed), ForceMode.Acceleration);
                 if (this.baseR.velocity.magnitude >= this.speed)
                 {
-                    this.baseR.AddForce((Vector3) (-this.speed * this.baseR.velocity.normalized), ForceMode.Acceleration);
+                    this.baseR.AddForce((Vector3)(-this.speed * this.baseR.velocity.normalized), ForceMode.Acceleration);
                 }
             }
             this.timeElapsed += Time.deltaTime;
@@ -258,10 +260,10 @@ public class Horse : MONO
             if (this.awayTimer > 6f)
             {
                 this.awayTimer = 0f;
-                LayerMask mask2 = ((int) 1) << LayerMask.NameToLayer("Ground");
+                LayerMask mask2 = ((int)1) << LayerMask.NameToLayer("Ground");
                 if (Physics.Linecast(this.baseT.position + Vector3.up, this.myHero.transform.position + Vector3.up, mask2.value))
                 {
-                    this.baseT.position = new Vector3(this.myHero.transform.position.x, this.getHeight(this.myHero.transform.position + ((Vector3) (Vector3.up * 5f))), this.myHero.transform.position.z);
+                    this.baseT.position = new Vector3(this.myHero.transform.position.x, this.getHeight(this.myHero.transform.position + ((Vector3)(Vector3.up * 5f))), this.myHero.transform.position.z);
                 }
             }
         }

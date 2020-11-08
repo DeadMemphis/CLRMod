@@ -8,7 +8,7 @@ public class MapNameChange : MonoBehaviour
         LevelInfo info = LevelInfo.getInfo(base.GetComponent<UIPopupList>().selection);
         if (info != null)
         {
-            BRM.CacheGameObject.Find("LabelLevelInfo").GetComponent<UILabel>().text = info.desc;
+            CLEARSKIES.CacheGameObject.Find("LabelLevelInfo").GetComponent<UILabel>().text = info.desc;
         }
         if (!base.GetComponent<UIPopupList>().items.Contains("Custom"))
         {

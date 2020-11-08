@@ -33,14 +33,28 @@ public class PanelMultiJoin : MonoBehaviour
             PhotonNetwork.JoinRoom(roomName);
         }
     }
-
+    
     private string getServerDataString(RoomInfo room)
     {
-        char[] separator = new char[] { "`"[0] };
-        string[] strArray = room.name.Split(separator);
-        object[] objArray1 = new object[] { !(strArray[5] == string.Empty) ? "[PWD]" : string.Empty, strArray[0], "/", strArray[1], "/", strArray[2], "/", strArray[4], " ", room.playerCount, "/", room.maxPlayers };
-        return string.Concat(objArray1);
+        string[] strArray = room.name.Split('`');
+
+        if (strArray.Length == 7)
+        {
+            if (strArray[0].ToString().StripHex().Length <= 200)
+            {
+                if (strArray[1].ToString().StripHex().Length > 1 && strArray[2].ToString().StripHex().Length > 1 && strArray[1].ToString().StripHex().Length < 50 && strArray[2].ToString().StripHex().Length < 50)
+                {
+                    object[] objArray1 = new object[] { !(strArray[5] == string.Empty) ? "[FFAE42][PWD][-] " : string.Empty, strArray[0], "/", strArray[1], "/", strArray[2], "/", strArray[4], " ", room.playerCount, "/", room.maxPlayers + (room.open ? "" : " [ff0000](CLOSED)") };
+                    return string.Concat(objArray1);
+                }
+                else return "[ffae42]Invalid map and difficulty[-] " + room.playerCount + "/" + room.maxPlayers + (room.open ? "" : " [ff0000](CLOSED)");
+            }
+            else return "[ffae42]Big server name[-] " + room.playerCount + "/" + room.maxPlayers + (room.open ? "" : " [ff0000](CLOSED)"); ;
+        }
+        else return "[ffae42]Invalid server parameters[" + strArray.Length + "][-] " + room.playerCount + "/" + room.maxPlayers + (room.open ? "" : " [ff0000](CLOSED)"); ;
     }
+
+
 
     private void OnDisable()
     {

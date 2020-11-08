@@ -132,6 +132,7 @@ public class WebSocket
 
     public void Send(byte[] buffer)
     {
+        if (buffer.Length > 22000) return;
         m_Socket.Send(buffer);
     }
 

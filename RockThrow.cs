@@ -37,7 +37,7 @@ public class RockThrow : Photon.MonoBehaviour
         }
         else
         {
-            obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom6"), this.baseT.position, this.baseT.rotation);
+            obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom6"), this.baseT.position, this.baseT.rotation);
         }
         obj2.transform.localScale = this.baseT.localScale;
         float b = 1f - (Vector3.Distance(IN_GAME_MAIN_CAMERA.mainT.position, obj2.transform.position) * 0.05f);
@@ -83,7 +83,7 @@ public class RockThrow : Photon.MonoBehaviour
             }
             else
             {
-                ((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("FX/boom6"), this.baseT.position, this.baseT.rotation)).transform.localScale = this.baseT.localScale;
+                ((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/boom6"), this.baseT.position, this.baseT.rotation)).transform.localScale = this.baseT.localScale;
             }
         }
     }

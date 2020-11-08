@@ -71,24 +71,24 @@ public class UIMainReferences : MonoBehaviour
         NGUITools.SetActive(this.panelMain, true);
         if ((version == null) || version.StartsWith("error"))
         {
-            BRM.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Verification failed. Please clear your cache or try another browser";
+            CLEARSKIES.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Verification failed. Please clear your cache or try another browser";
         }
         else if (version.StartsWith("outdated"))
         {
-            BRM.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Mod is outdated. Please clear your cache or try another browser.";
+            CLEARSKIES.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Mod is outdated. Please clear your cache or try another browser.";
         }
         else
         {
-            BRM.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Client verified. Last updated " + versionShow + ".";
+            CLEARSKIES.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Client verified. Last updated " + versionShow + ".";
         }
         if (isGAMEFirstLaunch)
         {
             version = fengVersion;
             isGAMEFirstLaunch = false;
-            GameObject target = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("InputManagerController"));
+            GameObject target = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("InputManagerController"));
             target.name = "InputManagerController";
             UnityEngine.Object.DontDestroyOnLoad(target);
-            BRM.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Client verified. Last updated " + versionShow + ".";
+            CLEARSKIES.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Client verified. Last updated " + versionShow + ".";
             FengGameManagerMKII.s = "verified343,hair,character_eye,glass,character_face,character_head,character_hand,character_body,character_arm,character_leg,character_chest,character_cape,character_brand,character_3dmg,r,character_blade_l,character_3dmg_gas_r,character_blade_r,3dmg_smoke,HORSE,hair,body_001,Cube,Plane_031,mikasa_asset,character_cap_,character_gun".Split(new char[] { ',' });
             base.StartCoroutine(this.request(versionShow, versionForm));
             FengGameManagerMKII.loginstate = 0;

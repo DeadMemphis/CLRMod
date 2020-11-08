@@ -29,8 +29,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
         this.hair_go_ref.transform.localScale = new Vector3(210f, 210f, 210f);
         this.hair_go_ref.transform.parent = base.transform.Find("Amarture/Core/Controller_Body/hip/spine/chest/neck/head").transform;
     }
-
-    [RPC]
+    
     public IEnumerator loadskinE(int hair, int eye, string hairlink)
     {
         bool iteratorVariable0 = false;
@@ -39,47 +38,50 @@ public class TITAN_SETUP : Photon.MonoBehaviour
         this.hairType = hair;
         if (this.hair.hair != string.Empty)
         {
-            GameObject iteratorVariable1 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+            GameObject iteratorVariable1 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
             iteratorVariable1.transform.parent = this.hair_go_ref.transform.parent;
             iteratorVariable1.transform.position = this.hair_go_ref.transform.position;
             iteratorVariable1.transform.rotation = this.hair_go_ref.transform.rotation;
             iteratorVariable1.transform.localScale = this.hair_go_ref.transform.localScale;
             iteratorVariable1.renderer.material = CharacterMaterials.materials[this.hair.texture];
             bool mipmap = true;
-            if (((int) FengGameManagerMKII.settings[0x3f]) == 1)
+            if (((int)FengGameManagerMKII.settings[0x3f]) == 1)
             {
                 mipmap = false;
             }
-            if ((!hairlink.EndsWith(".jpg") && !hairlink.EndsWith(".png")) && !hairlink.EndsWith(".jpeg"))
+            if (RCextensions.CheckIP(hairlink))
             {
-                if (hairlink.ToLower() == "transparent")
+                if ((!hairlink.EndsWith(".jpg") && !hairlink.EndsWith(".png")) && !hairlink.EndsWith(".jpeg"))
                 {
-                    iteratorVariable1.renderer.enabled = false;
+                    if (hairlink.ToLower() == "transparent")
+                    {
+                        iteratorVariable1.renderer.enabled = false;
+                    }
                 }
-            }
-            else if (FengGameManagerMKII.linkHash[0].ContainsKey(hairlink))
-            {
-                iteratorVariable1.renderer.material = (Material) FengGameManagerMKII.linkHash[0][hairlink];
-            }
-            else
-            {
-                WWW link = new WWW(hairlink);
-                yield return link;
-                Texture2D iteratorVariable4 = RCextensions.loadimage(link, mipmap, 0x30d40);
-                link.Dispose();
-                if (!FengGameManagerMKII.linkHash[0].ContainsKey(hairlink))
+                else if (FengGameManagerMKII.linkHash[0].ContainsKey(hairlink))
                 {
-                    iteratorVariable0 = true;
-                    iteratorVariable1.renderer.material.mainTexture = iteratorVariable4;
-                    FengGameManagerMKII.linkHash[0].Add(hairlink, iteratorVariable1.renderer.material);
-                    iteratorVariable1.renderer.material = (Material) FengGameManagerMKII.linkHash[0][hairlink];
+                    iteratorVariable1.renderer.material = (Material)FengGameManagerMKII.linkHash[0][hairlink];
                 }
                 else
                 {
-                    iteratorVariable1.renderer.material = (Material) FengGameManagerMKII.linkHash[0][hairlink];
+                    WWW link = new WWW(hairlink);
+                    yield return link;
+                    Texture2D iteratorVariable4 = RCextensions.loadimage(link, mipmap, 0x30d40);
+                    link.Dispose();
+                    if (!FengGameManagerMKII.linkHash[0].ContainsKey(hairlink))
+                    {
+                        iteratorVariable0 = true;
+                        iteratorVariable1.renderer.material.mainTexture = iteratorVariable4;
+                        FengGameManagerMKII.linkHash[0].Add(hairlink, iteratorVariable1.renderer.material);
+                        iteratorVariable1.renderer.material = (Material)FengGameManagerMKII.linkHash[0][hairlink];
+                    }
+                    else
+                    {
+                        iteratorVariable1.renderer.material = (Material)FengGameManagerMKII.linkHash[0][hairlink];
+                    }
                 }
+                this.part_hair = iteratorVariable1;
             }
-            this.part_hair = iteratorVariable1;
         }
         if (eye >= 0)
         {
@@ -178,7 +180,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
                 this.hair = CostumeHair.hairsM[9];
                 this.hairType = 9;
             }
-            this.part_hair = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+            this.part_hair = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
             this.part_hair.transform.parent = this.hair_go_ref.transform.parent;
             this.part_hair.transform.position = this.hair_go_ref.transform.position;
             this.part_hair.transform.rotation = this.hair_go_ref.transform.rotation;
@@ -196,23 +198,32 @@ public class TITAN_SETUP : Photon.MonoBehaviour
     }
 
     [RPC]
-    private void setHairPRC(int type, int eye_type, float c1, float c2, float c3)
+    private void setHairPRC(int type, int eye_type, float c1, float c2, float c3, PhotonMessageInfo info = null)
     {
-        UnityEngine.Object.Destroy(this.part_hair);
-        this.hair = CostumeHair.hairsM[type];
-        this.hairType = type;
-        if (this.hair.hair != string.Empty)
-        {
-            GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
-            obj2.transform.parent = this.hair_go_ref.transform.parent;
-            obj2.transform.position = this.hair_go_ref.transform.position;
-            obj2.transform.rotation = this.hair_go_ref.transform.rotation;
-            obj2.transform.localScale = this.hair_go_ref.transform.localScale;
-            obj2.renderer.material = CharacterMaterials.materials[this.hair.texture];
-            obj2.renderer.material.color = new Color(c1, c2, c3);
-            this.part_hair = obj2;
+        if (PhotonNetwork.isMasterClient && !info.sender.isLocal)
+        { // You don’t have to do this part, this just sets the hair back when someone else sends it.
+            object[] parameters = new object[] { this.hairType, eye_type, this.part_hair.renderer.material.color.r, this.part_hair.renderer.material.color.g, this.part_hair.renderer.material.color.b };
+            base.photonView.RPC("setHairPRC", PhotonTargets.OthersBuffered, parameters);
         }
-        this.setFacialTexture(this.eye, eye_type);
+        else if (info.sender.isMasterClient || info.sender.isLocal)
+        {
+
+            UnityEngine.Object.Destroy(this.part_hair);
+            this.hair = CostumeHair.hairsM[type];
+            this.hairType = type;
+            if (this.hair.hair != string.Empty)
+            {
+                GameObject obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
+                obj2.transform.parent = this.hair_go_ref.transform.parent;
+                obj2.transform.position = this.hair_go_ref.transform.position;
+                obj2.transform.rotation = this.hair_go_ref.transform.rotation;
+                obj2.transform.localScale = this.hair_go_ref.transform.localScale;
+                obj2.renderer.material = CharacterMaterials.materials[this.hair.texture];
+                obj2.renderer.material.color = new Color(c1, c2, c3);
+                this.part_hair = obj2;
+            }
+            this.setFacialTexture(this.eye, eye_type);
+        }
     }
 
     [RPC]
@@ -229,7 +240,7 @@ public class TITAN_SETUP : Photon.MonoBehaviour
         UnityEngine.Object.Destroy(this.part_hair);
         this.hair = CostumeHair.hairsM[3];
         this.hairType = 3;
-        GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(BRM.CacheResources.Load("Character/" + this.hair.hair));
+        GameObject obj2 = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("Character/" + this.hair.hair));
         obj2.transform.parent = this.hair_go_ref.transform.parent;
         obj2.transform.position = this.hair_go_ref.transform.position;
         obj2.transform.rotation = this.hair_go_ref.transform.rotation;

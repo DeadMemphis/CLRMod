@@ -556,26 +556,26 @@ public class FengCustomInputs : MonoBehaviour
     {
         for (int i = 0; i < this.DescriptionString.Length; i++)
         {
-            if (BRM.CacheGameObject.Find("CInput" + i) != null)
+            if (CLEARSKIES.CacheGameObject.Find("CInput" + i) != null)
             {
-                BRM.CacheGameObject.Find("CInput" + i).transform.Find("Label").gameObject.GetComponent<UILabel>().text = this.inputString[i];
+                CLEARSKIES.CacheGameObject.Find("CInput" + i).transform.Find("Label").gameObject.GetComponent<UILabel>().text = this.inputString[i];
             }
         }
-        if (BRM.CacheGameObject.Find("ChangeQuality") != null)
+        if (CLEARSKIES.CacheGameObject.Find("ChangeQuality") != null)
         {
-            BRM.CacheGameObject.Find<UISlider>("ChangeQuality").sliderValue = PlayerPrefs.GetFloat("GameQuality");
+            CLEARSKIES.CacheGameObject.Find<UISlider>("ChangeQuality").sliderValue = PlayerPrefs.GetFloat("GameQuality");
         }
-        if (BRM.CacheGameObject.Find("MouseSensitivity") != null)
+        if (CLEARSKIES.CacheGameObject.Find("MouseSensitivity") != null)
         {
-            BRM.CacheGameObject.Find<UISlider>("MouseSensitivity").sliderValue = PlayerPrefs.GetFloat("MouseSensitivity");
+            CLEARSKIES.CacheGameObject.Find<UISlider>("MouseSensitivity").sliderValue = PlayerPrefs.GetFloat("MouseSensitivity");
         }
-        if (BRM.CacheGameObject.Find("CheckboxSettings") != null)
+        if (CLEARSKIES.CacheGameObject.Find("CheckboxSettings") != null)
         {
-            BRM.CacheGameObject.Find<UICheckbox>("CheckboxSettings").isChecked = PlayerPrefs.GetInt("invertMouseY") != 1;
+            CLEARSKIES.CacheGameObject.Find<UICheckbox>("CheckboxSettings").isChecked = PlayerPrefs.GetInt("invertMouseY") != 1;
         }
-        if (BRM.CacheGameObject.Find("CheckboxCameraTilt") != null)
+        if (CLEARSKIES.CacheGameObject.Find("CheckboxCameraTilt") != null)
         {
-            BRM.CacheGameObject.Find<UICheckbox>("CheckboxCameraTilt").isChecked = PlayerPrefs.GetInt("cameraTilt") == 1;
+            CLEARSKIES.CacheGameObject.Find<UICheckbox>("CheckboxCameraTilt").isChecked = PlayerPrefs.GetInt("cameraTilt") == 1;
         }
     }
 

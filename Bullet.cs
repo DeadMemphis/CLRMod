@@ -268,8 +268,8 @@ public class Bullet : Photon.MonoBehaviour
     [RPC]
     private void killObject()
     {
-        UnityEngine.Object.Destroy(this.rope);
-        UnityEngine.Object.Destroy(base.gameObject);
+        //UnityEngine.Object.Destroy(this.rope);
+        //UnityEngine.Object.Destroy(base.gameObject);
     }
 
     public void launchDashNets(Vector3 v, Vector3 v2, GameObject hero, HERO victimHero)
@@ -363,8 +363,19 @@ public class Bullet : Photon.MonoBehaviour
     }
 
     [RPC]
-    private void myMasterIs(int id, string launcherRef)
+    private void myMasterIs(int id, string launcherRef, PhotonMessageInfo info)
     {
+        if (info.sender != this.basePV.owner || id < 0)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "messing w/ hooks");
+            return;
+        }
+        PhotonView photonView = PhotonView.Find(id);
+        if (photonView.owner != info.sender)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "messing w/ hooks2");
+            return;
+        }
         //this.master = PhotonView.Find(id).gameObject;
         //if (launcherRef == "hookRefL1")
         //{
@@ -382,7 +393,6 @@ public class Bullet : Photon.MonoBehaviour
         //{
         //    this.myRef = this.MasterHero.hookRefR2;
         //}
-        PhotonView photonView = PhotonView.Find(id);
         if (photonView != null)
         {
             GameObject gameObject = photonView.gameObject;
@@ -555,14 +565,24 @@ public class Bullet : Photon.MonoBehaviour
     }
 
     [RPC]
-    private void setPhase(int value)
+    private void setPhase(int value, PhotonMessageInfo info)
     {
+        if (info.sender != basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "invalid Hook destroy");
+            return;
+        }
         this.phase = value;
     }
 
     [RPC]
-    private void setVelocityAndLeft(Vector3 value, Vector3 v2, bool l)
+    private void setVelocityAndLeft(Vector3 value, Vector3 v2, bool l, PhotonMessageInfo info)
     {
+        if (info.sender != basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "invalid Hook destroy");
+            return;
+        }
         this.velocity = value;
         this.velocity2 = v2;
         this.left = l;
@@ -577,14 +597,25 @@ public class Bullet : Photon.MonoBehaviour
     }
 
     [RPC]
-    private void tieMeTo(Vector3 p)
+    private void tieMeTo(Vector3 p, PhotonMessageInfo info)
     {
+        if (info.sender != basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "invalid tieMeTo");
+            return;
+        }
         baseT.position = p;
     }
 
     [RPC]
-    private void tieMeToOBJ(int id)
+    private void tieMeToOBJ(int id, PhotonMessageInfo info)
     {
+        if (info.sender != basePV.owner)
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "invalid tieMeToObj");
+            return;
+        }
+
         //PhotonView photonView = PhotonView.Find(id);
         //if (photonView != null)
         //{

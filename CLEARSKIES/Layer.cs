@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BRM
+namespace CLEARSKIES
 {
         public static class Layer
         {

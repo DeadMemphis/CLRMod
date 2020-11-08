@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x02000026 RID: 38
     internal class FunctionComparer<T> : System.Collections.Generic.IComparer<T>

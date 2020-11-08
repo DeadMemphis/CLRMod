@@ -223,7 +223,7 @@ public class Language
     public static void init()
     {
         char[] separator = new char[] { "\n"[0] };
-        string[] strArray = ((TextAsset) BRM.CacheResources.Load("lang")).text.Split(separator);
+        string[] strArray = ((TextAsset) CLEARSKIES.CacheResources.Load("lang")).text.Split(separator);
         string txt = string.Empty;
         int index = 0;
         string str3 = string.Empty;

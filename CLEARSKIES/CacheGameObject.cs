@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BRM
+namespace CLEARSKIES
 {
     // Token: 0x02000078 RID: 120
     public static class CacheGameObject

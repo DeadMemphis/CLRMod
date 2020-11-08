@@ -43,7 +43,7 @@ public class TriggerColliderWeapon : MonoBehaviour
         Transform transform = component.neck;
         if (transform == null)
             transform = titan.root.transform.Find("Amarture/Core/Controller_Body/hip/spine/chest/neck");
-        GameObject gameObject = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("titanNapeMeat"), transform.position, transform.rotation);
+        GameObject gameObject = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("titanNapeMeat"), transform.position, transform.rotation);
         gameObject.transform.localScale = titan.localScale;
         Rigidbody rigidbody = gameObject.rigidbody;
         rigidbody.AddForce((Vector3)(vkill.normalized * 15f), ForceMode.Impulse);
@@ -75,7 +75,7 @@ public class TriggerColliderWeapon : MonoBehaviour
                     }
                     else
                     {
-                        ((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("hitMeat"))).transform.position = baseT.position;
+                        ((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("hitMeat"))).transform.position = baseT.position;
                     }
                     this.hero.useBlade(0);
                 }
@@ -349,7 +349,7 @@ public class TriggerColliderWeapon : MonoBehaviour
         }
         else
         {
-            obj2 = (GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("redCross"));
+            obj2 = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("redCross"));
         }
         obj2.transform.position = this.baseT.position;
         obj2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);

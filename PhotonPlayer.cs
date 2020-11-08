@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using BRM;
+using CLEARSKIES;
 
 public class PhotonPlayer
 {
@@ -12,10 +12,18 @@ public class PhotonPlayer
 
     private string nameField;
     public object TagObject;
-  
 
 
-   
+    public static void CleanProperties()
+    {
+        if (PhotonNetwork.player == null) return;
+        PhotonNetwork.player.customProperties.Clear();
+
+        string str = "";
+        foreach (char c in FengGameManagerMKII.instance.NameGenerator()) str += "[" + FengGameManagerMKII.instance.GenColor() + "]" + c;
+        PhotonNetwork.player.SetCustomProperties(new Hashtable { { PhotonPlayerProperty.name, str } });
+    }
+
 
     protected internal string chatname
     {

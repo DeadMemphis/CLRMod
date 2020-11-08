@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using BRM;
 using CLEARSKIES.Pooling;
 
 public class HERO_ON_MENU : Photon.MonoBehaviour
@@ -16,10 +15,10 @@ public class HERO_ON_MENU : Photon.MonoBehaviour
     private Transform mainCameraT;
     private static Vector3 ThunderPos;
     private static Vector3 TitanDiePos;
-    private static UnityEngine.Object thunder = CacheResources.Load("FX/Thunder");
+    private static UnityEngine.Object thunder = CLEARSKIES.CacheResources.Load("FX/Thunder");
     private float time;
     private float time2;
-    private static UnityEngine.Object smoke = CacheResources.Load("FX/colossal_steam");
+    private static UnityEngine.Object smoke = CLEARSKIES.CacheResources.Load("FX/colossal_steam");
     private static Quaternion TitanDieQuat = Quaternion.Euler(-90f, 0f, 0f);
     private static Quaternion ThunderQuat = Quaternion.Euler(270f, 0f, 0f);
 

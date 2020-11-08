@@ -4,6 +4,6 @@ public enum CAMERA_TYPE
 {
     ORIGINAL,
     TPS,
-    OldTPS
+    NewTPS
 }
 

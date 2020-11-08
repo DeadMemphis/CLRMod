@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using BRM;
+using CLEARSKIES;
 using Boo.Lang;
 using System.Linq;
 
@@ -250,7 +250,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         tiltshift = base.GetComponent<TiltShift>();
         tiltshift.enabled = (!PlayerPrefs.HasKey("GameQuality") || PlayerPrefs.GetFloat("GameQuality") >= 0.9f);
         tiltshift = base.GetComponent<TiltShift>();
-        mainLightL = BRM.CacheGameObject.Find<Light>("mainLight");
+        mainLightL = CLEARSKIES.CacheGameObject.Find<Light>("mainLight");
         skybox = base.GetComponent<Skybox>();
         rotationY = 0f;
         spectate = base.GetComponent<SpectatorMovement>();
@@ -300,7 +300,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                 }
                 mainT.position -= (Vector3)(((mainT.forward * this.distance) * this.distanceMulti) * this.distanceOffsetMulti);
                 break;
-            case CAMERA_TYPE.OldTPS:
+            case CAMERA_TYPE.NewTPS:
                 if (!FengCustomInputs.Inputs.menuOn)
                 {
                     Screen.lockCursor = true;
@@ -329,7 +329,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         //    //{
         //    //    IN_GAME_MAIN_CAMERA.mainT.position = (IN_GAME_MAIN_CAMERA.main_objectT = IN_GAME_MAIN_CAMERA.main_object.transform).position;
         //    //}
-        //    BRM.StatsTab.AddLine("SOSAT", BRM.StatsTab.DebugType.ERROR);
+        //    CLEARSKIES.StatsTab.AddLine("SOSAT", CLEARSKIES.StatsTab.DebugType.ERROR);
         //}
         //move();
         //if (cameraMode == CAMERA_TYPE.WOW)
@@ -563,7 +563,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
 
     public void flashBlind()
     {
-        BRM.CacheGameObject.Find("flash").GetComponent<UISprite>().alpha = 1f;
+        CLEARSKIES.CacheGameObject.Find("flash").GetComponent<UISprite>().alpha = 1f;
         this.flashDuration = 2f;
     }
 
@@ -653,7 +653,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         dayLight = val;
         if (dayLight == DayLight.Night)
         {
-            Transform transform = ((GameObject)UnityEngine.Object.Instantiate(BRM.CacheResources.Load("flashlight"))).transform;
+            Transform transform = ((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("flashlight"))).transform;
             transform.parent = mainT;
             transform.position = mainT.position;
             transform.rotation = Quaternion.Euler(353f, 0f, 0f);
@@ -682,17 +682,17 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
               mposh = (-Screen.height * 0.5f),
               pposh = (Screen.height * 0.5f),
               pposw = (Screen.width * 0.5f);
-        UILabel uilabel = BRM.CacheGameObject.Find<UILabel>("LabelInfoBottomRight");
+        UILabel uilabel = CLEARSKIES.CacheGameObject.Find<UILabel>("LabelInfoBottomRight");
 
-        BRM.CacheGameObject.Find<Transform>("Flare").localPosition = new Vector3(((int)mposw + 14), (int)mposh, 0f);
+        CLEARSKIES.CacheGameObject.Find<Transform>("Flare").localPosition = new Vector3(((int)mposw + 14), (int)mposh, 0f);
 
         uilabel.transform.localPosition = new Vector3((int)pposw, (int)mposh, 0f);
         uilabel.text = "Pause : " + FengCustomInputs.Inputs.inputString[InputCode.pause] + " ";
 
-        BRM.CacheGameObject.Find<Transform>("LabelInfoTopCenter").localPosition = new Vector3(0f, (int)pposh, 0f);
-        BRM.CacheGameObject.Find<Transform>("LabelInfoTopRight").localPosition = new Vector3((int)pposw, (int)pposh, 0f);
-        BRM.CacheGameObject.Find<Transform>("LabelNetworkStatus").localPosition = new Vector3((int)mposw, (int)pposh, 0f);
-        BRM.CacheGameObject.Find<Transform>("LabelInfoTopLeft").localPosition = new Vector3((int)mposw, (int)(pposh - 20f), 0f);
+        CLEARSKIES.CacheGameObject.Find<Transform>("LabelInfoTopCenter").localPosition = new Vector3(0f, (int)pposh, 0f);
+        CLEARSKIES.CacheGameObject.Find<Transform>("LabelInfoTopRight").localPosition = new Vector3((int)pposw, (int)pposh, 0f);
+        CLEARSKIES.CacheGameObject.Find<Transform>("LabelNetworkStatus").localPosition = new Vector3((int)mposw, (int)pposh, 0f);
+        CLEARSKIES.CacheGameObject.Find<Transform>("LabelInfoTopLeft").localPosition = new Vector3((int)mposw, (int)(pposh - 20f), 0f);
 
         if (InRoomChat.ChatInstanse != null)
         {
@@ -701,26 +701,26 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         }
         if (!usingTitan || (gametype == GAMETYPE.SINGLE))
         {
-            BRM.CacheGameObject.Find<Transform>("skill_cd_bottom").localPosition = new Vector3(0f, (int)(mposh + 5f), 0f);
-            BRM.CacheGameObject.Find<Transform>("GasUI").localPosition = BRM.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
-            BRM.CacheGameObject.Find<Transform>("stamina_titan").localPosition = new Vector3(0f, 9999f, 0f);
-            BRM.CacheGameObject.Find<Transform>("stamina_titan_bottom").localPosition = new Vector3(0f, 9999f, 0f);
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_bottom").localPosition = new Vector3(0f, (int)(mposh + 5f), 0f);
+            CLEARSKIES.CacheGameObject.Find<Transform>("GasUI").localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+            CLEARSKIES.CacheGameObject.Find<Transform>("stamina_titan").localPosition = new Vector3(0f, 9999f, 0f);
+            CLEARSKIES.CacheGameObject.Find<Transform>("stamina_titan_bottom").localPosition = new Vector3(0f, 9999f, 0f);
         }
         else
         {
             Vector3 vector = new Vector3(0f, 9999f, 0f);
-            BRM.CacheGameObject.Find<Transform>("skill_cd_bottom").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_armin").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_eren").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_jean").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_levi").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_marco").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_mikasa").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_petra").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("skill_cd_sasha").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("GasUI").localPosition = vector;
-            BRM.CacheGameObject.Find<Transform>("stamina_titan").localPosition = new Vector3(-160f, (int)(mposh + 15f), 0f);
-            BRM.CacheGameObject.Find<Transform>("stamina_titan_bottom").localPosition = new Vector3(-160f, (int)(mposh + 15f), 0f);
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_bottom").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_armin").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_eren").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_jean").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_levi").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_marco").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_mikasa").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_petra").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_sasha").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("GasUI").localPosition = vector;
+            CLEARSKIES.CacheGameObject.Find<Transform>("stamina_titan").localPosition = new Vector3(-160f, (int)(mposh + 15f), 0f);
+            CLEARSKIES.CacheGameObject.Find<Transform>("stamina_titan_bottom").localPosition = new Vector3(-160f, (int)(mposh + 15f), 0f);
         }
         if (mainHERO != null && mainHERO.isLocal)
         {
@@ -899,17 +899,17 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         this.snapShotCountDown = 2f;
         if (index == 1)
         {
-            BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().mainTexture = this.snapshot1;
-            BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().transform.localScale = new Vector3(Screen.width * 0.4f, Screen.height * 0.4f, 1f);
-            BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().transform.localPosition = new Vector3(-Screen.width * 0.225f, Screen.height * 0.225f, 0f);
-            BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().transform.rotation = Quaternion.Euler(0f, 0f, 10f);
+            CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().mainTexture = this.snapshot1;
+            CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().transform.localScale = new Vector3(Screen.width * 0.4f, Screen.height * 0.4f, 1f);
+            CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().transform.localPosition = new Vector3(-Screen.width * 0.225f, Screen.height * 0.225f, 0f);
+            CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().transform.rotation = Quaternion.Euler(0f, 0f, 10f);
             if (PlayerPrefs.HasKey("showSSInGame") && (PlayerPrefs.GetInt("showSSInGame") == 1))
             {
-                BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().enabled = true;
+                CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().enabled = true;
             }
             else
             {
-                BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().enabled = false;
             }
         }
     }
@@ -930,17 +930,17 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
             this.snapShotCountDown -= Time.deltaTime;
             if (this.snapShotCountDown <= 0f)
             {
-                BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().enabled = false;
+                CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().enabled = false;
                 this.hasSnapShot = false;
                 this.snapShotCountDown = 0f;
             }
             else if (this.snapShotCountDown < 1f)
             {
-                BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().mainTexture = this.snapshot3;
+                CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().mainTexture = this.snapshot3;
             }
             else if (this.snapShotCountDown < 1.5f)
             {
-                BRM.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().mainTexture = this.snapshot2;
+                CLEARSKIES.CacheGameObject.Find("UI_IN_GAME").GetComponent<UIReferArray>().panels[0].transform.Find("snapshot1").GetComponent<UITexture>().mainTexture = this.snapshot2;
             }
             if (this.snapShotCount < 3)
             {
@@ -963,7 +963,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         isPausing = false;
 
 
-        locker = BRM.CacheGameObject.Find<Transform>("locker");
+        locker = CLEARSKIES.CacheGameObject.Find<Transform>("locker");
         setDayLight(dayLight);
 
         snapT = snapShotCamera.transform;
@@ -1172,11 +1172,11 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                             Screen.lockCursor = false;
                             break;
                         case CAMERA_TYPE.TPS:
-                            cameraMode = CAMERA_TYPE.OldTPS;
+                            cameraMode = CAMERA_TYPE.NewTPS;
                             //move = MoveOldTPS;
                             Screen.lockCursor = true;
                             break;
-                        case CAMERA_TYPE.OldTPS:
+                        case CAMERA_TYPE.NewTPS:
                             cameraMode = CAMERA_TYPE.ORIGINAL;
                             //move = MoveORIGINAL;
                             Screen.lockCursor = false;

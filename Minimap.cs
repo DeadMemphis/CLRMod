@@ -229,7 +229,7 @@ public class Minimap : MonoBehaviour
         {
             this.Initialize();
         }
-        GameObject obj2 = BRM.CacheGameObject.Find("mainLight");
+        GameObject obj2 = CLEARSKIES.CacheGameObject.Find("mainLight");
         Light component = null;
         Quaternion identity = Quaternion.identity;
         LightShadows none = LightShadows.None;
@@ -541,7 +541,7 @@ public class Minimap : MonoBehaviour
     {
         if (this.minimap != null)
         {
-            GameObject obj2 = BRM.CacheGameObject.Find("mainLight");
+            GameObject obj2 = CLEARSKIES.CacheGameObject.Find("mainLight");
             Light component = null;
             Quaternion identity = Quaternion.identity;
             LightShadows none = LightShadows.None;
