@@ -27,7 +27,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     public bool isPlayerTTL = false;
     private object thread_locker = new object();
     public Dictionary<int, CannonValues> allowedToCannon;
-    public static readonly string applicationId = "5578b046-8264-438c-99c5-fb15c71b6744";//new connection string /*"f1f6195c-df4a-40f9-bae5-4744c32901ef"; old connection string*/
+    public static string applicationId = "5578b046-8264-438c-99c5-fb15c71b6744";//new connection string /*"f1f6195c-df4a-40f9-bae5-4744c32901ef"; old connection string*/
     public Dictionary<string, Texture2D> assetCacheTextures;
     public static ExitGames.Client.Photon.Hashtable banHash;
     public static ExitGames.Client.Photon.Hashtable boolVariables;
@@ -109,6 +109,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     public Dictionary<string, int[]> PreservedPlayerKDR;
     public static string PrivateServerAuthPass;
     public static string privateServerField;
+    public static string privateAppIDField;
     public int PVPhumanScore;
     private int PVPhumanScoreMax = 200;
     public int PVPtitanScore;
@@ -349,35 +350,20 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private string antiChatAbuse(string input, PhotonMessageInfo info)
     {
-        if (input.ToLower().Contains("<si"))
+        MatchCollection matches = Regex.Matches(input, @"<size=(\w*)?>?");
+        int num = 12;
+        foreach (Match m in matches)
         {
-            if (!FengGameManagerMKII.ignoreList.Contains(info.sender.ID) && (input.Contains("▀▄") || input.Contains("▀") || input.Contains("▀▄ ▀▄") || input.Contains("▀")))
+            if (int.TryParse(m.Groups[1].Value, out num))
             {
-                input = "";
-                FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "cubes");
-            }
-            //return Regex.Replace(input, "<size=(\\w*)?>?|<\\/size>?", string.Empty);
-
-            MatchCollection matches = Regex.Matches(input, @"<size=(\w*)?>?");
-            MatchCollection matches2 = Regex.Matches(input, @"<\/size>");
-            if (matches.Count != matches2.Count)
-                return (Regex.Replace(input, @"<size=(\w*)?>?", "").Replace("</size>", "")); //delete all sizes
-            int num = 12;
-            foreach (Match m in matches)
-            {
-                if (int.TryParse(m.Groups[1].Value, out num))
+                if (num < 13 || num > 18)
                 {
-                    if (num < 13 || num > 18)
-                    {
-                        if (num > 25)
-                        {
-                            kickPlayerRC(info.sender, true, "big size");
-                        }
-                        return Regex.Replace(input, "<size=(\\w*)?>?|<\\/size>?", string.Empty);
-                    }
+                    if (num > 25) kickPlayerRC(info.sender, true, "big size");
+                    return Regex.Replace(input, "<size=(\\w*)?>?|<\\/size>?", string.Empty);
                 }
             }
         }
+
         if (input.Contains("quad material")) input = "";
         return input;
     }
@@ -1223,7 +1209,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         }
         if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && this.needChooseSide)
         {
-            if (FengCustomInputs.Inputs.isInputDown[InputCode.flare1])
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 if (NGUITools.GetActive(this.uirefer.panels[3]))
                 {
@@ -3553,7 +3539,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         objArray[90] = PlayerPrefs.GetString("titanbody5", string.Empty);
         objArray[0x5b] = 0;
         objArray[0x5c] = PlayerPrefs.GetInt("traildisable", 0);
-        objArray[0x5d] = PlayerPrefs.GetInt("wind", 0);
+        objArray[0x5d] = PlayerPrefs.GetInt("wind", 1);
         objArray[0x5e] = PlayerPrefs.GetString("trailskin", string.Empty);
         objArray[0x5f] = PlayerPrefs.GetString("snapshot", "0");
         objArray[0x60] = PlayerPrefs.GetString("trailskin2", string.Empty);
@@ -3722,9 +3708,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         objArray[260] = PlayerPrefs.GetString("cannonSlow", "LeftShift");
         objArray[0x105] = PlayerPrefs.GetInt("deadlyCannon", 0);
         objArray[0x106] = PlayerPrefs.GetString("liveCam", "Y");
-        objArray[263] = 0;
+        objArray[263] = 1;
         objArray[267] = PlayerPrefs.GetInt("ProtocolType", 1);
-        //objArray[263] = true;
 
         inputRC = new InputManagerRC();
         inputRC.setInputHuman(InputCodeRC.reelin, (string)objArray[0x62]);
@@ -5068,116 +5053,99 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             Application.LoadLevel("SnapShot");
                         }
                         GUI.Box(new Rect(10f, 30f, 220f, 150f), string.Empty);
-                        if (GUI.Button(new Rect(17.5f, 40f, 40f, 25f), "Login", "box"))
+                        if (GUI.Button(new Rect(23.75f, 40f, 55f, 25f), "Name", "box"))
                         {
-                            settings[0xbb] = 0;
+                            FengGameManagerMKII.settings[187] = 0;
                         }
-                        else if (GUI.Button(new Rect(65f, 40f, 95f, 25f), "Custom Name", "box"))
+                        else if (GUI.Button(new Rect(92.5f, 40f, 55f, 25f), "Server", "box"))
                         {
-                            settings[0xbb] = 1;
+                            FengGameManagerMKII.settings[187] = 1;
                         }
-                        else if (GUI.Button(new Rect(167.5f, 40f, 55f, 25f), "Servers", "box"))
+                        else if (GUI.Button(new Rect(161.25f, 40f, 55f, 25f), "AppID", "box"))
                         {
-                            settings[0xbb] = 2;
+                            FengGameManagerMKII.settings[187] = 2;
                         }
-                        if (((int)settings[0xbb]) == 1)
+                        if ((int)FengGameManagerMKII.settings[187] == 0)
                         {
-                            if (loginstate == 3)
+                            if (FengGameManagerMKII.loginstate == 3)
                             {
                                 GUI.Label(new Rect(30f, 80f, 180f, 60f), "You're already logged in!", "Label");
+                                return;
                             }
-                            else
+                            GUI.Label(new Rect(20f, 80f, 45f, 20f), "Name:", "Label");
+                            FengGameManagerMKII.nameField = GUI.TextField(new Rect(65f, 80f, 145f, 20f), FengGameManagerMKII.nameField, 40);
+                            GUI.Label(new Rect(20f, 105f, 45f, 20f), "Guild:", "Label");
+                            LoginFengKAI.player.guildname = GUI.TextField(new Rect(65f, 105f, 145f, 20f), LoginFengKAI.player.guildname, 40);
+                            if (GUI.Button(new Rect(80f, 140f, 80f, 25f), "Save"))
                             {
-                                GUI.Label(new Rect(20f, 80f, 45f, 20f), "Name:", "Label");
-                                nameField = GUI.TextField(new Rect(65f, 80f, 145f, 20f), nameField, 990);
-                                GUI.Label(new Rect(20f, 105f, 45f, 20f), "Guild:", "Label");
-                                LoginFengKAI.player.guildname = GUI.TextField(new Rect(65f, 105f, 145f, 20f), LoginFengKAI.player.guildname, 990);
-                                if (GUI.Button(new Rect(42f, 140f, 50f, 25f), "Save"))
-                                {
-                                    PlayerPrefs.SetString("name", nameField);
-                                    PlayerPrefs.SetString("guildname", LoginFengKAI.player.guildname);
-                                }
-                                else if (GUI.Button(new Rect(128f, 140f, 50f, 25f), "Load"))
-                                {
-                                    nameField = PlayerPrefs.GetString("name", string.Empty);
-                                    LoginFengKAI.player.guildname = PlayerPrefs.GetString("guildname", string.Empty);
-                                }
-                            }
-
-
-                        }
-                        else if (((int)settings[0xbb]) == 0)
-                        {
-                            if (loginstate == 3)
-                            {
-                                GUI.Label(new Rect(20f, 80f, 70f, 20f), "Username:", "Label");
-                                GUI.Label(new Rect(90f, 80f, 90f, 20f), LoginFengKAI.player.name, "Label");
-                                GUI.Label(new Rect(20f, 105f, 45f, 20f), "Guild:", "Label");
-                                LoginFengKAI.player.guildname = GUI.TextField(new Rect(65f, 105f, 145f, 20f), LoginFengKAI.player.guildname, 990);
-                                if (GUI.Button(new Rect(35f, 140f, 70f, 25f), "Set Guild"))
-                                {
-                                    base.StartCoroutine(this.setGuildFeng());
-                                }
-                                else if (GUI.Button(new Rect(130f, 140f, 65f, 25f), "Logout"))
-                                {
-                                    loginstate = 0;
-                                }
-                            }
-                            else
-                            {
-                                GUI.Label(new Rect(20f, 80f, 70f, 20f), "Username:", "Label");
-                                usernameField = GUI.TextField(new Rect(90f, 80f, 130f, 20f), usernameField, 40);
-                                GUI.Label(new Rect(20f, 105f, 70f, 20f), "Password:", "Label");
-                                passwordField = GUI.PasswordField(new Rect(90f, 105f, 130f, 20f), passwordField, '*', 40);
-                                if (GUI.Button(new Rect(30f, 140f, 50f, 25f), "Login") && (loginstate != 1))
-                                {
-                                    base.StartCoroutine(this.loginFeng());
-                                    loginstate = 1;
-                                }
-                                if (loginstate == 1)
-                                {
-                                    GUI.Label(new Rect(100f, 140f, 120f, 25f), "Logging in...", "Label");
-                                }
-                                else if (loginstate == 2)
-                                {
-                                    GUI.Label(new Rect(100f, 140f, 120f, 25f), "Login Failed.", "Label");
-                                }
+                                PlayerPrefs.SetString("name", FengGameManagerMKII.nameField);
+                                PlayerPrefs.SetString("guildname", LoginFengKAI.player.guildname);
+                                return;
                             }
                         }
-                        else if (((int)settings[0xbb]) == 2)
+                        else
                         {
-                            if (UIMainReferences.version == UIMainReferences.fengVersion)
+                            if ((int)FengGameManagerMKII.settings[187] == 1)
                             {
-                                GUI.Label(new Rect(37f, 75f, 190f, 25f), "Connected to public server.", "Label");
+                                if (UIMainReferences.version == UIMainReferences.fengVersion)
+                                {
+                                    GUI.Label(new Rect(37f, 75f, 190f, 25f), "Connected to public server.", "Label");
+                                }
+                                else if (UIMainReferences.version == s[0])
+                                {
+                                    GUI.Label(new Rect(28f, 75f, 190f, 25f), "Connected to RC private server.", "Label");
+                                }
+                                else
+                                {
+                                    GUI.Label(new Rect(37f, 75f, 190f, 25f), "Connected to custom server.", "Label");
+                                }
+                                GUI.Label(new Rect(20f, 100f, 90f, 25f), "Public Server:", "Label");
+                                GUI.Label(new Rect(20f, 125f, 80f, 25f), "RC Private:", "Label");
+                                GUI.Label(new Rect(20f, 150f, 60f, 25f), "Custom:", "Label");
+
+
+
+                                if (GUI.Button(new Rect(160f, 100f, 60f, 20f), "Connect"))
+                                {
+                                    UIMainReferences.version = UIMainReferences.fengVersion;
+                                }
+                                else if (GUI.Button(new Rect(160f, 125f, 60f, 20f), "Connect"))
+                                {
+                                    UIMainReferences.version = s[0];
+                                }
+                                else if (GUI.Button(new Rect(160f, 150f, 60f, 20f), "Connect"))
+                                {
+                                    UIMainReferences.version = FengGameManagerMKII.privateServerField;
+                                }
+                                FengGameManagerMKII.privateServerField = GUI.TextField(new Rect(78f, 153f, 70f, 18f), FengGameManagerMKII.privateServerField, 50);
+                                return;
                             }
-                            else if (UIMainReferences.version == s[0])
+                            if ((int)FengGameManagerMKII.settings[187] == 2)
                             {
-                                GUI.Label(new Rect(28f, 75f, 190f, 25f), "Connected to RC private server.", "Label");
+                                if (applicationId == "5578b046-8264-438c-99c5-fb15c71b6744")
+                                {
+                                    GUI.Label(new Rect(37f, 75f, 190f, 25f), "Connected to public AppID.", "Label");
+                                }
+                                else
+                                {
+                                    GUI.Label(new Rect(37f, 75f, 190f, 25f), "Connected to custom AppID.", "Label");
+                                }
+                                GUI.Label(new Rect(20f, 100f, 90f, 25f), "Public AppID:", "Label");
+                                GUI.Label(new Rect(20f, 125f, 60f, 25f), "Custom:", "Label");
+                                if (GUI.Button(new Rect(160f, 100f, 60f, 20f), "Connect"))
+                                {
+                                    applicationId = "5578b046-8264-438c-99c5-fb15c71b6744";
+                                }
+                                else if (GUI.Button(new Rect(160f, 125f, 60f, 20f), "Connect"))
+                                {
+                                    if (privateAppIDField != null && privateAppIDField.Length == 36)
+                                    {
+                                        applicationId = privateAppIDField;
+                                    }
+                                }
+                                privateAppIDField = GUI.TextField(new Rect(78f, 128f, 70f, 18f), privateAppIDField);
+                                return;
                             }
-                            else if (UIMainReferences.version == "DontUseThisVersionPlease173")
-                            {
-                                GUI.Label(new Rect(28f, 75f, 190f, 25f), "Connecting to crypto server...", "Label");
-                            }
-                            else
-                            {
-                                GUI.Label(new Rect(37f, 75f, 190f, 25f), "Connected to custom server.", "Label");
-                            }
-                            GUI.Label(new Rect(20f, 100f, 90f, 25f), "Public Server:", "Label");
-                            GUI.Label(new Rect(20f, 125f, 80f, 25f), "RC Private:", "Label");
-                            GUI.Label(new Rect(20f, 150f, 60f, 25f), "Custom:", "Label");
-                            if (GUI.Button(new Rect(160f, 100f, 60f, 20f), "Connect"))
-                            {
-                                UIMainReferences.version = UIMainReferences.fengVersion;
-                            }
-                            else if (GUI.Button(new Rect(160f, 125f, 60f, 20f), "Connect"))
-                            {
-                                UIMainReferences.version = s[0];
-                            }
-                            else if (GUI.Button(new Rect(160f, 150f, 60f, 20f), "Connect"))
-                            {
-                                UIMainReferences.version = privateServerField;
-                            }
-                            privateServerField = GUI.TextField(new Rect(78f, 153f, 70f, 18f), privateServerField, 50);
                         }
                     }
                 }
@@ -6463,6 +6431,29 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     else if (((int)settings[0x40]) == 11)
                     {
+                        GUI.Label(new Rect(num7 + 350f, num8 + 110, 185f, 22f), "Forest Bomb Introduction", "Label");
+                        if (GUI.Button(new Rect(num7 + 530f, num8 + 110, 75f, 25f), "Open"))
+                        {
+                            Application.OpenURL("https://docs.google.com/document/d/1LGhvccaWqU9IXtWRjDhPv6DMwVyfCvi3LZRZMUUnwq8/edit?usp=sharing");
+                        }
+
+                        GUI.Label(new Rect(num7 + 350f, num8 + 140, 185f, 22f), "Forest Bomb Bible", "Label");
+                        if (GUI.Button(new Rect(num7 + 530f, num8 + 140, 75f, 25f), "Open"))
+                        {
+                            Application.OpenURL("https://docs.google.com/document/d/1o5xej8c2FFpn-RoM5MuWKFJ62Yrp2iIkPgd9xZvKq6s/edit?usp=sharing");
+                        }
+
+                        GUI.Label(new Rect(num7 + 350f, num8 + 170, 185f, 22f), "Forest Bomb Duels Chart", "Label");
+                        if (GUI.Button(new Rect(num7 + 530f, num8 + 170, 75f, 25f), "Open"))
+                        {
+                            Application.OpenURL("https://docs.google.com/spreadsheets/d/1aanipZCYjESg6oa8-bw7zuoxtDWZbVlz3w_8wiFSgKU/edit?usp=sharing");
+                        }
+
+                        GUI.Label(new Rect(num7 + 350f, num8 + 200, 185f, 22f), "Our Discord", "Label");
+                        if (GUI.Button(new Rect(num7 + 530f, num8 + 200, 75f, 25f), "Open"))
+                        {
+                            Application.OpenURL("https://discord.gg/rJyazCYrqN");
+                        }
                         GUI.Label(new Rect(num7 + 150f, num8 + 80f, 185f, 22f), "Bomb Mode", "Label");
                         GUI.Label(new Rect(num7 + 80f, num8 + 110f, 80f, 22f), "Color:", "Label");
                         textured = new Texture2D(1, 1, TextureFormat.ARGB32, false);
@@ -6497,44 +6488,52 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             if (((int)settings[250]) > 0)
                             {
                                 settings[250] = ((int)settings[250]) - 1;
+                                PlayerPrefs.SetInt("bombRadius", (int)settings[250]);
                             }
                         }
                         else if (GUI.Button(new Rect(num7 + 215f, num8 + 235f, 20f, 20f), "+") && ((((int)settings[250]) < 10) && (num43 > 0)))
                         {
                             settings[250] = ((int)settings[250]) + 1;
+                            PlayerPrefs.SetInt("bombRadius", (int)settings[250]);
                         }
                         if (GUI.Button(new Rect(num7 + 190f, num8 + 260f, 20f, 20f), "-"))
                         {
                             if (((int)settings[0xfb]) > 0)
                             {
                                 settings[0xfb] = ((int)settings[0xfb]) - 1;
+                                PlayerPrefs.SetInt("bombRange", (int)settings[251]);
                             }
                         }
                         else if (GUI.Button(new Rect(num7 + 215f, num8 + 260f, 20f, 20f), "+") && ((((int)settings[0xfb]) < 10) && (num43 > 0)))
                         {
                             settings[0xfb] = ((int)settings[0xfb]) + 1;
+                            PlayerPrefs.SetInt("bombRange", (int)settings[251]);
                         }
                         if (GUI.Button(new Rect(num7 + 190f, num8 + 285f, 20f, 20f), "-"))
                         {
                             if (((int)settings[0xfc]) > 0)
                             {
                                 settings[0xfc] = ((int)settings[0xfc]) - 1;
+                                PlayerPrefs.SetInt("bombSpeed", (int)settings[0xfc]);
                             }
                         }
                         else if (GUI.Button(new Rect(num7 + 215f, num8 + 285f, 20f, 20f), "+") && ((((int)settings[0xfc]) < 10) && (num43 > 0)))
                         {
                             settings[0xfc] = ((int)settings[0xfc]) + 1;
+                            PlayerPrefs.SetInt("bombSpeed", (int)settings[0xfc]);
                         }
                         if (GUI.Button(new Rect(num7 + 190f, num8 + 310f, 20f, 20f), "-"))
                         {
                             if (((int)settings[0xfd]) > 0)
                             {
                                 settings[0xfd] = ((int)settings[0xfd]) - 1;
+                                PlayerPrefs.SetInt("bombCD", (int)settings[253]);
                             }
                         }
                         else if (GUI.Button(new Rect(num7 + 215f, num8 + 310f, 20f, 20f), "+") && ((((int)settings[0xfd]) < 10) && (num43 > 0)))
                         {
                             settings[0xfd] = ((int)settings[0xfd]) + 1;
+                            PlayerPrefs.SetInt("bombCD", (int)settings[253]);
                         }
                     }
                     else
@@ -9311,7 +9310,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             {
                 FengGameManagerMKII.PView = base.photonView;
             }
-            if (banHash.ContainsValue(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name])))
+            if (!banHash.ContainsValue(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name])))
             {
                 int num = RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.statACL]);
                 int num2 = RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.statBLA]);
@@ -10798,15 +10797,19 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             }
         }
     }
-    
+
     [RPC]
-    private void respawnHeroInNewRound()
+    private void respawnHeroInNewRound(PhotonMessageInfo info)
     {
-        if (!this.needChooseSide && IN_GAME_MAIN_CAMERA.mainCamera.gameOver)
+        if (!info.sender.isMasterClient) kickPlayerRC(info.sender, true, "malicious revive");
+        else if (((PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null) && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])) && (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.isTitan]) != 2))
         {
-            this.SpawnPlayer(this.myLastHero, this.myLastRespawnTag);
-            IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
-            this.ShowHUDInfoCenter(string.Empty);
+            if (!this.needChooseSide && IN_GAME_MAIN_CAMERA.mainCamera.gameOver)
+            {
+                this.SpawnPlayer(this.myLastHero, this.myLastRespawnTag);
+                IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+                this.ShowHUDInfoCenter(string.Empty);
+            }
         }
     }
 
@@ -11911,6 +11914,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     [RPC]
     private void showChatContent(string content)
     {
+        return;
         //this.chatContent.Add(content);
         //if (this.chatContent.Count > 10)
         //{
@@ -12959,6 +12963,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.sFPS = string.Empty;
         base.StartCoroutine(this.FPS());
 
+        if (privateAppIDField == null) privateAppIDField = "create AppID (36 letters) on https://dashboard.photonengine.com/Account/SignIn?ReturnUrl=%2fen-US%2fpubliccloud";
     }
 
     public void setBackground()
@@ -12973,13 +12978,14 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     [RPC]
     public void titanGetKill(PhotonPlayer player, int Damage, string name)
     {
-        Damage = Mathf.Max(10, Damage);
-        object[] parameters = new object[] { Damage };
-        PView.RPC("netShowDamage", player, parameters);
-        object[] objArray2 = new object[] { name, false };
-        PView.RPC("oneTitanDown", PhotonTargets.MasterClient, objArray2);
-        this.sendKillInfo(false, (string)player.customProperties[PhotonPlayerProperty.name], true, name, Damage);
-        this.playerKillInfoUpdate(player, Damage);
+        return;
+        //Damage = Mathf.Max(10, Damage);
+        //object[] parameters = new object[] { Damage };
+        //PView.RPC("netShowDamage", player, parameters);
+        //object[] objArray2 = new object[] { name, false };
+        //PView.RPC("oneTitanDown", PhotonTargets.MasterClient, objArray2);
+        //this.sendKillInfo(false, (string)player.customProperties[PhotonPlayerProperty.name], true, name, Damage);
+        //this.playerKillInfoUpdate(player, Damage);
     }
 
     public void titanGetKillbyServer(int Damage, string name)
@@ -13283,7 +13289,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             for (int i = 0; i < PhotonNetwork.playerList.Length; i++)
             {
                 PhotonPlayer player7 = PhotonNetwork.playerList[i];
-                if (i < 20)
+                if (i < 20) //allow 20 players only
                 {
                     if (player7.customProperties[PhotonPlayerProperty.dead] != null)
                     {

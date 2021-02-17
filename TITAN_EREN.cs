@@ -607,6 +607,7 @@ private string attackAnimation;
     [RPC]
     private void playsoundRPC(string sndname)
     {
+        base.transform.Find(sndname).GetComponent<AudioSource>().volume = 0.2f;
         base.transform.Find(sndname).GetComponent<AudioSource>().Play();
     }
 

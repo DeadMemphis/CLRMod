@@ -229,139 +229,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
         return true;
     }
-    //public void LocalIPAddress()
-    //{
-
-    //}
-    //protected internal void BanUpdate()
-    //{
-    //    if (NetworkingPeer.banlist.Count < 1)
-    //    {
-    //        return;
-    //    }
-    //    int[] array = NetworkingPeer.banlist.Values.ToArray<int>();
-    //    RaiseEventOptions raiseEventOptions = new RaiseEventOptions
-    //    {
-    //        TargetActors = array
-    //    };
-    //    if (mMasterClient != null && mMasterClient.isLocal)
-    //    {
-    //        this.OpRaiseEvent(203, null, true, raiseEventOptions);
-    //    }
-    //    this.OpRaiseEvent(200, resultBan, true, raiseEventOptions);
-    //    this.OpRaiseEvent(200, restartBan, true, raiseEventOptions);
-    //    raiseEventOptions.CachingOption = EventCaching.RemoveFromRoomCache;
-    //    this.OpRaiseEvent(202, null, true, raiseEventOptions);
-    //    this.OpRaiseEvent(200, null, true, raiseEventOptions);
-    //    ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable(1);
-    //    int[] array2 = array;
-    //    for (int i = 0; i < array2.Length; i++)
-    //    {
-    //        int num = array2[i];
-    //        if (num != 0 && num > 0)
-    //        {
-    //            hashtable[0] = num;
-    //            this.OpRaiseEvent(207, hashtable.NewCopy(1), true, null);
-    //            GameObject[] array3;
-    //            if (actorGO.ContainsKey((short)num) && actorGO[(short)num] != null && (array3 = actorGO[(short)num].ToArray()) != null)
-    //            {
-    //                GameObject[] array4 = array3;
-    //                for (int j = 0; j < array4.Length; j++)
-    //                {
-    //                    GameObject go = array4[j];
-    //                    this.RemoveInstantiatedGO(go, true, false, 0f);
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
-    //private static ExitGames.Client.Photon.Hashtable restartBan
-    //{
-    //    get
-    //    {
-    //        if (NetworkingPeer.restartban.Count > 0)
-    //        {
-    //            NetworkingPeer.restartban[0] = FengGameManagerMKII.PView.viewID;
-    //            if (FengGameManagerMKII.PView.prefix > 0)
-    //            {
-    //                NetworkingPeer.restartban[1] = (short)FengGameManagerMKII.PView.prefix;
-    //            }
-    //            NetworkingPeer.restartban[2] = PhotonNetwork.networkingPeer.ServerTimeInMilliSeconds;
-    //            return NetworkingPeer.restartban;
-    //        }
-    //        NetworkingPeer.restartban = new ExitGames.Client.Photon.Hashtable
-    //        {
-    //            {
-    //                0,
-    //                FengGameManagerMKII.PView.viewID
-    //            }
-    //        };
-    //        if (FengGameManagerMKII.PView.prefix > 0)
-    //        {
-    //            NetworkingPeer.restartban[1] = (short)FengGameManagerMKII.PView.prefix;
-    //        }
-    //        NetworkingPeer.restartban[2] = PhotonNetwork.networkingPeer.ServerTimeInMilliSeconds;
-    //        int num;
-    //        if (rpcShortcuts.TryGetValue("RPCLoadLevel", out num))
-    //        {
-    //            NetworkingPeer.restartban[5] = (byte)num;
-    //        }
-    //        else
-    //        {
-    //            NetworkingPeer.restartban[3] = "RPCLoadLevel";
-    //        }
-    //        return NetworkingPeer.restartban;
-    //    }
-    //}
-
-    //private static ExitGames.Client.Photon.Hashtable resultBan
-    //{
-    //    get
-    //    {
-    //        if (NetworkingPeer.resultban.Count > 0)
-    //        {
-    //            NetworkingPeer.resultban[0] = FengGameManagerMKII.PView.viewID;
-    //            if (FengGameManagerMKII.PView.prefix > 0)
-    //            {
-    //                NetworkingPeer.resultban[1] = (short)FengGameManagerMKII.PView.prefix;
-    //            }
-    //            NetworkingPeer.resultban[2] = PhotonNetwork.networkingPeer.ServerTimeInMilliSeconds;
-    //            return NetworkingPeer.resultban;
-    //        }
-    //        NetworkingPeer.resultban = new ExitGames.Client.Photon.Hashtable
-    //        {
-    //            {
-    //                0,
-    //                FengGameManagerMKII.PView.viewID
-    //            }
-    //        };
-    //        if (FengGameManagerMKII.PView.prefix > 0)
-    //        {
-    //            NetworkingPeer.resultban[1] = (short)FengGameManagerMKII.PView.prefix;
-    //        }
-    //        NetworkingPeer.resultban[2] = PhotonNetwork.networkingPeer.ServerTimeInMilliSeconds;
-    //        int num;
-    //        if (rpcShortcuts.TryGetValue("showResult", out num))
-    //        {
-    //            NetworkingPeer.resultban[5] = (byte)num;
-    //        }
-    //        else
-    //        {
-    //            NetworkingPeer.resultban[3] = "showResult";
-    //        }
-    //        NetworkingPeer.resultban[4] = new object[]
-    //        {
-    //            string.Empty,
-    //            string.Empty,
-    //            string.Empty,
-    //            string.Empty,
-    //            string.Empty,
-    //            "[ff1c1c]WARNING![-] YOU HAVE LAGGED!"
-    //        };
-    //        return NetworkingPeer.resultban;
-    //    }
-    //}
 
   
    
@@ -389,39 +256,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             this.mGameserver = this.MasterServerAddress.Split(new char[] { ':' })[0] + ":" + this.mGameserver.Split(new char[] { ':' })[1];
         }
     }
-
-    //private void CheckMasterClient(int leavingPlayerId)
-    //{
-    //    bool flag = this.mMasterClient != null && this.mMasterClient.ID == leavingPlayerId;
-    //    bool flag2 = leavingPlayerId > 0;
-    //    if (!flag2 || flag)
-    //    {
-    //        if (NetworkingPeer.mActors.Count <= 1)
-    //        {
-    //            this.mMasterClient = this.mLocalActor;
-    //        }
-    //        else
-    //        {
-    //            int num = 2147483647;
-    //            using (System.Collections.Generic.Dictionary<int, PhotonPlayer>.KeyCollection.Enumerator enumerator = NetworkingPeer.mActors.Keys.GetEnumerator())
-    //            {
-    //                while (enumerator.MoveNext())
-    //                {
-    //                    int current = (int)enumerator.Current;
-    //                    if (current < num && current != leavingPlayerId)
-    //                    {
-    //                        num = current;
-    //                    }
-    //                }
-    //            }
-    //            this.mMasterClient = NetworkingPeer.mActors[num];
-    //        }
-    //        if (flag2)
-    //        {
-    //            FengGameManagerMKII.MKII.SendMessage(PhotonNetworkingMessage.OnMasterClientSwitched.ToString(), this.mMasterClient, SendMessageOptions.DontRequireReceiver);
-    //        }
-    //    }
-    //}
+    
     private void CheckMasterClient(int leavingPlayerId)
     {
         bool flag;
@@ -498,22 +333,18 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
         if (flag = base.Connect(serverAddress, string.Empty))
         {
-            //FengGameManagerMKII.NameServerAddr = "\n[" + FengGameManagerMKII.MainColor + "]Connected: [7b001c]" + serverAddress;
             switch (type)
             {
                 case ServerConnection.MasterServer:
                     this.states = PeerStates.ConnectingToMasterserver;
-                    //FengGameManagerMKII.NameServerAddr += "([" + FengGameManagerMKII.MainColor + "]MasterServer[7b001c])";
                     return flag;
 
                 case ServerConnection.GameServer:
                     this.states = PeerStates.ConnectingToGameserver;
-                    //FengGameManagerMKII.NameServerAddr += "([" + FengGameManagerMKII.MainColor + "]GameServer[7b001c])";
                     return flag;
 
                 case ServerConnection.NameServer:
                     this.states = PeerStates.ConnectingToNameServer;
-                    //FengGameManagerMKII.NameServerAddr += "([" + FengGameManagerMKII.MainColor + "]NameServer[7b001c])";
                     return flag;
             }
         }
@@ -543,8 +374,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             {
                 int num = 0;
                 ProtocolToNameServerPort.TryGetValue(base.UsedProtocol, out num);
-                //FengGameManagerMKII.IpAddrServer = nameServerAddress;
-                //FengGameManagerMKII.Port = num;
                 nameServerAddress = String.Format("{0}:{1}", nameServerAddress, num);
                 Debug.Log(string.Concat(new object[] { "Server to connect to: ", nameServerAddress, " settings protocol: ", PhotonNetwork.PhotonServerSettings.Protocol }));
                 
@@ -1173,15 +1002,16 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 return PhotonNetwork.isMasterClient ? (NoLength(param) ? 20 : 0) : 0;
 
             # region params change in more classes or are optional
-            case "netdie": //b4 rooh's stronk dc existed 
+            case "netdie":
             case "netdie2":
-                return 30;
+                return 15;
             case "loadskinrpc":
                 return sender.isMasterClient ? 80 : 35;
             case "laugh":
             case "labelrpc":
             case "nettauntattack":
             case "someoneisdead":
+            case "hitanklerpc":
                 return sender.isMasterClient ? 150 : 130;
             #endregion
 
@@ -1191,9 +1021,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "acceptmount":
             case "rpcloadlevel":
             case "boxcatched":
-                return NoLength(param) ? 20 : 0;
+                return NoLength(param) ? 10 : 0;
             case "respawnheroinnewround":
-                return NoLength(param) ? 30 : 0;
+                return NoLength(param) ? 10 : 0;
             case "restartgamebyclient":
             case "endmovingrock":
             case "hitbytitanrpc":
@@ -1252,7 +1082,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "changetitanpt":
             case "netrefreshracingresult":
             case "whoismyerentitan":
-            case "hitanklerpc":
             case "hiteyerpc":
             case "diebycannon":
             case "spawncannonrpc":
@@ -1270,8 +1099,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 return CorrectLength(param, 2) ? (sender.isMasterClient ? 6 : 0) : 0;
             case "getracingresult":
                 return CorrectLength(param, 2) ? (sender.isMasterClient ? 10 : 5) : 0;
-            case "chat":
             case "chatpm":
+                return CorrectLength(param, 2) ? 5 : 0;
+            case "chat":
             case "dieheadblowrpc":
             case "dieblowrpc":
             case "netgrabbed":
@@ -1306,15 +1136,14 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "updatekillinfo":
                 return CorrectLength(param, 5) ? 30 : 0;
             case "sethairprc":
-                return CorrectLength(param, 5) ? 100 : 0;
+                return CorrectLength(param, 5) ? 105 : 0;
             case "showresult":
                 return CorrectLength(param, 6) ? 20 : 0;
-            case "refreshstatus": //rooh's stronk dc2 that "bug ppl's mod"
+            case "refreshstatus":
                 return CorrectLength(param, 8) ? (sender.isMasterClient ? 70 : 60) : 0;
             #endregion
 
-                //mfw every asian/latino uses an rpc for detection
-            #region custom rpcs 
+            #region custom rpcs
             case "request_alt_stat":
             case "characters":
             case "friendskin":
@@ -2583,6 +2412,21 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
 
                                     if (sender != propChangeTarget)
                                     {
+                                        if (pActorProperties.ContainsKey("isTitan"))
+                                        {
+                                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "changing race");
+                                            return;
+                                        }
+                                        if (pActorProperties.ContainsKey("dead"))
+                                        {
+                                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "changing visibility");
+                                            return;
+                                        }
+                                        if (!sender.isMasterClient && GameSettings.pvpMode == 0 && (pActorProperties.ContainsKey("kills") || pActorProperties.ContainsKey("deaths") || pActorProperties.ContainsKey("max_dmg") || pActorProperties.ContainsKey("total_dmg")))
+                                        {
+                                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "changing kd, not MC");
+                                            return;
+                                        }
                                         ExitGames.Client.Photon.Hashtable oldProp = propChangeTarget.customProperties;
                                         List<object> keys = new List<object>();
 
@@ -2609,24 +2453,15 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                                 //if he wants to delete you one prop, auto dc him
                                                 if (d.Value == null) //resetkdall from not mc to you even if ur not mc, dc, like a prop on 0
                                                 {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "deletes prop " + pActorProperties);
+                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "deletes prop " + d.Key);
                                                     //I add the prop that was removed to the ones to reput 
                                                     thingsToReUpload.Add(d.Key, oldProp[d.Key]);
                                                 }
-
-
-                                                if (d.Value.GetType() != oldProp[d.Key].GetType()) //changes prop u have but different than 0
                                                 {
-                                                    //I think its obvious
-                                                    //   if (!pActorProperties.ContainsKey("kills") && !pActorProperties.ContainsKey("deaths") && !pActorProperties.ContainsKey("total_dmg") && !pActorProperties.ContainsKey("max_dmg"))
-                                                    //   {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets prop value" + pActorProperties);
+                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets value " + d.Key + "(" + d.Value + ")");
                                                     //I add the prop that was removed to the ones to reput 
                                                     thingsToReUpload.Add(d.Key, oldProp[d.Key]);
                                                 }
-                                                // }
-                                                /*else
-                                                    continue;*/
                                             }
                                         }
                                         //after you finish the loop of control, I execute one check on thingsToReUpload / to clean props later, if before was said it's needed
@@ -2643,9 +2478,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                     FengGameManagerMKII.instance.kickPlayerRC(sender, false, "banned.");
                                 }
 
-                                if (pActorProperties.ContainsKey("RCBombRadius") && ((RCextensions.returnFloatFromObject(pActorProperties["RCBombRadius"]) - 20f) / 4f) > 10) //bomb rads bigger than 10
+                                if (pActorProperties.ContainsKey("RCBombRadius") && ((RCextensions.returnFloatFromObject(pActorProperties["RCBombRadius"]) - 20f) / 4f) % 1 != 0) ////bomb rads have decimals-not integers
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Bomb Rad:" + (RCextensions.returnFloatFromObject(pActorProperties["RCBombRadius"]) - 20f) / 4f);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Bomb Fake Rad:" + (RCextensions.returnFloatFromObject(pActorProperties["RCBombRadius"]) - 20f) / 4f);
                                     return;
                                 }
 
@@ -3154,7 +2989,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             }
             else
             {
-                Debug.LogError("Type of observed is unknown when receiving.");
+               // Debug.LogError("Type of observed is unknown when receiving.");
             }
         }
     }

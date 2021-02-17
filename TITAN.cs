@@ -4914,7 +4914,7 @@ public class TITAN : MONO
                             this.throwRock.GetComponent<RockThrow>().launch(vector6);
                             //this.throwRock.launch(vector6, this.baseG.name, -1);
                             this.rockT.parent = null;
-                            //this.throwRock = null;
+                            this.throwRock = null;
                         }
                     }
                     if ((this.attackAnimation == "jumper_0") || (this.attackAnimation == "crawler_jump_0"))

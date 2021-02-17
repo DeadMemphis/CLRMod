@@ -268,6 +268,7 @@ public class Bullet : Photon.MonoBehaviour
     [RPC]
     private void killObject()
     {
+        return;
         //UnityEngine.Object.Destroy(this.rope);
         //UnityEngine.Object.Destroy(base.gameObject);
     }

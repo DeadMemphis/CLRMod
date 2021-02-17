@@ -2210,6 +2210,7 @@ public class HERO : MONO
     [RPC]
     private void killObject()
     {
+        return;
       //  UnityEngine.Object.Destroy(base.gameObject);
     }
 
@@ -2602,7 +2603,10 @@ public class HERO : MONO
             float num = !single ? ((hit.distance <= 50f) ? (hit.distance * 0.05f) : (hit.distance * 0.3f)) : 0f;
             Vector3 vector = (hit.point + ((Vector3)(baseT.right * num))) - this.bulletRT.position;
             vector.Normalize();
-            this.RBullet.launch((Vector3)(vector * 3f), baseR.velocity, !this.useGun ? "hookRefR1" : "hookRefR2", false, baseG, mode == 1);
+            if (mode == 1)
+                this.RBullet.launch((Vector3)(vector * 5f), baseR.velocity, !this.useGun ? "hookRefR1" : "hookRefR2", false, baseG, true);
+            else
+                this.RBullet.launch((Vector3)(vector * 3f), baseR.velocity, !this.useGun ? "hookRefR1" : "hookRefR2", false, baseG, false);
             this.launchPointRight = Vector3.zero;
         }
     }
@@ -4000,6 +4004,8 @@ public class HERO : MONO
     {
         if ((basePV.isMine && (info != null)) && (IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.BOSS_FIGHT_CT))
         {
+            if (this.invincible > 0 || (PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])))
+                FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "malicious netDie1");
             if (FengGameManagerMKII.ignoreList.Contains(info.sender.ID))
             {
                 basePV.RPC("backToHumanRPC", PhotonTargets.Others, new object[0]);
@@ -4227,9 +4233,10 @@ public class HERO : MONO
     [RPC]
     private void netDie2(int viewID = -1, string titanName = "", PhotonMessageInfo info = null)
     {
-       
         if ((basePV.isMine && (info != null)) && (IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.BOSS_FIGHT_CT))
         {
+            if (this.invincible > 0 || (PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])))
+                FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "malicious netDie2");
             if (FengGameManagerMKII.ignoreList.Contains(info.sender.ID))
             {
                 basePV.RPC("backToHumanRPC", PhotonTargets.Others, new object[0]);
@@ -5369,20 +5376,21 @@ public class HERO : MONO
     [RPC]
     private void showHitDamage()
     {
+        return;
         //GameObject target = CLEARSKIES.CacheGameObject.Find("LabelScore");
-        if (FengGameManagerMKII.LabelScore != null)
-        {
-            this.speed = Mathf.Max(10f, this.speed);
-            FengGameManagerMKII.LabelScoreUI.text = this.speed.ToString();
-            FengGameManagerMKII.LabelScoreT.localScale = Vector3.zero;
-            this.speed = (int)(this.speed * 0.1f);
-            this.speed = Mathf.Clamp(this.speed, 40f, 150f);
-            iTween.Stop(FengGameManagerMKII.LabelScore);
-            object[] args = new object[] { "x", this.speed, "y", this.speed, "z", this.speed, "easetype", iTween.EaseType.easeOutElastic, "time", 1f };
-            iTween.ScaleTo(FengGameManagerMKII.LabelScore, iTween.Hash(args));
-            object[] objArray2 = new object[] { "x", 0, "y", 0, "z", 0, "easetype", iTween.EaseType.easeInBounce, "time", 0.5f, "delay", 2f };
-            iTween.ScaleTo(FengGameManagerMKII.LabelScore, iTween.Hash(objArray2));
-        }
+        //if (FengGameManagerMKII.LabelScore != null)
+        //{
+        //    this.speed = Mathf.Max(10f, this.speed);
+        //    FengGameManagerMKII.LabelScoreUI.text = this.speed.ToString();
+        //    FengGameManagerMKII.LabelScoreT.localScale = Vector3.zero;
+        //    this.speed = (int)(this.speed * 0.1f);
+        //    this.speed = Mathf.Clamp(this.speed, 40f, 150f);
+        //    iTween.Stop(FengGameManagerMKII.LabelScore);
+        //    object[] args = new object[] { "x", this.speed, "y", this.speed, "z", this.speed, "easetype", iTween.EaseType.easeOutElastic, "time", 1f };
+        //    iTween.ScaleTo(FengGameManagerMKII.LabelScore, iTween.Hash(args));
+        //    object[] objArray2 = new object[] { "x", 0, "y", 0, "z", 0, "easetype", iTween.EaseType.easeInBounce, "time", 0.5f, "delay", 2f };
+        //    iTween.ScaleTo(FengGameManagerMKII.LabelScore, iTween.Hash(objArray2));
+        //}
     }
 
     private void showSkillCD()
@@ -5674,7 +5682,7 @@ public class HERO : MONO
     
     public void update()
     {
-        if (!IN_GAME_MAIN_CAMERA.isPausing)
+      //  if (!IN_GAME_MAIN_CAMERA.isPausing)
         {
             if (this.invincible > 0f)
             {
@@ -5838,44 +5846,46 @@ public class HERO : MONO
                         var checkAxis = Input.GetAxis("Mouse ScrollWheel");
                         if (checkAxis != 0f)
                         {
-                            var flag2 = false;
-                            var flag3 = false;
-                            if (isLaunchLeft && bulletLeft != null && this.LBullet.isHooked())
+                            if (((string)FengGameManagerMKII.settings[98] == "Scroll Up" && checkAxis > 0) || ((string)FengGameManagerMKII.settings[98] == "Scroll Down" && checkAxis < 0))
                             {
-                                isLeftHandHooked = true;
-                                var vector5 = bulletLT.position - baseT.position;
-                                vector5.Normalize();
-                                vector5 *= 10f;
-                                if (!isLaunchRight) vector5 *= 2f;
-                                if (Vector3.Angle(baseR.velocity, vector5) > 90f && FengCustomInputs.Inputs.isInput[InputCode.jump]) flag2 = true;
-                            }
+                                var flag2 = false;
+                                var flag3 = false;
+                                if (isLaunchLeft && bulletLeft != null && this.LBullet.isHooked())
+                                {
+                                    isLeftHandHooked = true;
+                                    var vector5 = bulletLT.position - baseT.position;
+                                    vector5.Normalize();
+                                    vector5 *= 10f;
+                                    if (!isLaunchRight) vector5 *= 2f;
+                                    if (Vector3.Angle(baseR.velocity, vector5) > 90f && FengCustomInputs.Inputs.isInput[InputCode.jump]) flag2 = true;
+                                }
 
-                            if (isLaunchRight && bulletRight != null && this.RBullet.isHooked())
-                            {
-                                isRightHandHooked = true;
-                                var vector6 = bulletRT.position - baseT.position;
-                                vector6.Normalize();
-                                vector6 *= 10f;
-                                if (!isLaunchLeft) vector6 *= 2f;
-                                if (Vector3.Angle(baseR.velocity, vector6) > 90f && FengCustomInputs.Inputs.isInput[InputCode.jump]) flag3 = true;
-                            }
+                                if (isLaunchRight && bulletRight != null && this.RBullet.isHooked())
+                                {
+                                    isRightHandHooked = true;
+                                    var vector6 = bulletRT.position - baseT.position;
+                                    vector6.Normalize();
+                                    vector6 *= 10f;
+                                    if (!isLaunchLeft) vector6 *= 2f;
+                                    if (Vector3.Angle(baseR.velocity, vector6) > 90f && FengCustomInputs.Inputs.isInput[InputCode.jump]) flag3 = true;
+                                }
 
-                            var current = Vector3.zero;
-                            if (flag2 && flag3)
-                                current = (bulletRT.position + bulletLT.position) * 0.5f - baseT.position;
-                            else if (flag2 && !flag3)
-                                current = bulletLT.position - baseT.position;
-                            else if (flag3 && !flag2) current = bulletRT.position - baseT.position;
-                            if (flag2 || flag3)
-                            {
-                                baseR.AddForce(-baseR.velocity, ForceMode.VelocityChange);
-                                var idk = 1.53938f * (1f + Mathf.Clamp(checkAxis > 0 ? 1f : -1f, -0.8f, 0.8f));
-                                reelAxis = 0f;
-                                baseR.velocity = Vector3.RotateTowards(current, baseR.velocity, idk, idk).normalized *
-                                                 (currentSpeed + 0.1f);
+                                var current = Vector3.zero;
+                                if (flag2 && flag3)
+                                    current = (bulletRT.position + bulletLT.position) * 0.5f - baseT.position;
+                                else if (flag2 && !flag3)
+                                    current = bulletLT.position - baseT.position;
+                                else if (flag3 && !flag2) current = bulletRT.position - baseT.position;
+                                if (flag2 || flag3)
+                                {
+                                    baseR.AddForce(-baseR.velocity, ForceMode.VelocityChange);
+                                    var idk = 1.53938f * (1f + Mathf.Clamp(checkAxis > 0 ? 1f : -1f, -0.8f, 0.8f));
+                                    reelAxis = 0f;
+                                    baseR.velocity = Vector3.RotateTowards(current, baseR.velocity, idk, idk).normalized *
+                                                     (currentSpeed + 0.1f);
+                                }
                             }
                         }
-
 
                         switch (state)
                         {

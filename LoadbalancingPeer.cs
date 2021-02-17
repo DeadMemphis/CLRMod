@@ -332,10 +332,10 @@ internal class LoadbalancingPeer : PhotonPeer
         }
         Dictionary<byte, object> customOpParameters = new Dictionary<byte, object>();
         customOpParameters.Add(0xfb, gameProperties);
-        if (broadcast)
-        {
-            customOpParameters.Add(250, true);
-        }
+        //if (broadcast)
+        //{
+        //    customOpParameters.Add(250, true);
+        //}
         return this.OpCustom(0xfc, customOpParameters, broadcast, channelId);
     }
 

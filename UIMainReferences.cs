@@ -63,6 +63,16 @@ public class UIMainReferences : MonoBehaviour
         }
     }
 
+    private void CreateSAButton()
+    {
+        GameObject gameObject = this.panelMultiStart.transform.Find("ButtonServer1").gameObject;
+        GameObject gameObject2 = NGUITools.AddChild(this.panelMultiStart, gameObject);
+        UnityEngine.Object.Destroy(gameObject2.GetComponent<BTN_ServerUS>());
+        gameObject2.AddComponent<BTN_Server_SA>();
+        gameObject2.transform.localPosition = new Vector3(-110f, -85f, 0f);
+        gameObject2.transform.Find("Label").GetComponent<UILabel>().text = "SA";
+    }
+
     private void Start()
     {
         string versionShow = "8/12/2015";
@@ -93,6 +103,7 @@ public class UIMainReferences : MonoBehaviour
             base.StartCoroutine(this.request(versionShow, versionForm));
             FengGameManagerMKII.loginstate = 0;
         }
+        this.CreateSAButton();
     }
 
 }

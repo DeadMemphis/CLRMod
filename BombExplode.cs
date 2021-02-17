@@ -38,7 +38,7 @@ public class BombExplode : Photon.MonoBehaviour
                     //    System.Random rnd = new System.Random();
                         //base.GetComponent<ParticleSystem>().startColor = new Color(RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd));
                     //}
-                    base.GetComponent<ParticleSystem>().startColor = new Color(num2, num3, num4, 1f);
+                    base.GetComponent<ParticleSystem>().startColor = new Color(num2, num3, num4, num5);
                 }
             }
             else
@@ -53,7 +53,7 @@ public class BombExplode : Photon.MonoBehaviour
                 //    System.Random rnd = new System.Random();
                 //    base.GetComponent<ParticleSystem>().startColor = new Color(RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd), RCextensions.NextFloat(rnd));
                 //}
-                base.GetComponent<ParticleSystem>().startColor = new Color(num2, num3, num4, 1f);
+                base.GetComponent<ParticleSystem>().startColor = new Color(num2, num3, num4, num5);
             }
             float num6 = RCextensions.returnFloatFromObject(owner.customProperties[PhotonPlayerProperty.RCBombRadius]) * 2f;
             num6 = Mathf.Clamp(num6, 40f, 120f);

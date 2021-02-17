@@ -10,8 +10,9 @@ public class OnClickDestroy : Photon.MonoBehaviour
     [RPC]
     public void DestroyRpc()
     {
-        UnityEngine.Object.Destroy(base.gameObject);
-        PhotonNetwork.UnAllocateViewID(base.photonView.viewID);
+        return;
+        //UnityEngine.Object.Destroy(base.gameObject);
+        //PhotonNetwork.UnAllocateViewID(base.photonView.viewID);
     }
 
     private void OnClick()

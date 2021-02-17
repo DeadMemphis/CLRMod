@@ -204,10 +204,8 @@ public class TITAN_SETUP : Photon.MonoBehaviour
         { // You don’t have to do this part, this just sets the hair back when someone else sends it.
             object[] parameters = new object[] { this.hairType, eye_type, this.part_hair.renderer.material.color.r, this.part_hair.renderer.material.color.g, this.part_hair.renderer.material.color.b };
             base.photonView.RPC("setHairPRC", PhotonTargets.OthersBuffered, parameters);
+            return;
         }
-        else if (info.sender.isMasterClient || info.sender.isLocal)
-        {
-
             UnityEngine.Object.Destroy(this.part_hair);
             this.hair = CostumeHair.hairsM[type];
             this.hairType = type;
@@ -223,7 +221,6 @@ public class TITAN_SETUP : Photon.MonoBehaviour
                 this.part_hair = obj2;
             }
             this.setFacialTexture(this.eye, eye_type);
-        }
     }
 
     [RPC]

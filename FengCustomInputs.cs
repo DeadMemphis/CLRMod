@@ -548,8 +548,8 @@ public class FengCustomInputs : MonoBehaviour
         PlayerPrefs.SetFloat("MouseSensitivity", 0.5f);
         PlayerPrefs.SetString("version", UIMainReferences.version);
         PlayerPrefs.SetInt("invertMouseY", 1);
-        PlayerPrefs.SetInt("cameraTilt", 1);
-        PlayerPrefs.SetFloat("GameQuality", 0.9f);
+        PlayerPrefs.SetInt("cameraTilt", 0);
+        PlayerPrefs.SetFloat("GameQuality", 0.1f);
     }
 
     public void showKeyMap()

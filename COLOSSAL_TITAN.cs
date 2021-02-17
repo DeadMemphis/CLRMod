@@ -1128,7 +1128,7 @@ public class COLOSSAL_TITAN : MONO
                 {
                     base.transform.position = new Vector3(30f, 0f, 784f);
                     UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("FX/ThunderCT"), base.transform.position + ((Vector3) (Vector3.up * 350f)), Quaternion.Euler(270f, 0f, 0f));
-                    Camera.main.GetComponent<IN_GAME_MAIN_CAMERA>().flashBlind();
+                 //   Camera.main.GetComponent<IN_GAME_MAIN_CAMERA>().flashBlind();
                     if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
                     {
                         this.idle();
