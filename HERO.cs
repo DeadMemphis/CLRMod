@@ -4386,13 +4386,13 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void netlaughAttack(PhotonMessageInfo info = null)
+    private void netlaughAttack(/*PhotonMessageInfo info = null*/)
     {
-        if (info.sender != basePV.owner && info.sender != null)
-        {
-            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "making titans laugh");
-            return;
-        }
+        //if (info.sender != basePV.owner && info.sender != null)
+        //{
+        //    FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "making titans laugh");
+        //    return;
+        //}
         foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("titan"))
         {
             if (((Vector3.Distance(obj2.transform.position, baseT.position) < 50f) && (Vector3.Angle(obj2.transform.forward, baseT.position - obj2.transform.position) < 90f)) && (obj2.GetComponent<TITAN>() != null))
@@ -4469,13 +4469,13 @@ public class HERO : MONO
     }
 
     [RPC]
-    private void netTauntAttack(float tauntTime, float distance = 100f, PhotonMessageInfo info = null)
+    private void netTauntAttack(float tauntTime, float distance = 100f/*, PhotonMessageInfo info = null*/)
     {
-        if (info.sender != basePV.owner && info.sender != null)
-        {
-            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "netTauntAttack");
-            return;
-        }
+        //if (info.sender != basePV.owner && info.sender != null)
+        //{
+        //    FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "netTauntAttack");
+        //    return;
+        //}
         foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("titan"))
         {
             if ((Vector3.Distance(obj2.transform.position, baseT.position) < distance) && (obj2.GetComponent<TITAN>() != null))

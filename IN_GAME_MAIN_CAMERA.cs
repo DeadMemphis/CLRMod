@@ -1167,18 +1167,15 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                     switch (cameraMode)
                     {
                         case CAMERA_TYPE.ORIGINAL:
-                            cameraMode = CAMERA_TYPE.TPS;
-                            //move = MoveWOW;
-                            Screen.lockCursor = false;
-                            break;
-                        case CAMERA_TYPE.TPS:
                             cameraMode = CAMERA_TYPE.NewTPS;
-                            //move = MoveOldTPS;
                             Screen.lockCursor = true;
                             break;
-                        case CAMERA_TYPE.NewTPS:
+                        case CAMERA_TYPE.TPS:
                             cameraMode = CAMERA_TYPE.ORIGINAL;
-                            //move = MoveORIGINAL;
+                            Screen.lockCursor = false;
+                            break;
+                        case CAMERA_TYPE.NewTPS:
+                            cameraMode = CAMERA_TYPE.TPS;
                             Screen.lockCursor = false;
                             break;
                     }

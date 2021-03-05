@@ -19,6 +19,7 @@ using System.Net.Sockets;
 using System.IO;
 using UnityEditor.VersionControl;
 using System.Diagnostics.PerformanceData;
+using System.Runtime.InteropServices;
 
 
 
@@ -213,8 +214,37 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         Stable,
         Other = 255
     }
-    
-    
+
+
+    [DllImport("user32.dll")]
+    static extern bool ShowWindow(int hWnd, int nCmdShow);
+
+    [DllImport("user32.dll", EntryPoint = "GetActiveWindow")]
+    private static extern int GetActiveWindow();
+
+    void OnApplicationFocus(bool focus)
+    {
+        if (!focus)
+        {
+            //removes fullscreen going to windowed so application keeps working when going in background
+            Screen.SetResolution(960, 600, false);
+            IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
+            //minimize (not necessary, but without, the windowed resolution will not be hidden when u press windows/alt tab)
+            var handle = GetActiveWindow();
+            ShowWindow(handle, 11);
+        }
+        else if (focus && !Screen.fullScreen)
+        {
+            //this adjusts resolution on windowed, on fullsc u need to backspace manually
+            if (/*UIMainReferences.UIRefer.thirdLine.Contains("False") &&*/ !UIMainReferences.isGAMEFirstLaunch) //firstlaunch check so that it doesnt run when app is being opened, it's when borderless window is put
+            {
+                Screen.SetResolution(Screen.width, Screen.height, false);
+                IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
+            }
+        }
+    }
+
+
     //public void addCamera(IN_GAME_MAIN_CAMERA c)
     //{
     //    this.mainCamera = c;

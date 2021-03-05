@@ -8,7 +8,7 @@ using UnityEngine;
 public class UIMainReferences : MonoBehaviour
 {
     public static string fengVersion;
-    private static bool isGAMEFirstLaunch = true;
+    public static bool isGAMEFirstLaunch = true;
     public GameObject panelCredits;
     public GameObject PanelDisconnect;
     public GameObject panelMain;
