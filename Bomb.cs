@@ -136,13 +136,13 @@ public class Bomb : Photon.MonoBehaviour
                 }
             }
         }
-        //base.StartCoroutine(this.WaitAndFade(1.5f));
-        Yield.Begin(new WaitForSeconds(1.5f), new Action(() =>
-        {
-            UnityEngine.MonoBehaviour.print("==> test yield instructions");
-            PhotonNetwork.Destroy(this.myExplosion);
-            PhotonNetwork.Destroy(this.gameObject);
-        }));
+        base.StartCoroutine(this.WaitAndFade(1.5f));
+        //Yield.Begin(new WaitForSeconds(1.5f), new Action(() =>
+        //{
+        //    UnityEngine.MonoBehaviour.print("==> test yield instructions");
+        //    PhotonNetwork.Destroy(this.myExplosion);
+        //    PhotonNetwork.Destroy(this.gameObject);
+        //}));
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -186,12 +186,12 @@ public class Bomb : Photon.MonoBehaviour
         }
     }
 
-    //private IEnumerator WaitAndFade(float time)
-    //{
-    //    yield return new WaitForSeconds(time);
-    //    PhotonNetwork.Destroy(this.myExplosion);
-    //    PhotonNetwork.Destroy(this.gameObject);
-    //}
+    private IEnumerator WaitAndFade(float time)
+    {
+        yield return new WaitForSeconds(time);
+        PhotonNetwork.Destroy(this.myExplosion);
+        PhotonNetwork.Destroy(this.gameObject);
+    }
 
 }
 

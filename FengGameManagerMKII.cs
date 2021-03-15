@@ -239,11 +239,17 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             if (/*UIMainReferences.UIRefer.thirdLine.Contains("False") &&*/ !UIMainReferences.isGAMEFirstLaunch) //firstlaunch check so that it doesnt run when app is being opened, it's when borderless window is put
             {
                 Screen.SetResolution(Screen.width, Screen.height, false);
-                IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
+                base.StartCoroutine(sethud());
             }
         }
     }
 
+
+    IEnumerator sethud()
+    {
+        yield return new WaitForSeconds(1f);
+        IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
+    }
 
     //public void addCamera(IN_GAME_MAIN_CAMERA c)
     //{
@@ -3582,7 +3588,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         objArray[0x67] = PlayerPrefs.GetString("tleft", "A");
         objArray[0x68] = PlayerPrefs.GetString("tright", "D");
         objArray[0x69] = PlayerPrefs.GetString("twalk", "LeftShift");
-        objArray[0x6a] = PlayerPrefs.GetString("tjump", "Space");
+        objArray[0x6a] = PlayerPrefs.GetString("tjump", "Alpha0");
         objArray[0x6b] = PlayerPrefs.GetString("tpunch", "Q");
         objArray[0x6c] = PlayerPrefs.GetString("tslam", "E");
         objArray[0x6d] = PlayerPrefs.GetString("tgrabfront", "Alpha1");
@@ -5066,9 +5072,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         num7 = (((float)Screen.width) / 2f) - 85f;
                         num8 = ((float)Screen.height) / 2f;
                         GUI.backgroundColor = new Color(0.08f, 0.3f, 0.4f, 1f);
-                        GUI.DrawTexture(new Rect(12f, 32f, 216f, 146f), this.textureBackgroundBlue);
-                        GUI.DrawTexture(new Rect(num7 + 2f, 7f, 146f, 101f), this.textureBackgroundBlue);
-                        GUI.Box(new Rect(num7, 5f, 150f, 105f), string.Empty);
+                        GUI.DrawTexture(new Rect(12f, 32f, 216f, 171f), this.textureBackgroundBlue);
+                        GUI.DrawTexture(new Rect(num7 + 2f, 7f, 146f, 136f), this.textureBackgroundBlue);
+                        GUI.Box(new Rect(num7, 5f, 150f, 136f), string.Empty);
                         if (GUI.Button(new Rect(num7 + 11f, 15f, 128f, 25f), "Level Editor"))
                         {
                             settings[0x40] = 0x65;
@@ -5082,7 +5088,11 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         {
                             Application.LoadLevel("SnapShot");
                         }
-                        GUI.Box(new Rect(10f, 30f, 220f, 150f), string.Empty);
+                        else if (GUI.Button(new Rect(num7 + 11f, 105f, 128f, 25f), "Aottg2 Donate"))
+                        {
+                            Application.OpenURL("https://www.patreon.com/aottg2");
+                        }
+                        GUI.Box(new Rect(10f, 30f, 220f, 175f), string.Empty);
                         if (GUI.Button(new Rect(23.75f, 40f, 55f, 25f), "Name", "box"))
                         {
                             FengGameManagerMKII.settings[187] = 0;
@@ -5132,7 +5142,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 GUI.Label(new Rect(20f, 100f, 90f, 25f), "Public Server:", "Label");
                                 GUI.Label(new Rect(20f, 125f, 80f, 25f), "RC Private:", "Label");
                                 GUI.Label(new Rect(20f, 150f, 60f, 25f), "Custom:", "Label");
-
+                                GUI.Label(new Rect(20f, 175, 60f, 25f), "Offline:", "Label");
 
 
                                 if (GUI.Button(new Rect(160f, 100f, 60f, 20f), "Connect"))
@@ -5146,6 +5156,12 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 else if (GUI.Button(new Rect(160f, 150f, 60f, 20f), "Connect"))
                                 {
                                     UIMainReferences.version = FengGameManagerMKII.privateServerField;
+                                }
+                                if (GUI.Button(new Rect(160f, 175, 60f, 20f), "Connect"))
+                                {
+                                    PhotonNetwork.offlineMode = true;
+                                    NGUITools.SetActive(GameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMain, false);
+                                    NGUITools.SetActive(GameObject.Find("UIRefer").GetComponent<UIMainReferences>().panelMultiSet, true);
                                 }
                                 FengGameManagerMKII.privateServerField = GUI.TextField(new Rect(78f, 153f, 70f, 18f), FengGameManagerMKII.privateServerField, 50);
                                 return;

@@ -5,7 +5,11 @@ using UnityEngine;
 public class BTN_START_MULTI_SERVER : MonoBehaviour
 {
     // Token: 0x06001643 RID: 5699 RVA: 0x0000FDC4 File Offset: 0x0000DFC4
-  
+
+    void Start()
+    {
+        CacheGameObject.Find<UIInput>("InputMaxTime").label.text = "9999";
+    }
 
     // Token: 0x06001644 RID: 5700 RVA: 0x000F8D60 File Offset: 0x000F6F60
     private void OnClick()

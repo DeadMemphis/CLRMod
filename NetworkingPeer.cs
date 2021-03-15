@@ -1382,12 +1382,12 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     bool flag2 = num4 == sender.ID;
                     if (flag)
                     {
-                        Debug.LogWarning(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! View was/is ours.", !flag2 ? " Remote called." : " Owner called." }));
+                       // Debug.LogWarning(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! View was/is ours.", !flag2 ? " Remote called." : " Owner called." }));
                         return;
                     }
                     else
                     {
-                        Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! Was remote PV.", !flag2 ? " Remote called." : " Owner called." }));
+                       // Debug.LogError(string.Concat(new object[] { "Received RPC \"", str, "\" for viewID ", viewID, " but this PhotonView does not exist! Was remote PV.", !flag2 ? " Remote called." : " Owner called." }));
                         return;
                     }
                 }
@@ -2930,11 +2930,11 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         PhotonView photonView = this.GetPhotonView(viewID);
         if (photonView == null)
         {
-            Debug.LogWarning(string.Concat(new object[] { "Received OnSerialization for view ID ", viewID, ". We have no such PhotonView! Ignored this if you're leaving a room. State: ", this.states }));
+            //Debug.LogWarning(string.Concat(new object[] { "Received OnSerialization for view ID ", viewID, ". We have no such PhotonView! Ignored this if you're leaving a room. State: ", this.states }));
         }
         else if ((photonView.prefix > 0) && (correctPrefix != photonView.prefix))
         {
-            Debug.LogError(string.Concat(new object[] { "Received OnSerialization for view ID ", viewID, " with prefix ", correctPrefix, ". Our prefix is ", photonView.prefix }));
+           // Debug.LogError(string.Concat(new object[] { "Received OnSerialization for view ID ", viewID, " with prefix ", correctPrefix, ". Our prefix is ", photonView.prefix }));
         }
         else if ((photonView.group == 0) || this.allowedReceivingGroups.Contains(photonView.group))
         {

@@ -5271,32 +5271,44 @@ public class HERO : MONO
         {
             this.cachedSprites["bladeCL"].fillAmount = this.currentBladeSta / this.totalBladeSta;
             this.cachedSprites["bladeCR"].fillAmount = this.currentBladeSta / this.totalBladeSta;
+            if (num < 0.3f)
+            {
+                this.cachedSprites["gasL"].color = Color.yellow;
+                this.cachedSprites["gasR"].color = Color.yellow;
+            }
+            if (num < 0.1f)
+            {
+                this.cachedSprites["gasL"].color = new Color(1f, 0.35f, 0f, 1f);
+                this.cachedSprites["gasR"].color = new Color(1f, 0.35f, 0f, 1f);
+            }
             if (num <= 0f)
             {
                 this.cachedSprites["gasL"].color = Color.red;
                 this.cachedSprites["gasR"].color = Color.red;
             }
-            else if (num < 0.3f)
-            {
-                this.cachedSprites["gasL"].color = Color.yellow;
-                this.cachedSprites["gasR"].color = Color.yellow;
-            }
-            else
+            if (num >= 0.3f)
             {
                 this.cachedSprites["gasL"].color = Color.white;
                 this.cachedSprites["gasR"].color = Color.white;
+            }
+
+
+            if (num2 < 0.3f)
+            {
+                this.cachedSprites["bladel1"].color = Color.yellow;
+                this.cachedSprites["blader1"].color = Color.yellow;
+            }
+            if (num2 < 0.1f)
+            {
+                this.cachedSprites["bladel1"].color = new Color(1f, 0.35f, 0f, 1f);
+                this.cachedSprites["blader1"].color = new Color(1f, 0.35f, 0f, 1f);
             }
             if (num2 <= 0f)
             {
                 this.cachedSprites["bladel1"].color = Color.red;
                 this.cachedSprites["blader1"].color = Color.red;
             }
-            else if (num2 < 0.3f)
-            {
-                this.cachedSprites["bladel1"].color = Color.yellow;
-                this.cachedSprites["blader1"].color = Color.yellow;
-            }
-            else
+            if (num2 >= 0.3f)
             {
                 this.cachedSprites["bladel1"].color = Color.white;
                 this.cachedSprites["blader1"].color = Color.white;

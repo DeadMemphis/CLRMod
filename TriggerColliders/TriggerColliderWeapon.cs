@@ -285,6 +285,7 @@ public class TriggerColliderWeapon : MonoBehaviour
                                             else if (!PhotonNetwork.isMasterClient)
                                             {
                                                 object[] objArray6 = new object[] { this.basePV.viewID };
+                                                titan.GetComponent<TITAN>().photonView.RPC("hitAnkleRPC", PhotonTargets.MasterClient, objArray6);
                                             }
                                             else
                                                 titan.hitAnkle();
