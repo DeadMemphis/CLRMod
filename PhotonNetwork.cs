@@ -376,7 +376,7 @@ public static class PhotonNetwork
         {
             offlineMode = false;
             offlineModeRoom = null;
-            NetworkingPeer.instance.states = PeerStates.Disconnecting;
+            networkingPeer.states = PeerStates.Disconnecting;
             networkingPeer.OnStatusChanged(StatusCode.Disconnect);
         }
         else if (networkingPeer != null)

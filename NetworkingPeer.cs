@@ -2422,7 +2422,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                             FengGameManagerMKII.instance.kickPlayerRC(sender, true, "changing visibility");
                                             return;
                                         }
-                                        if (!sender.isMasterClient && GameSettings.pvpMode == 0 && (pActorProperties.ContainsKey("kills") || pActorProperties.ContainsKey("deaths") || pActorProperties.ContainsKey("max_dmg") || pActorProperties.ContainsKey("total_dmg")))
+                                        if (!sender.isMasterClient && GameSettings.pvpMode == 0 && RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.team]) != 2 && (pActorProperties.ContainsKey("kills") || pActorProperties.ContainsKey("deaths") || pActorProperties.ContainsKey("max_dmg") || pActorProperties.ContainsKey("total_dmg")))
                                         {
                                             FengGameManagerMKII.instance.kickPlayerRC(sender, true, "changing kd, not MC");
                                             return;

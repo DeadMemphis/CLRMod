@@ -13,6 +13,7 @@ public class Horse : MONO
     private float speed = 45f;
     private string State = "idle";
     private float timeElapsed;
+    private float _idleTime = 0f;
 
 
     public Animation baseA;
@@ -170,7 +171,7 @@ public class Horse : MONO
 
                 if (this.baseR.velocity.magnitude > 15f)
                 {
-                    if (!this.heroA.IsPlaying("horse_Run"))
+                    if (!this.heroA.IsPlaying("horse_run"))
                     {
                         this.hero.crossFade("horse_run", 0.1f);
                     }
@@ -197,7 +198,7 @@ public class Horse : MONO
             }
             if (this.baseR.velocity.magnitude > 8f)
             {
-                if (!this.baseA.IsPlaying("horse_Run"))
+                if (!this.baseA.IsPlaying("horse_run"))
                 {
                     this.crossFade("horse_Run", 0.1f);
                 }
@@ -379,36 +380,24 @@ public class Horse : MONO
         }
         else
         {
-            if (this.baseA.IsPlaying("horse_idle1") && (this.baseA["horse_idle1"].normalizedTime >= 1f))
+            if (_idleTime <= 0f)
             {
-                this.crossFade("horse_idle0", 0.1f);
-            }
-            if (this.baseA.IsPlaying("horse_idle2") && (this.baseA["horse_idle2"].normalizedTime >= 1f))
-            {
-                this.crossFade("horse_idle0", 0.1f);
-            }
-            if (this.baseA.IsPlaying("horse_idle3") && (this.baseA["horse_idle3"].normalizedTime >= 1f))
-            {
-                this.crossFade("horse_idle0", 0.1f);
-            }
-            if ((!this.baseA.IsPlaying("horse_idle0") && !this.baseA.IsPlaying("horse_idle1")) && (!this.baseA.IsPlaying("horse_idle2") && !this.baseA.IsPlaying("horse_idle3")))
-            {
-                this.crossFade("horse_idle0", 0.1f);
-            }
-            if (this.baseA.IsPlaying("horse_idle0"))
-            {
-                int num = UnityEngine.Random.Range(0, 0x2710);
-                if (num < 10)
+                if (base.animation.IsPlaying("horse_idle0"))
                 {
-                    this.crossFade("horse_idle1", 0.1f);
+                    //this.crossFade("horse_idle1", 0.1f);
+                    float num = UnityEngine.Random.Range(0f, 1f);
+                    if (num < 0.33f)
+                        this.crossFade("horse_idle1", 0.1f);
+                    else if (num < 0.66f)
+                        this.crossFade("horse_idle2", 0.1f);
+                    else
+                        this.crossFade("horse_idle3", 0.1f);
+                    _idleTime = 1f;
                 }
-                else if (num < 20)
+                else
                 {
-                    this.crossFade("horse_idle2", 0.1f);
-                }
-                else if (num < 30)
-                {
-                    this.crossFade("horse_idle3", 0.1f);
+                    this.crossFade("horse_idle0", 0.1f);
+                    _idleTime = UnityEngine.Random.Range(1f, 4f);
                 }
             }
             if (this.dustPS.enableEmission)
@@ -417,7 +406,8 @@ public class Horse : MONO
                 object[] objArray3 = new object[] { false };
                 this.basePV.RPC("setDust", PhotonTargets.Others, objArray3);
             }
-            this.baseR.AddForce(-this.baseR.velocity, ForceMode.VelocityChange);
+            // this.baseR.AddForce(-this.baseR.velocity, ForceMode.VelocityChange);
+            _idleTime -= Time.deltaTime;
         }
     }
 

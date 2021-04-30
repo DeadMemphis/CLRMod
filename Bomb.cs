@@ -159,8 +159,6 @@ public class Bomb : Photon.MonoBehaviour
             this.correctPlayerRot = (Quaternion)stream.ReceiveNext();
             this.correctPlayerVelocity = (Vector3)stream.ReceiveNext();
             
-            float lag = Mathf.Abs((float)(PhotonNetwork.time - info.timestamp));
-            /*rigidbody.position*/ this.correctPlayerPos += rigidbody.velocity * lag;
         }
     }
 

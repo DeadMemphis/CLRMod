@@ -31,6 +31,8 @@ public class PVPcheckPoint : Photon.MonoBehaviour
     private bool titanOn;
     public float titanPt;
     public float titanPtMax = 40f;
+    float _lastTitanPt;
+    float _lastHumanPt;
 
     [RPC]
     private void changeHumanPt(float pt)
@@ -263,10 +265,29 @@ public class PVPcheckPoint : Photon.MonoBehaviour
 
     private void syncPts()
     {
-        object[] parameters = new object[] { this.titanPt };
-        base.photonView.RPC("changeTitanPt", PhotonTargets.Others, parameters);
-        object[] objArray2 = new object[] { this.humanPt };
-        base.photonView.RPC("changeHumanPt", PhotonTargets.Others, objArray2);
+        if (titanPt != _lastTitanPt)
+        {
+            object[] parameters = new object[] { this.titanPt };
+            base.photonView.RPC("changeTitanPt", PhotonTargets.Others, parameters);
+            _lastTitanPt = titanPt;
+        }
+        if (humanPt != _lastHumanPt)
+        {
+            object[] objArray2 = new object[] { this.humanPt };
+            base.photonView.RPC("changeHumanPt", PhotonTargets.Others, objArray2);
+            _lastHumanPt = humanPt;
+        }
+    }
+
+    public void OnPhotonPlayerConnected(PhotonPlayer player)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            object[] parameters = new object[] { this.titanPt };
+            base.photonView.RPC("changeTitanPt", PhotonTargets.Others, parameters);
+            object[] objArray2 = new object[] { this.humanPt };
+            base.photonView.RPC("changeHumanPt", PhotonTargets.Others, objArray2);
+        }
     }
 
     private void titanGetsPoint()

@@ -13,6 +13,7 @@ using CLEARSKIES;
 
 public class HERO : MONO
 {
+    private bool _animationStopped = false;
     private HERO_STATE _state;
     private bool almostSingleHook;
     private string attackAnimation;
@@ -235,8 +236,7 @@ public class HERO : MONO
         }
     }
     
-
-    private bool netPauseStopped;
+    
 
     private HERO() : base(SPECIES.Hero)
     {
@@ -984,8 +984,8 @@ public class HERO : MONO
 
     public void continueAnimation()
     {
-        if (!this.netPauseStopped) return;
-        this.netPauseStopped = false;
+        if (!this._animationStopped) return;
+        _animationStopped = false;
         foreach (object obj in this.baseA)
         {
             AnimationState current = (AnimationState)obj;
@@ -1054,7 +1054,11 @@ public class HERO : MONO
             Quaternion quaternion = Quaternion.Euler(0f, this.facingDirection, 0f);
             baseR.rotation = quaternion;
             this.targetRotation = quaternion;
-            PhotonNetwork.Instantiate("FX/boost_smoke", base.transform.position, base.transform.rotation, 0);
+            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+                UnityEngine.Object.Instantiate(Resources.Load("FX/boost_smoke"), base.transform.position, base.transform.rotation);
+            else
+                PhotonNetwork.Instantiate("FX/boost_smoke", base.transform.position, base.transform.rotation, 0);
+
             this.dashTime = 0.5f;
             this.crossFade("dash", 0.1f);
             baseA["dash"].time = 0.1f;
@@ -1642,7 +1646,8 @@ public class HERO : MONO
                             baseT.position = this.myHorse.transform.position + ((Vector3)(Vector3.up * 1.65f));
                             baseT.rotation = this.myHorse.transform.rotation;
                             this.isMounted = true;
-                            this.crossFade("horse_idle", 0.1f);
+                            if (!base.animation.IsPlaying("horse_idle"))
+                                this.crossFade("horse_idle", 0.1f);
                             this.myHorse.GetComponent<Horse>().mounted();
                         }
                         if ((((((this.state == HERO_STATE.Idle) && !baseA.IsPlaying("dash")) && (!baseA.IsPlaying("wallrun") && !baseA.IsPlaying("toRoof"))) && ((!baseA.IsPlaying("horse_geton") && !baseA.IsPlaying("horse_getoff")) && (!baseA.IsPlaying("air_release") && !this.isMounted))) && ((!baseA.IsPlaying("air_hook_l_just") || (baseA["air_hook_l_just"].normalizedTime >= 1f)) && (!baseA.IsPlaying("air_hook_r_just") || (baseA["air_hook_r_just"].normalizedTime >= 1f)))) || (baseA["dash"].normalizedTime >= 0.99f))
@@ -1740,13 +1745,16 @@ public class HERO : MONO
                                 }
                             }
                         }
-                        if (((this.state == HERO_STATE.Idle) && baseA.IsPlaying("air_release")) && (baseA["air_release"].normalizedTime >= 1f))
+                        if (!this.baseA.IsPlaying("air_rise"))
                         {
-                            this.crossFade("air_rise", 0.2f);
-                        }
-                        if (baseA.IsPlaying("horse_getoff") && (baseA["horse_getoff"].normalizedTime >= 1f))
-                        {
-                            this.crossFade("air_rise", 0.2f);
+                            if (((this.state == HERO_STATE.Idle) && baseA.IsPlaying("air_release")) && (baseA["air_release"].normalizedTime >= 1f))
+                            {
+                                this.crossFade("air_rise", 0.2f);
+                            }
+                            if (baseA.IsPlaying("horse_getoff") && (baseA["horse_getoff"].normalizedTime >= 1f))
+                            {
+                                this.crossFade("air_rise", 0.2f);
+                            }
                         }
                         if (baseA.IsPlaying("toRoof"))
                         {
@@ -4598,7 +4606,7 @@ public class HERO : MONO
 
     public void pauseAnimation()
     {
-        if (this.netPauseStopped) return;
+        if (this._animationStopped) return;
         foreach (object obj in this.baseA)
         {
             ((AnimationState)obj).speed = 0f;
@@ -4607,7 +4615,7 @@ public class HERO : MONO
         {
             this.basePV.RPC("netPauseAnimation", PhotonTargets.Others, new object[0]);
         }
-        this.netPauseStopped = true;
+        this._animationStopped = true;
     }
 
 

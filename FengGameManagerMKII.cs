@@ -3422,8 +3422,12 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 }
 
             }
-            if (!ignoreList.Contains(player.ID)) ignoreList.Add(player.ID);
-            if (reason != string.Empty) InRoomChat.ChatInstanse.addLINE("Player " + player.ID.ToString() + " was " + (PhotonNetwork.isMasterClient ? "autobanned" : "ignored")+ ". Reason:" + reason);
+            if (!ignoreList.Contains(player.ID))
+            {
+                ignoreList.Add(player.ID);
+                if (reason != string.Empty)
+                    InRoomChat.ChatInstanse.addLINE("Player " + player.ID.ToString() + " was " + (PhotonNetwork.isMasterClient ? "autobanned" : "ignored") + ". Reason:" + reason);
+            }
             this.RecompilePlayerList(0.1f);
         }
     }
@@ -3731,10 +3735,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         objArray[0xf7] = PlayerPrefs.GetFloat("bombG", 1f);
         objArray[0xf8] = PlayerPrefs.GetFloat("bombB", 1f);
         objArray[0xf9] = PlayerPrefs.GetFloat("bombA", 1f);
-        objArray[250] = PlayerPrefs.GetInt("bombRadius", 5);
-        objArray[0xfb] = PlayerPrefs.GetInt("bombRange", 5);
-        objArray[0xfc] = PlayerPrefs.GetInt("bombSpeed", 5);
-        objArray[0xfd] = PlayerPrefs.GetInt("bombCD", 5);
+        objArray[250] = PlayerPrefs.GetInt("bombRadius", 6);
+        objArray[0xfb] = PlayerPrefs.GetInt("bombRange", 2);
+        objArray[0xfc] = PlayerPrefs.GetInt("bombSpeed", 6);
+        objArray[0xfd] = PlayerPrefs.GetInt("bombCD", 6);
         objArray[0xfe] = PlayerPrefs.GetString("cannonUp", "W");
         objArray[0xff] = PlayerPrefs.GetString("cannonDown", "S");
         objArray[0x100] = PlayerPrefs.GetString("cannonLeft", "A");
@@ -7157,7 +7161,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 strArray16 = new string[] { "Off", "Speed", "Damage" };
                                 settings[0xbd] = GUI.SelectionGrid(new Rect(num7 + 480f, num8 + 305f, 140f, 60f), (int)settings[0xbd], strArray16, 1, GUI.skin.toggle);
                                 AudioListener.volume = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 191f, 150f, 20f), AudioListener.volume, 0f, 1f);
-                                this.mouseSlider = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 216f, 150f, 20f), this.mouseSlider, 0.1f, 1f);
+                                this.mouseSlider = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 216f, 150f, 20f), this.mouseSlider, 0.01f, 1f);
                                 PlayerPrefs.SetFloat("MouseSensitivity", this.mouseSlider);
                                 IN_GAME_MAIN_CAMERA.sensitivityMulti = PlayerPrefs.GetFloat("MouseSensitivity");
                                 this.distanceSlider = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 241f, 150f, 20f), this.distanceSlider, 0f, 1f);
@@ -9162,7 +9166,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             {
                                 num4 = 70;
                             }
-                            this.spawnTitanCustom("titanRespawn", num4, levelinfo.enemyNumber, false);
+                            if (GameSettings.bombMode == 0) this.spawnTitanCustom("titanRespawn", num4, levelinfo.enemyNumber, false);
                         }
                     }
                     else if ((levelinfo.type != GAMEMODE.TROST) && ((levelinfo.type == GAMEMODE.PVP_CAPTURE) && (levelinfo.mapName == "OutSide")))

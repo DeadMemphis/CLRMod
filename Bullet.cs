@@ -342,6 +342,8 @@ public class Bullet : Photon.MonoBehaviour
             {
                 this.myRef = this.MasterHero.hookRefR2;
                 this.myRefT = this.MasterHero.hookRefR2.transform;
+                if (myRefT.position.y < 0.1f)
+                    myRefT.position += new Vector3(0f, 0.1f, 0f);
                 //this.MasterHero.hook["right"] = this;
             }
             this.nodes = new ArrayList()
