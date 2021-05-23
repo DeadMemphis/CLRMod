@@ -58,7 +58,7 @@ public class CustomCharacterManager : MonoBehaviour
             num += this.setup.myCostume.stat.BLA;
             return (num + this.setup.myCostume.stat.ACL);
         }
-        return 400;
+        return 460;
     }
 
     private void copyBodyCostume(HeroCostume from, HeroCostume to)
@@ -235,7 +235,7 @@ public class CustomCharacterManager : MonoBehaviour
         this.labelCostume.GetComponent<UILabel>().text = "costume_" + this.costumeId.ToString();
         this.labelCape.GetComponent<UILabel>().text = "cape_" + this.capeId.ToString();
         this.labelDivision.GetComponent<UILabel>().text = this.divisionOption[this.divisionId].ToString();
-        this.labelPOINT.GetComponent<UILabel>().text = "Points: " + ((400 - this.calTotalPoints())).ToString();
+        this.labelPOINT.GetComponent<UILabel>().text = "Points: " + ((460 - this.calTotalPoints())).ToString();
         this.labelSPD.GetComponent<UILabel>().text = "SPD " + this.setup.myCostume.stat.SPD.ToString();
         this.labelGAS.GetComponent<UILabel>().text = "GAS " + this.setup.myCostume.stat.GAS.ToString();
         this.labelBLA.GetComponent<UILabel>().text = "BLA " + this.setup.myCostume.stat.BLA.ToString();
@@ -283,7 +283,7 @@ public class CustomCharacterManager : MonoBehaviour
             this.character.GetComponent<CharacterCreateAnimationControl>().playAttack(this.setup.myCostume.stat.skillId);
             this.freshLabel();
         }
-        else if (this.calTotalPoints() < 400)
+        else if (this.calTotalPoints() < 460)
         {
             this.setStatPoint(type, 1);
         }

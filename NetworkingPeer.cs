@@ -68,6 +68,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             }
         };
         ProtocolToNameServerPort = dictionary;
+        PhotonNetwork.sendRateOnSerialize = 20;
     }
 
     public NetworkingPeer(IPhotonPeerListener listener, string playername, ConnectionProtocol connectionProtocol) : base(listener, connectionProtocol)
@@ -2457,11 +2458,11 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                                     //I add the prop that was removed to the ones to reput 
                                                     thingsToReUpload.Add(d.Key, oldProp[d.Key]);
                                                 }
-                                                {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets value " + d.Key + "(" + d.Value + ")");
-                                                    //I add the prop that was removed to the ones to reput 
-                                                    thingsToReUpload.Add(d.Key, oldProp[d.Key]);
-                                                }
+                                                //{ this bans in bomb if u kill the mc
+                                                //    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets value " + d.Key + "(" + d.Value + ")");
+                                                //    //I add the prop that was removed to the ones to reput 
+                                                //    thingsToReUpload.Add(d.Key, oldProp[d.Key]);
+                                                //}
                                             }
                                         }
                                         //after you finish the loop of control, I execute one check on thingsToReUpload / to clean props later, if before was said it's needed

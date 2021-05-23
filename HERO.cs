@@ -9,10 +9,12 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using Xft;
 using CLEARSKIES;
+using Utility;
 
 
 public class HERO : MONO
 {
+    private bool _cancelGasDisable = false;
     private bool _animationStopped = false;
     private HERO_STATE _state;
     private bool almostSingleHook;
@@ -1297,6 +1299,7 @@ public class HERO : MONO
         //GameObject dmgsmoke = new GameObject();
         if ((!this.titanForm && !this.isCannon) && (!IN_GAME_MAIN_CAMERA.isPausing || (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)))
         {
+            this.bodyLean();
             this.currentSpeed = baseR.velocity.magnitude;
             if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
             {
@@ -1929,24 +1932,31 @@ public class HERO : MONO
                     {
                         Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 50f, 0.1f);
                     }
-                    if (flag2)
+                    if (_cancelGasDisable == false)
                     {
-                        this.useGas(this.useGasSpeed * Time.deltaTime);
-                        if ((!this.smoke_3dmg.enableEmission && (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)) && basePV.isMine)
+                        if (flag2)
                         {
-                            object[] parameters = new object[] { true };
-                            basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, parameters);
+                            this.useGas(this.useGasSpeed * Time.deltaTime);
+                            if ((!this.smoke_3dmg.enableEmission && (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)) && base.photonView.isMine)
+                            {
+                                object[] parameters = new object[] { true };
+                                basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, parameters);
+                            }
+                            this.smoke_3dmg.enableEmission = true;
                         }
-                        this.smoke_3dmg.enableEmission = true;
+                        else
+                        {
+                            if ((this.smoke_3dmg.enableEmission && (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)) && base.photonView.isMine)
+                            {
+                                object[] objArray3 = new object[] { false };
+                                basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, objArray3);
+                            }
+                            this.smoke_3dmg.enableEmission = false;
+                        }
                     }
                     else
                     {
-                        if ((this.smoke_3dmg.enableEmission && (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)) && basePV.isMine)
-                        {
-                            object[] objArray3 = new object[] { false };
-                            basePV.RPC("net3DMGSMOKE", PhotonTargets.Others, objArray3);
-                        }
-                        this.smoke_3dmg.enableEmission = false;
+                        _cancelGasDisable = false;
                     }
                     if (this.currentSpeed > 80f)
                     {
@@ -2451,7 +2461,6 @@ public class HERO : MONO
                 }
             }
             this.setHookedPplDirection();
-            this.bodyLean();
         }
     }
 
@@ -2563,6 +2572,7 @@ public class HERO : MONO
                 this.releaseIfIHookSb();
             }
         }
+        _cancelGasDisable = true;
         this.sparks.enableEmission = false;
     }
 

@@ -3485,7 +3485,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
         int num;
         int num2;
-        object[] objArray = new object[280];
+        object[] objArray = new object[300];
+        objArray[295] = PlayerPrefs.GetInt("PhysicsType", 0);
+        objArray[294] = PlayerPrefs.GetInt("Interpolation", 0);
         objArray[0] = PlayerPrefs.GetInt("human", 1);
         objArray[1] = PlayerPrefs.GetInt("titan", 1);
         objArray[2] = PlayerPrefs.GetInt("level", 1);
@@ -6948,6 +6950,15 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             if (((int)settings[0x40]) == 0)
                             {
                                 int num47;
+                                string[] Pol = new string[] { "None", "Interpolation", "Extrapolation" };
+                                FengGameManagerMKII.settings[294] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 380, 280f, 40), (int)FengGameManagerMKII.settings[294], Pol, 3);
+
+                                GUI.Label(new Rect(num7 + 72f, num8 + 410, 190f, 20f), "Physics Update rate (restart):", "Label");
+                                string[] PhysicsType = new string[] { "50/s \n(aottg)", "60/s", "75/s" };
+                                FengGameManagerMKII.settings[295] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 435, 280f, 40), (int)FengGameManagerMKII.settings[295], PhysicsType, 3);
+
+
+
                                 GUI.Label(new Rect(num7 + 150f, num8 + 51f, 185f, 22f), "Graphics", "Label");
                                 GUI.Label(new Rect(num7 + 72f, num8 + 81f, 185f, 22f), "Disable custom gas textures:", "Label");
                                 GUI.Label(new Rect(num7 + 72f, num8 + 106f, 185f, 22f), "Disable weapon trail:", "Label");
@@ -6958,8 +6969,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 GUI.Label(new Rect(num7 + 72f, num8 + 242f, 150f, 22f), "Overall Quality:", "Label");
                                 GUI.Label(new Rect(num7 + 72f, num8 + 272f, 185f, 22f), "Disable Mipmapping:", "Label");
                                 GUI.Label(new Rect(num7 + 72f, num8 + 297f, 185f, 65f), "*Disabling mipmapping will increase custom texture quality at the cost of performance.", "Label");
-
-
+                                
                                 GUI.Label(new Rect(num7 + 72f, num8 + 351, 185f, 65f), "Protocol:", "Label");
                                 string[] ProtocolType = new string[] { "<size=14>UDP</size>", "<size=14>TCP</size>", "<size=14>Web</size>" };
                                 FengGameManagerMKII.settings[267] = GUI.SelectionGrid(new Rect(num7 + 140, num8 + 350, 160f, 25f), (int)FengGameManagerMKII.settings[267], ProtocolType, 3);
@@ -8278,6 +8288,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (GUI.Button(new Rect(num7 + 408f, num8 + 465f, 42f, 25f), "Save"))
                     {
+                        PlayerPrefs.SetInt("PhysicsType", (int)settings[295]);
+                        PlayerPrefs.SetInt("Interpolation", (int)settings[294]);
                         PlayerPrefs.SetInt("human", (int)settings[0]);
                         PlayerPrefs.SetInt("titan", (int)settings[1]);
                         PlayerPrefs.SetInt("level", (int)settings[2]);
@@ -9005,6 +9017,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void OnLevelWasLoaded(int level)
     {
+        if (((int)FengGameManagerMKII.settings[295]) == 0) Time.fixedDeltaTime = 1f / 50; //test
+        else if (((int)FengGameManagerMKII.settings[295]) == 1) Time.fixedDeltaTime = 1f / 60;
+        else if (((int)FengGameManagerMKII.settings[295]) == 2) Time.fixedDeltaTime = 1f / 75;
+
         if ((level != 0) && ((Application.loadedLevelName != "characterCreation") && (Application.loadedLevelName != "SnapShot")))
         {
             ChangeQuality.setCurrentQuality();
@@ -13025,17 +13041,17 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     }
 
 
-    [RPC]
+   // [RPC]
     public void titanGetKill(PhotonPlayer player, int Damage, string name)
     {
-        return;
-        //Damage = Mathf.Max(10, Damage);
-        //object[] parameters = new object[] { Damage };
-        //PView.RPC("netShowDamage", player, parameters);
-        //object[] objArray2 = new object[] { name, false };
-        //PView.RPC("oneTitanDown", PhotonTargets.MasterClient, objArray2);
-        //this.sendKillInfo(false, (string)player.customProperties[PhotonPlayerProperty.name], true, name, Damage);
-        //this.playerKillInfoUpdate(player, Damage);
+        //return;
+        Damage = Mathf.Max(10, Damage);
+        object[] parameters = new object[] { Damage };
+        PView.RPC("netShowDamage", player, parameters);
+        object[] objArray2 = new object[] { name, false };
+        PView.RPC("oneTitanDown", PhotonTargets.MasterClient, objArray2);
+        this.sendKillInfo(false, (string)player.customProperties[PhotonPlayerProperty.name], true, name, Damage);
+        this.playerKillInfoUpdate(player, Damage);
     }
 
     public void titanGetKillbyServer(int Damage, string name)

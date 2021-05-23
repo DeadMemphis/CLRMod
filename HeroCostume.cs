@@ -70,7 +70,7 @@ public class HeroCostume
         num += this.stat.GAS;
         num += this.stat.BLA;
         num += this.stat.ACL;
-        if (num > 400)
+        if (num > 460)
         {
             this.stat.SPD = this.stat.GAS = this.stat.BLA = this.stat.ACL = 100;
         }

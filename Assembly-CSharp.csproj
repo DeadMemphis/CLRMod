@@ -107,6 +107,7 @@
     <Compile Include="SmoothSyncMovement.cs" />
     <Compile Include="RCSettings.cs" />
     <Compile Include="UpdateModule.cs" />
+    <Compile Include="Utility\RateLimit.cs" />
     <Compile Include="ViewSynchronization.cs" />
     <Compile Include="OnSerializeTransform.cs" />
     <Compile Include="OnSerializeRigidBody.cs" />
