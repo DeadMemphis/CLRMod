@@ -1236,550 +1236,1079 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         return 0;
     }
 
-    private void core()
+
+    #region Old Core
+    //private void core()
+    //{
+    //    if (((int)settings[0x40]) >= 100)
+    //    {
+    //        this.coreeditor();
+    //        return;
+    //    }
+    //    if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && this.needChooseSide)
+    //    {
+    //        if (Input.GetKeyDown(KeyCode.Alpha1))
+    //        {
+    //            if (NGUITools.GetActive(this.uirefer.panels[3]))
+    //            {
+    //                Screen.lockCursor = true;
+    //                Screen.showCursor = true;
+    //                NGUITools.SetActive(this.uirefer.panels[0], true);
+    //                NGUITools.SetActive(this.uirefer.panels[1], false);
+    //                NGUITools.SetActive(this.uirefer.panels[2], false);
+    //                NGUITools.SetActive(this.uirefer.panels[3], false);
+    //                IN_GAME_MAIN_CAMERA.spectate.disable = false;
+    //                IN_GAME_MAIN_CAMERA.mouselook.disable = false;
+    //            }
+    //            else
+    //            {
+    //                Screen.lockCursor = false;
+    //                Screen.showCursor = true;
+    //                NGUITools.SetActive(this.uirefer.panels[0], false);
+    //                NGUITools.SetActive(this.uirefer.panels[1], false);
+    //                NGUITools.SetActive(this.uirefer.panels[2], false);
+    //                NGUITools.SetActive(this.uirefer.panels[3], true);
+    //                IN_GAME_MAIN_CAMERA.spectate.disable = true;
+    //                IN_GAME_MAIN_CAMERA.mouselook.disable = true;
+    //            }
+    //        }
+    //        if (FengCustomInputs.Inputs.isInputDown[15] && !NGUITools.GetActive(this.uirefer.panels[3]))
+    //        {
+    //            //NGUITools.SetActive(this.uirefer.panels[0], false);
+    //            //NGUITools.SetActive(this.uirefer.panels[1], true);
+    //            //NGUITools.SetActive(this.uirefer.panels[2], false);
+    //            //NGUITools.SetActive(this.uirefer.panels[3], false);
+    //            Screen.showCursor = true;
+    //            Screen.lockCursor = false;
+    //            IN_GAME_MAIN_CAMERA.spectate.disable = true;
+    //            IN_GAME_MAIN_CAMERA.mouselook.disable = true;
+    //            //FengCustomInputs.Inputs.showKeyMap();
+    //            //FengCustomInputs.Inputs.justUPDATEME();
+    //            FengCustomInputs.Inputs.menuOn = true;
+    //        }
+    //    }
+    //    if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER))
+    //    {
+    //        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
+    //        {
+    //            this.coreadd();
+    //            //this.ShowHUDInfoTopLeft(this.playerList);
+    //            string content = string.Empty;               
+    //            if ((IN_GAME_MAIN_CAMERA.mainG != null && (IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING)) && (IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !this.needChooseSide))
+    //            {
+    //                this.ShowHUDInfoCenter(string.Concat(new string[]
+    //            {
+    //                "Press [F7D358]",
+    //                FengCustomInputs.Inputs.inputString[InputCode.flare1],
+    //                "[-] to spectate the next player. \nPress [F7D358]",
+    //                FengCustomInputs.Inputs.inputString[InputCode.flare2],
+    //                "[-] to spectate the previous player.\nPress [F7D358]",
+    //                FengCustomInputs.Inputs.inputString[InputCode.attack1],
+    //                "[-] to enter the spectator mode.\n\n\n\n"
+    //            }));
+    //                if (LevelInfo.getInfo(level).respawnMode == RespawnMode.DEATHMATCH || (GameSettings.endlessMode > 0) || (((GameSettings.bombMode == 1) || (GameSettings.pvpMode > 0)) && (GameSettings.pointMode > 0)))
+    //                {
+    //                    this.myRespawnTime += Time.deltaTime;
+    //                    int endlessMode = 5;
+    //                    if (PhotonNetwork.player.isTitan)
+    //                    {
+    //                        endlessMode = 10;
+    //                    }
+    //                    if (GameSettings.endlessMode > 0)
+    //                    {
+    //                        endlessMode = GameSettings.endlessMode;
+    //                    }
+    //                    this.ShowHUDInfoCenterADD("Respawn in " + (endlessMode - (int)this.myRespawnTime) + "s.");
+    //                    if (this.myRespawnTime > endlessMode)
+    //                    {
+    //                        this.myRespawnTime = 0f;
+    //                        IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+    //                        if (PhotonNetwork.player.isTitan)
+    //                        {
+    //                            this.SpawnNonAITitan2(this.myLastHero, "titanRespawn");
+    //                        }
+    //                        else
+    //                        {
+    //                            base.StartCoroutine(this.WaitAndRespawn1(0.1f, this.myLastRespawnTag));
+    //                        }
+    //                        IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+    //                        this.ShowHUDInfoCenter(string.Empty);
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        else if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+    //        {
+    //            if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+    //            {
+    //                if (!this.isLosing && IN_GAME_MAIN_CAMERA.main_objectR != null)
+    //                {
+    //                    this.currentSpeed = IN_GAME_MAIN_CAMERA.main_objectR.velocity.magnitude;
+    //                    this.maxSpeed = Mathf.Max(this.maxSpeed, this.currentSpeed);
+    //                    this.ShowHUDInfoTopLeft(string.Concat(new object[] { 
+    //                        "Current Speed : ", 
+    //                        (int)this.currentSpeed, 
+    //                        "\nMax Speed:", 
+    //                        this.maxSpeed }));
+    //                }
+    //            }
+    //            else
+    //            {
+    //                this.ShowHUDInfoTopLeft(string.Concat(new object[] { 
+    //                    "Kills:", 
+    //                    this.single_kills, 
+    //                    "\nMax Damage:", 
+    //                    this.single_maxDamage, 
+    //                    "\nTotal Damage:", 
+    //                    this.single_totalDamage }));
+    //            }
+    //        }
+    //        if (this.isLosing && IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING)
+    //        {
+    //            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+    //            {
+    //                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+    //                {
+    //                    this.ShowHUDInfoCenter(string.Concat(new object[] { 
+    //                        "Survive ", 
+    //                        this.wave, 
+    //                        " Waves!\n Press ", 
+    //                        FengCustomInputs.Inputs.inputString[InputCode.restart], 
+    //                        " to Restart.\n\n\n" }));
+    //                }
+    //                else
+    //                {
+    //                    this.ShowHUDInfoCenter("Humanity Fail!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+    //                {
+    //                    this.ShowHUDInfoCenter(string.Concat(new object[] { "Survive ", this.wave, " Waves!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
+    //                }
+    //                else
+    //                {
+    //                    this.ShowHUDInfoCenter("Humanity Fail!\nAgain!\nGame Restart in " + ((int)this.gameEndCD) + "s\n\n");
+    //                }
+    //                if (this.gameEndCD <= 0f)
+    //                {
+    //                    this.gameEndCD = 0f;
+    //                    if (PhotonNetwork.isMasterClient)
+    //                    {
+    //                        this.restartRC();
+    //                    }
+    //                    this.ShowHUDInfoCenter(string.Empty);
+    //                }
+    //                else
+    //                {
+    //                    this.gameEndCD -= Time.deltaTime;
+    //                }
+    //            }
+    //        }
+    //        if (this.isWinning)
+    //        {
+    //            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+    //            {
+    //                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+    //                {
+    //                    this.ShowHUDInfoCenter((((((int)(this.timeTotalServer * 10f)) * 0.1f) - 5f)).ToString() + "s !\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+    //                }
+    //                else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+    //                {
+    //                    this.ShowHUDInfoCenter("Survive All Waves!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+    //                }
+    //                else
+    //                {
+    //                    this.ShowHUDInfoCenter("Humanity Win!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+    //                {
+    //                    this.ShowHUDInfoCenter(string.Concat(new object[] { this.localRacingResult, "\n\nGame Restart in ", (int)this.gameEndCD, "s" }));
+    //                }
+    //                else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+    //                {
+    //                    this.ShowHUDInfoCenter("Survive All Waves!\nGame Restart in " + ((int)this.gameEndCD) + "s\n\n");
+    //                }
+    //                else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
+    //                {
+    //                    if ((GameSettings.pvpMode == 0) && (GameSettings.bombMode == 0))
+    //                        this.ShowHUDInfoCenter(string.Concat(new object[] { "Team ", this.teamWinner, " Win!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
+    //                    else this.ShowHUDInfoCenter(string.Concat(new object[] { "Round Ended!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
+    //                }
+    //                else
+    //                {
+    //                    this.ShowHUDInfoCenter("Humanity Win!\nGame Restart in " + ((int)this.gameEndCD) + "s\n\n");
+    //                }
+    //                if (this.gameEndCD <= 0f)
+    //                {
+    //                    this.gameEndCD = 0f;
+    //                    if (PhotonNetwork.isMasterClient)
+    //                    {
+    //                        this.restartGame2(false);
+    //                    }
+    //                    this.ShowHUDInfoCenter(string.Empty);
+    //                }
+    //                else
+    //                {
+    //                    this.gameEndCD -= Time.deltaTime;
+    //                }
+    //            }
+    //        }
+    //        this.timeElapse += Time.deltaTime;
+    //        this.roundTime += Time.deltaTime;
+    //        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+    //        {
+    //            if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+    //            {
+    //                if (!this.isWinning)
+    //                {
+    //                    this.timeTotalServer += Time.deltaTime;
+    //                }
+    //            }
+    //            else if (!this.isLosing && !this.isWinning)
+    //            {
+    //                this.timeTotalServer += Time.deltaTime;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            this.timeTotalServer += Time.deltaTime;
+    //        }
+    //        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+    //        {
+    //            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+    //            {
+    //                if (!this.isWinning)
+    //                {
+    //                    this.ShowHUDInfoTopCenter("Time : " + ((((int)(this.timeTotalServer * 10f)) * 0.1f) - 5f));
+    //                }
+    //                if (this.timeTotalServer < 5f)
+    //                {
+    //                    this.ShowHUDInfoCenter("RACE START IN " + ((int)(5f - this.timeTotalServer)));
+    //                }
+    //                else if (!this.startRacing)
+    //                {
+    //                    this.ShowHUDInfoCenter(string.Empty);
+    //                    this.startRacing = true;
+    //                    this.endRacing = false;
+    //                    CLEARSKIES.CacheGameObject.Find("door").SetActive(false);
+    //                }
+    //            }
+    //            else
+    //            {
+    //                this.ShowHUDInfoTopCenter("Time : " + ((this.roundTime >= 20f) ? (((((int)(this.roundTime * 10f)) * 0.1f) - 20f)).ToString() : "WAITING"));
+    //                if (this.roundTime < 20f)
+    //                {
+    //                    this.ShowHUDInfoCenter("RACE START IN " + ((int)(20f - this.roundTime)) + (!(this.localRacingResult == string.Empty) ? ("\nLast Round\n" + this.localRacingResult) : "\n\n"));
+    //                }
+    //                else if (!this.startRacing)
+    //                {
+    //                    this.ShowHUDInfoCenter(string.Empty);
+    //                    this.startRacing = true;
+    //                    this.endRacing = false;
+    //                    GameObject doors = CacheGameObject.Find("door");
+    //                    if (doors != null) doors.SetActive(false);
+    //                    if (this.racingDoors != null && FengGameManagerMKII.customLevelLoaded)
+    //                    {
+    //                        foreach (GameObject go in this.racingDoors)
+    //                            go.SetActive(false);
+    //                     //   this.racingDoors = null;
+    //                    }
+                            
+                       
+    //                }
+    //                else if (this.racingDoors != null && FengGameManagerMKII.customLevelLoaded)
+    //                {
+    //                    foreach (GameObject go in this.racingDoors)
+    //                        go.SetActive(false);
+    //                    //this.racingDoors = null;
+    //                }
+    //            }
+    //            if (IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !this.needChooseSide)
+    //            {
+    //                this.myRespawnTime += Time.deltaTime;
+    //                if (this.myRespawnTime > 1.5f)
+    //                {
+    //                    this.myRespawnTime = 0f;
+    //                    IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+    //                    if (this.checkpoint != null)
+    //                    {
+    //                        base.StartCoroutine(this.WaitAndRespawn2(0.1f, this.checkpoint));
+    //                    }
+    //                    else
+    //                    {
+    //                        base.StartCoroutine(this.WaitAndRespawn1(0.1f, this.myLastRespawnTag));
+    //                    }
+    //                    IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+    //                    this.ShowHUDInfoCenter(string.Empty);
+    //                }
+    //            }
+    //        }
+    //        if (this.timeElapse > 1f)
+    //        {
+    //            this.timeElapse -= 1f;
+    //            string text = string.Empty;
+    //            GAMEMODE gamemode2 = IN_GAME_MAIN_CAMERA.gamemode;
+    //            string text2;
+    //            switch (gamemode2)
+    //            {
+    //                case GAMEMODE.KILL_TITAN:
+    //                    text = "Titan Left: " + FengGameManagerMKII.alltitans.Count + "  Time : ";
+    //                    if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+    //                    {
+    //                        text += (int)this.timeTotalServer;
+    //                    }
+    //                    else
+    //                    {
+    //                        text += this.time - (int)this.timeTotalServer;
+    //                    }
+    //                    break;
+    //                case GAMEMODE.PVP_AHSS:
+    //                case GAMEMODE.CAGE_FIGHT:
+    //                    break;
+    //                case GAMEMODE.ENDLESS_TITAN:
+    //                    text = "Time : " + (this.time - (int)this.timeTotalServer);
+    //                    break;
+    //                case GAMEMODE.SURVIVE_MODE:
+    //                    text = string.Concat(new object[]
+    //                    {
+    //                "Titan Left: ",
+    //                FengGameManagerMKII.titans.Count.ToString(),
+    //                " Wave : ",
+    //                this.wave
+    //                    });
+    //                    break;
+    //                case GAMEMODE.BOSS_FIGHT_CT:
+    //                    text = "Time : " + (this.time - (int)this.timeTotalServer) + "\nDefeat the Colossal Titan.\nPrevent abnormal titan from running to the north gate";
+    //                    break;
+    //                default:
+    //                    if (gamemode2 == GAMEMODE.PVP_CAPTURE)
+    //                    {
+    //                        text2 = "| ";
+    //                        for (int i = 0; i < PVPcheckPoint.chkPts.Count; i++)
+    //                        {
+    //                            text2 = text2 + (PVPcheckPoint.chkPts[i] as PVPcheckPoint).getStateString() + " ";
+    //                        }
+    //                        text2 += "|";
+    //                        text = string.Concat(new object[] { this.PVPtitanScoreMax - this.PVPtitanScore, "  ", text2, "  ", this.PVPhumanScoreMax - this.PVPhumanScore, "\n" }) + "Time : " + (this.time - ((int)this.timeTotalServer)).ToString();
+    //                    }
+    //                    break;
+    //            }
+    //            this.ShowHUDInfoTopCenter(text);
+    //            text = string.Empty;
+    //            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+    //            {
+    //                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+    //                {
+    //                    text = "Time : " + (int)this.timeTotalServer;
+    //                }
+    //                this.ShowHUDInfoTopRight(text);
+    //            }
+    //            text2 = ((IN_GAME_MAIN_CAMERA.difficulty >= 0) ? ((IN_GAME_MAIN_CAMERA.difficulty != 0) ? ((IN_GAME_MAIN_CAMERA.difficulty != 1) ? "Abnormal" : "Hard") : "Normal") : "Trainning");
+    //            if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.CAGE_FIGHT)
+    //            {
+    //                this.ShowHUDInfoTopRightMAPNAME(string.Concat(new object[]
+    //                {
+    //                (int)this.roundTime,
+    //                "s\n",
+    //                FengGameManagerMKII.level,
+    //                " : ",
+    //                text2
+    //                }));
+    //            }
+    //            else
+    //            {
+    //                this.ShowHUDInfoTopRightMAPNAME("\n" + FengGameManagerMKII.level + " : " + text2);
+    //            }
+    //            this.ShowHUDInfoTopRightMAPNAME("\nCamera(" + FengCustomInputs.Inputs.inputString[InputCode.camera] + "):" + IN_GAME_MAIN_CAMERA.cameraMode.ToString());
+    //            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER && this.needChooseSide)
+    //            {
+    //                this.ShowHUDInfoTopCenterADD("\n\nPRESS 1 TO ENTER GAME");
+    //            }
+    //        }
+    //        if (((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && 
+    //            (this.killInfoGO.Count > 0)) && (this.killInfoGO[0] == null))
+    //        {
+    //            this.killInfoGO.RemoveAt(0);
+    //        }
+    //        if (((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && PhotonNetwork.isMasterClient) && (this.timeTotalServer > this.time))
+    //        {
+    //            IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
+    //            Screen.lockCursor = (gameStart = !(Screen.showCursor = true));
+    //            string text3 = string.Empty;
+    //            string text4 = string.Empty;
+    //            string text5 = string.Empty;
+    //            string text6 = string.Empty;
+    //            string text7 = string.Empty;
+    //            string text8 = string.Empty;
+    //            foreach (PhotonPlayer photonPlayer in PhotonNetwork.playerList)
+    //            {
+    //                ExitGames.Client.Photon.Hashtable customProperties;
+    //                if (photonPlayer != null && (customProperties = photonPlayer.customProperties) != null)
+    //                {
+    //                    text3 = text3 + customProperties["name"] + "\n";
+    //                    text4 = text4 + customProperties["kills"] + "\n";
+    //                    text5 = text5 + customProperties["deaths"] + "\n";
+    //                    text6 = text6 + customProperties["max_dmg"] + "\n";
+    //                    text7 = text7 + customProperties["total_dmg"] + "\n";
+    //                }
+    //            }
+    //            if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
+    //            {
+    //                text8 = string.Empty;
+    //                for (int k = 0; k < this.teamScores.Length; k++)
+    //                {
+    //                    text8 += ((k == 0) ? string.Concat(new object[]
+    //                    {
+    //                    "Team",
+    //                    (k + 1).ToString(),
+    //                    " ",
+    //                    this.teamScores[k],
+    //                    " "
+    //                    }) : " : ");
+    //                }
+    //            }
+    //            else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+    //            {
+    //                text8 = "Highest Wave : " + this.highestwave;
+    //            }
+    //            else
+    //            {
+    //                text8 = string.Concat(new object[]
+    //                {
+    //                "Humanity ",
+    //                this.humanScore,
+    //                " : Titan ",
+    //                this.titanScore
+    //                });
+    //            }
+    //            FengGameManagerMKII.PView.RPC("showResult", PhotonTargets.AllBuffered, new object[]
+    //            {
+    //            text3,
+    //            text4,
+    //            text5,
+    //            text6,
+    //            text7,
+    //            text8
+    //            });
+    //        }
+    //    }
+    //    this.core2();
+    //}
+    
+    //private void core2()
+    //{
+    //    if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
+    //    {
+    //        this.deltaTime += (Time.deltaTime - this.deltaTime) * 0.1f;
+    //        if (this.LabelInfoTopRight == null)
+    //        {
+    //            this.LabelInfoTopRight = CacheGameObject.Find<UILabel>("LabelInfoTopRight");
+    //        }
+    //        else
+    //        {
+    //            this.LabelInfoTopRight.text = string.Empty;
+    //            if (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)
+    //            {
+    //                this.LabelInfoTopRight.text = RIGHTTOPINFO();
+    //            }
+    //        }
+    //    }
+    //}
+
+    //private string RIGHTTOPINFO()
+    //{
+    //    string str6 = (IN_GAME_MAIN_CAMERA.difficulty >= 0)
+    //                  ? ((IN_GAME_MAIN_CAMERA.difficulty != 0)
+    //                      ? ((IN_GAME_MAIN_CAMERA.difficulty != 1) ? "Abnormal" : "Hard")
+    //                      : "Normal")
+    //                  : "Trainning";
+    //    string text6 = string.Empty;
+    //    string text7 = string.Empty;
+    //    int num = GameSettings.waveModeNum;
+    //    string content;
+    //    if (GameSettings.waveModeOn > 0)
+    //    {
+    //        object obj = text6;
+    //        text6 = string.Concat(new object[]
+    //        {
+    //                        obj,
+    //                        "\n",
+    //                        num,
+    //                        " WAVES"
+    //        });
+    //    }
+    //    int numpoint = GameSettings.pointMode;
+    //    if (GameSettings.pointMode > 0)
+    //    {
+    //        object obj4 = text6;
+    //        text6 = string.Concat(new object[]
+    //        {
+    //                        obj4,
+    //                        "\nPOINT MODE ",
+    //                        numpoint,
+    //                        "[-]"
+    //        });
+    //    }
+
+    //    char[] separator = new char[] { "`"[0] };
+    //    string text4 ="\n"+ PhotonNetwork.room.name.Split(separator)[0];
+    //    if (text4.Length > 20) text4 = text4.Remove(0x13) + "..."; 
+        
+    //    string text5 = string.Concat(new string[]
+    //    {
+    //                    "[ffc700](",
+    //                    PhotonNetwork.room.playerCount.ToString(),
+    //                    "/",
+    //                    PhotonNetwork.room.maxPlayers.ToString(),
+    //                    ")[-][-][7b001c]",
+    //    });
+       
+
+    //    string text3 = "Camera(" + FengCustomInputs.Inputs.inputString[InputCode.camera] + "):" + IN_GAME_MAIN_CAMERA.cameraMode.ToString();
+      
+
+    //    return content = string.Concat(new string[]
+    //    {
+    //                    text3,
+    //                    text4,
+    //                    text5,
+    //                    text7,
+    //                    text6,
+    //    });
+
+    //}
+#endregion
+
+
+        #region Core
+    private GameObject Door;
+
+    public void UpdateGameHuds(GAMEMODE mode)
     {
-        if (((int)settings[0x40]) >= 100)
+        string labelTextTopCenter = string.Empty;
+        string labelTextTopRight = string.Empty;
+        string labelTextMapName = string.Empty;
+        string labelTextCenter = string.Empty;
+        if (timeElapse > 1f)
         {
-            this.coreeditor();
-            return;
-        }
-        if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && this.needChooseSide)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                if (NGUITools.GetActive(this.uirefer.panels[3]))
+            timeElapse -= 1f;
+          
+                switch (mode)
                 {
-                    Screen.lockCursor = true;
-                    Screen.showCursor = true;
-                    NGUITools.SetActive(this.uirefer.panels[0], true);
-                    NGUITools.SetActive(this.uirefer.panels[1], false);
-                    NGUITools.SetActive(this.uirefer.panels[2], false);
-                    NGUITools.SetActive(this.uirefer.panels[3], false);
-                    IN_GAME_MAIN_CAMERA.spectate.disable = false;
-                    IN_GAME_MAIN_CAMERA.mouselook.disable = false;
+                    case GAMEMODE.ENDLESS_TITAN:
+                        {
+                            labelTextTopCenter += "Time : " + (time - (int)timeTotalServer);
+                            object[] args = new object[5]
+                            {
+                            "Humanity ",
+                            humanScore,
+                            " : Titan ",
+                            titanScore,
+                            " "
+                            };
+                            labelTextTopRight = string.Concat(args);
+                            break;
+                        }
+
+                    case GAMEMODE.SURVIVE_MODE:
+                        {
+                            labelTextTopCenter = "Titan Left: ";
+                            labelTextTopCenter += GameObject.FindGameObjectsWithTag("titan").Length.ToString() + " Wave : " + wave;
+                            labelTextTopRight = "Time : ";
+                            labelTextTopRight += (int)timeTotalServer;
+                            break;
+                        }
+
+                    case GAMEMODE.BOSS_FIGHT_CT:
+                        {
+                            labelTextTopCenter = "Time : ";
+                            labelTextTopCenter += (time - (int)timeTotalServer) + "\nDefeat the Colossal Titan.\nPrevent abnormal titan from running to the north gate";
+                            break;
+                        }
+
+                    case GAMEMODE.PVP_CAPTURE:
+                        {
+                            string str = "| ";
+                            for (int i = 0; i < PVPcheckPoint.chkPts.Count; i++)
+                            {
+                                str += (PVPcheckPoint.chkPts[i] as PVPcheckPoint).getStateString() + " ";
+                            }
+                            str += "|";
+                            labelTextTopCenter = string.Concat(PVPtitanScoreMax - PVPtitanScore + "  " + str + "  " + (PVPhumanScoreMax - PVPhumanScore) + "\n", "Time : ", (time - (int)timeTotalServer).ToString());
+                            break;
+                        }
+
+                    //case GAMEMODE.PVP_AHSS:
+                    //    {
+                    //        for (int j = 0; j < teamScores.Length; j++)
+                    //        {
+                    //            object[] args3 = new object[7]
+                    //            {
+                    //            labelTextTopRight,
+                    //            (j == 0) ? string.Empty : " : ",
+                    //            "Team",
+                    //            j + 1,
+                    //            " ",
+                    //            teamScores[j],
+                    //            string.Empty
+                    //            };
+                    //            labelTextTopRight = string.Concat(args3);
+                    //        }
+                    //       // labelTextTopRight += "\nTime : " + (time - (int)timeTotalServer);
+                    //        break;
+                    //    }
+
+                    default:
+                        labelTextTopCenter = "Titan Left: ";
+                        labelTextTopCenter += GameObject.FindGameObjectsWithTag("titan").Length + "  Time : ";
+                        labelTextTopCenter = ((IN_GAME_MAIN_CAMERA.gametype != 0) ? (labelTextTopCenter + (time - (int)timeTotalServer)) : (labelTextTopCenter + (int)timeTotalServer));
+                        break;
                 }
-                else
+                if (GameSettings.teamMode > 0)
                 {
-                    Screen.lockCursor = false;
-                    Screen.showCursor = true;
-                    NGUITools.SetActive(this.uirefer.panels[0], false);
-                    NGUITools.SetActive(this.uirefer.panels[1], false);
-                    NGUITools.SetActive(this.uirefer.panels[2], false);
-                    NGUITools.SetActive(this.uirefer.panels[3], true);
-                    IN_GAME_MAIN_CAMERA.spectate.disable = true;
-                    IN_GAME_MAIN_CAMERA.mouselook.disable = true;
+                    labelTextTopCenter += "\n[00FFFF]Cyan:" + Convert.ToString(cyanKills) + "       [FF00FF]Magenta:" + Convert.ToString(magentaKills) + "[ffffff]";
                 }
-            }
-            if (FengCustomInputs.Inputs.isInputDown[15] && !NGUITools.GetActive(this.uirefer.panels[3]))
+            
+            //else if (GameSettings.TopRightHUD == 0)
+            //{
+            //    labelTextTopCenter = "";
+            //    labelTextTopRight = "";
+            //}
+            ShowHUDInfoTopCenter(labelTextTopCenter);
+            //if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.KILL_TITAN || IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.BOSS_FIGHT_CT || IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_CAPTURE)
+            //{
+            //    object[] args2 = new object[5]
+            //    {
+            //        "Humanity ",
+            //        humanScore,
+            //        " : Titan ",
+            //        titanScore,
+            //        " "
+            //    };
+            //    labelTextTopRight = string.Concat(args2);
+            //}
+            ShowHUDInfoTopRight(labelTextTopRight);
+            
+                labelTextMapName = (IN_GAME_MAIN_CAMERA.difficulty < 0) ? "Training" : ((IN_GAME_MAIN_CAMERA.difficulty == 0) ? "Normal" : ((IN_GAME_MAIN_CAMERA.difficulty != 1) ? "Abnormal" : "Hard"));
+            if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.CAGE_FIGHT)
             {
-                //NGUITools.SetActive(this.uirefer.panels[0], false);
-                //NGUITools.SetActive(this.uirefer.panels[1], true);
-                //NGUITools.SetActive(this.uirefer.panels[2], false);
-                //NGUITools.SetActive(this.uirefer.panels[3], false);
-                Screen.showCursor = true;
-                Screen.lockCursor = false;
-                IN_GAME_MAIN_CAMERA.spectate.disable = true;
-                IN_GAME_MAIN_CAMERA.mouselook.disable = true;
-                //FengCustomInputs.Inputs.showKeyMap();
-                //FengCustomInputs.Inputs.justUPDATEME();
-                FengCustomInputs.Inputs.menuOn = true;
+                ShowHUDInfoTopRightMAPNAME((int)roundTime + "s\n" + level + " : " + labelTextMapName);
             }
-        }
-        if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER))
-        {
+            else
+            {
+                ShowHUDInfoTopRightMAPNAME("\n" + level + " : " + labelTextMapName);
+            }
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
             {
-                this.coreadd();
-                //this.ShowHUDInfoTopLeft(this.playerList);
-                string content = string.Empty;               
-                if ((IN_GAME_MAIN_CAMERA.mainG != null && (IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING)) && (IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !this.needChooseSide))
-                {
-                    this.ShowHUDInfoCenter(string.Concat(new string[]
-                {
-                    "Press [F7D358]",
-                    FengCustomInputs.Inputs.inputString[InputCode.flare1],
-                    "[-] to spectate the next player. \nPress [F7D358]",
-                    FengCustomInputs.Inputs.inputString[InputCode.flare2],
-                    "[-] to spectate the previous player.\nPress [F7D358]",
-                    FengCustomInputs.Inputs.inputString[InputCode.attack1],
-                    "[-] to enter the spectator mode.\n\n\n\n"
-                }));
-                    if (LevelInfo.getInfo(level).respawnMode == RespawnMode.DEATHMATCH || (GameSettings.endlessMode > 0) || (((GameSettings.bombMode == 1) || (GameSettings.pvpMode > 0)) && (GameSettings.pointMode > 0)))
+                    char[] separator = new char[1] {  "`"[0] };
+                    string[] array = PhotonNetwork.room.name.Split(separator);
+                    labelTextMapName = array[0];
+                    if (labelTextMapName.Length > 20)
                     {
-                        this.myRespawnTime += Time.deltaTime;
-                        int endlessMode = 5;
-                        if (PhotonNetwork.player.isTitan)
+                        labelTextMapName = labelTextMapName.Remove(19) + "...";
+                    }
+                    ShowHUDInfoTopRightMAPNAME("\n" + labelTextMapName + "[F7D358](" + Convert.ToString(PhotonNetwork.room.playerCount) + "/" + Convert.ToString(PhotonNetwork.room.maxPlayers) + ")");
+                
+
+                if (needChooseSide)
+                {
+                    ShowHUDInfoTopCenterADD("\n\nPRESS 1 TO ENTER GAME");
+                }
+                //ShowHUDInfoTopRightMAPNAME("\n[f0f0f0]Camera(" + FengCustomInputs.Inputs.inputString[InputCode.camera] + "):" + IN_GAME_MAIN_CAMERA.cameraMode.ToString());
+            }
+        }
+    }
+
+
+
+    public void ShowGameResult()
+    {
+        IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
+        gameStart = false;
+        Screen.lockCursor = false;
+        Screen.showCursor = true;
+        string name = string.Empty;
+        string kills = string.Empty;
+        string deaths = string.Empty;
+        string max_dmg = string.Empty;
+        string total_dmg = string.Empty;
+        string text;
+        foreach (PhotonPlayer photonPlayer in PhotonNetwork.playerList)
+        {
+            ExitGames.Client.Photon.Hashtable customProperties;
+            if (photonPlayer != null && (customProperties = photonPlayer.customProperties) != null)
+            {
+                name = name + customProperties["name"] + "\n";
+                kills = kills + customProperties["kills"] + "\n";
+                deaths = deaths + customProperties["deaths"] + "\n";
+                max_dmg = max_dmg + customProperties["max_dmg"] + "\n";
+                total_dmg = total_dmg + customProperties["total_dmg"] + "\n";
+            }
+        }
+
+        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
+        {
+            text = string.Empty;
+            for (int l = 0; l < teamScores.Length; l++)
+            {
+                text += ((l == 0) ? ("Team" + (l + 1) + " " + teamScores[l] + " ") : " : ");
+            }
+        }
+        else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+        {
+            text = "Highest Wave : " + highestwave;
+        }
+        else
+        {
+            object[] args4 = new object[4]
+            {
+                "Humanity ",
+                humanScore,
+                " : Titan ",
+                titanScore
+            };
+            text = string.Concat(args4);
+        }
+        object[] parameters = new object[6]
+        {
+            name,
+            kills,
+            deaths,
+            max_dmg,
+            total_dmg,
+            text
+        };
+        base.photonView.RPC("showResult", PhotonTargets.AllBuffered, parameters);
+    }
+
+
+    public void Core(GAMETYPE game_type)
+    {
+        if ((int)settings[64] >= 100)
+        {
+            coreeditor();
+            return;
+        }
+        timeElapse += Time.deltaTime;
+        roundTime += Time.deltaTime;
+        
+            UpdateGameHuds(IN_GAME_MAIN_CAMERA.gamemode);
+
+        switch (game_type)
+        {
+            case GAMETYPE.SINGLE:
+                {
+                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+                    {
+                        if (!isLosing)
                         {
-                            endlessMode = 10;
+                            currentSpeed = IN_GAME_MAIN_CAMERA.main_objectR.velocity.magnitude;
+                            maxSpeed = Mathf.Max(maxSpeed, currentSpeed);
+                            ShowHUDInfoTopLeft("Current Speed : " + (int)currentSpeed + "\nMax Speed:" + maxSpeed);
                         }
-                        if (GameSettings.endlessMode > 0)
+                    }
+                    else
+                    {
+                        ShowHUDInfoTopLeft("Kills:" + single_kills + "\nMax Damage:" + single_maxDamage + "\nTotal Damage:" + single_totalDamage);
+                    }
+                    if (isLosing && IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING)
+                    {
+                        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
                         {
-                            endlessMode = GameSettings.endlessMode;
+                            ShowHUDInfoCenter("Survive " + wave + " Waves!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
                         }
-                        this.ShowHUDInfoCenterADD("Respawn in " + (endlessMode - (int)this.myRespawnTime) + "s.");
-                        if (this.myRespawnTime > endlessMode)
+                        else
                         {
-                            this.myRespawnTime = 0f;
-                            IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
-                            if (PhotonNetwork.player.isTitan)
+                            ShowHUDInfoCenter("Humanity Fail!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+                        }
+                    }
+                    if (isWinning)
+                    {
+                        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+                        {
+                            ShowHUDInfoCenter((float)(int)(timeTotalServer * 10f) * 0.1f - 5f + "s !\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+                        }
+                        else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+                        {
+                            ShowHUDInfoCenter("Survive All Waves!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+                        }
+                        else
+                        {
+                            ShowHUDInfoCenter("Humanity Win!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
+                        }
+                    }
+                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+                    {
+                        if (!isWinning)
+                        {
+                            timeTotalServer += Time.deltaTime;
+                            ShowHUDInfoTopCenter("Time : " + ((float)(int)(timeTotalServer * 10f) * 0.1f - 5f));
+                        }
+                        if (timeTotalServer < 5f)
+                        {
+                            ShowHUDInfoCenter("RACE START IN " + (int)(5f - timeTotalServer));
+                        }
+                        else if (!startRacing)
+                        {
+                            ShowHUDInfoCenter(string.Empty);
+                            startRacing = true;
+                            endRacing = false;
+                            Door = CacheGameObject.Find("door");
+                            Door.SetActive(false);
+                        }
+                        if (Camera.main.GetComponent<IN_GAME_MAIN_CAMERA>().gameOver && !needChooseSide && customLevelLoaded)
+                        {
+                            myRespawnTime += Time.deltaTime;
+                            if (myRespawnTime > 1.5f)
                             {
-                                this.SpawnNonAITitan2(this.myLastHero, "titanRespawn");
+                                myRespawnTime = 0f;
+                                IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+                                if (checkpoint != null)
+                                {
+                                    StartCoroutine(WaitAndRespawn2(0.1f, checkpoint));
+                                }
+                                else
+                                {
+                                    StartCoroutine(WaitAndRespawn1(0.1f, myLastRespawnTag));
+                                }
+                                IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+                                ShowHUDInfoCenter(string.Empty);
+                            }
+                        }
+                    }
+                    else if (!isLosing && !isWinning)
+                    {
+                        timeTotalServer += Time.deltaTime;
+                    }
+
+                    break;
+                }
+            case GAMETYPE.MULTIPLAYER:
+                {
+                    timeTotalServer += Time.deltaTime;
+                    if (needChooseSide)
+                    {
+                        if (FengCustomInputs.Inputs.isInputDown[InputCode.flare1])
+                        {
+                            if (NGUITools.GetActive(this.uirefer.panels[3]))
+                            {
+                                Screen.lockCursor = true;
+                                Screen.showCursor = true;
+                                NGUITools.SetActive(this.uirefer.panels[0], state: true);
+                                NGUITools.SetActive(this.uirefer.panels[1], state: false);
+                                NGUITools.SetActive(this.uirefer.panels[2], state: false);
+                                NGUITools.SetActive(this.uirefer.panels[3], state: false);
+                                Camera.main.GetComponent<SpectatorMovement>().disable = false;
+                                Camera.main.GetComponent<MouseLook>().disable = false;
                             }
                             else
                             {
-                                base.StartCoroutine(this.WaitAndRespawn1(0.1f, this.myLastRespawnTag));
+                                Screen.lockCursor = false;
+                                Screen.showCursor = true;
+                                NGUITools.SetActive(this.uirefer.panels[0], state: false);
+                                NGUITools.SetActive(this.uirefer.panels[1], state: false);
+                                NGUITools.SetActive(this.uirefer.panels[2], state: false);
+                                NGUITools.SetActive(this.uirefer.panels[3], state: true);
+                                Camera.main.GetComponent<SpectatorMovement>().disable = true;
+                                Camera.main.GetComponent<MouseLook>().disable = true;
                             }
-                            IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
-                            this.ShowHUDInfoCenter(string.Empty);
+                        }
+                        if (FengCustomInputs.Inputs.isInputDown[15] && !FengCustomInputs.Inputs.menuOn)
+                        {
+                            Screen.showCursor = true;
+                            Screen.lockCursor = false;
+                            Camera.main.GetComponent<SpectatorMovement>().disable = true;
+                            Camera.main.GetComponent<MouseLook>().disable = true;
+                            FengCustomInputs.Inputs.menuOn = true;
                         }
                     }
-                }
-            }
-            else if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-            {
-                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
-                {
-                    if (!this.isLosing && IN_GAME_MAIN_CAMERA.main_objectR != null)
+                    coreadd();
+                    ShowHUDInfoTopLeft(playerList);
+                    if (Camera.main != null && IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING &&IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !needChooseSide && (int)settings[245] == 0)
                     {
-                        this.currentSpeed = IN_GAME_MAIN_CAMERA.main_objectR.velocity.magnitude;
-                        this.maxSpeed = Mathf.Max(this.maxSpeed, this.currentSpeed);
-                        this.ShowHUDInfoTopLeft(string.Concat(new object[] { 
-                            "Current Speed : ", 
-                            (int)this.currentSpeed, 
-                            "\nMax Speed:", 
-                            this.maxSpeed }));
-                    }
-                }
-                else
-                {
-                    this.ShowHUDInfoTopLeft(string.Concat(new object[] { 
-                        "Kills:", 
-                        this.single_kills, 
-                        "\nMax Damage:", 
-                        this.single_maxDamage, 
-                        "\nTotal Damage:", 
-                        this.single_totalDamage }));
-                }
-            }
-            if (this.isLosing && IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING)
-            {
-                if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-                {
-                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-                    {
-                        this.ShowHUDInfoCenter(string.Concat(new object[] { 
-                            "Survive ", 
-                            this.wave, 
-                            " Waves!\n Press ", 
-                            FengCustomInputs.Inputs.inputString[InputCode.restart], 
-                            " to Restart.\n\n\n" }));
-                    }
-                    else
-                    {
-                        this.ShowHUDInfoCenter("Humanity Fail!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
-                    }
-                }
-                else
-                {
-                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-                    {
-                        this.ShowHUDInfoCenter(string.Concat(new object[] { "Survive ", this.wave, " Waves!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
-                    }
-                    else
-                    {
-                        this.ShowHUDInfoCenter("Humanity Fail!\nAgain!\nGame Restart in " + ((int)this.gameEndCD) + "s\n\n");
-                    }
-                    if (this.gameEndCD <= 0f)
-                    {
-                        this.gameEndCD = 0f;
-                        if (PhotonNetwork.isMasterClient)
+                        //ShowHUDInfoCenter("Press [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.flare1] + "[-] to spectate the next player. \nPress [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.flare2] + "[-] to spectate the previous player.\nPress [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.attack1] + "[-] to enter the spectator mode.\n\n\n\n");
+                        ShowHUDInfoCenter("");
+
+                        if (GameObject.FindGameObjectsWithTag("Player").Length != 0 && IN_GAME_MAIN_CAMERA.main_objectR != null)
                         {
-                            this.restartRC();
+                            this.currentSpeed = IN_GAME_MAIN_CAMERA.main_objectR.velocity.magnitude.RoundTo(0); //speedometer for peeps
+                            string str = (((int)FengGameManagerMKII.settings[189]) == 1) ? this.currentSpeed + " u/s \n" : (this.currentSpeed / 100f) + "K \n";
+                            this.ShowHUDInfoCenter(str);
                         }
-                        this.ShowHUDInfoCenter(string.Empty);
-                    }
-                    else
-                    {
-                        this.gameEndCD -= Time.deltaTime;
-                    }
-                }
-            }
-            if (this.isWinning)
-            {
-                if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-                {
-                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
-                    {
-                        this.ShowHUDInfoCenter((((((int)(this.timeTotalServer * 10f)) * 0.1f) - 5f)).ToString() + "s !\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
-                    }
-                    else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-                    {
-                        this.ShowHUDInfoCenter("Survive All Waves!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
-                    }
-                    else
-                    {
-                        this.ShowHUDInfoCenter("Humanity Win!\n Press " + FengCustomInputs.Inputs.inputString[InputCode.restart] + " to Restart.\n\n\n");
-                    }
-                }
-                else
-                {
-                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
-                    {
-                        this.ShowHUDInfoCenter(string.Concat(new object[] { this.localRacingResult, "\n\nGame Restart in ", (int)this.gameEndCD, "s" }));
-                    }
-                    else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-                    {
-                        this.ShowHUDInfoCenter("Survive All Waves!\nGame Restart in " + ((int)this.gameEndCD) + "s\n\n");
-                    }
-                    else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
-                    {
-                        if ((GameSettings.pvpMode == 0) && (GameSettings.bombMode == 0))
-                            this.ShowHUDInfoCenter(string.Concat(new object[] { "Team ", this.teamWinner, " Win!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
-                        else this.ShowHUDInfoCenter(string.Concat(new object[] { "Round Ended!\nGame Restart in ", (int)this.gameEndCD, "s\n\n" }));
-                    }
-                    else
-                    {
-                        this.ShowHUDInfoCenter("Humanity Win!\nGame Restart in " + ((int)this.gameEndCD) + "s\n\n");
-                    }
-                    if (this.gameEndCD <= 0f)
-                    {
-                        this.gameEndCD = 0f;
-                        if (PhotonNetwork.isMasterClient)
+
+
+                        if (LevelInfo.getInfo(level).respawnMode == RespawnMode.DEATHMATCH || GameSettings.endlessMode > 0 || ((GameSettings.bombMode == 1 || GameSettings.pvpMode > 0) && GameSettings.pointMode > 0))
                         {
-                            this.restartGame2(false);
-                        }
-                        this.ShowHUDInfoCenter(string.Empty);
-                    }
-                    else
-                    {
-                        this.gameEndCD -= Time.deltaTime;
-                    }
-                }
-            }
-            this.timeElapse += Time.deltaTime;
-            this.roundTime += Time.deltaTime;
-            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-            {
-                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
-                {
-                    if (!this.isWinning)
-                    {
-                        this.timeTotalServer += Time.deltaTime;
-                    }
-                }
-                else if (!this.isLosing && !this.isWinning)
-                {
-                    this.timeTotalServer += Time.deltaTime;
-                }
-            }
-            else
-            {
-                this.timeTotalServer += Time.deltaTime;
-            }
-            if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
-            {
-                if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-                {
-                    if (!this.isWinning)
-                    {
-                        this.ShowHUDInfoTopCenter("Time : " + ((((int)(this.timeTotalServer * 10f)) * 0.1f) - 5f));
-                    }
-                    if (this.timeTotalServer < 5f)
-                    {
-                        this.ShowHUDInfoCenter("RACE START IN " + ((int)(5f - this.timeTotalServer)));
-                    }
-                    else if (!this.startRacing)
-                    {
-                        this.ShowHUDInfoCenter(string.Empty);
-                        this.startRacing = true;
-                        this.endRacing = false;
-                        CLEARSKIES.CacheGameObject.Find("door").SetActive(false);
-                    }
-                }
-                else
-                {
-                    this.ShowHUDInfoTopCenter("Time : " + ((this.roundTime >= 20f) ? (((((int)(this.roundTime * 10f)) * 0.1f) - 20f)).ToString() : "WAITING"));
-                    if (this.roundTime < 20f)
-                    {
-                        this.ShowHUDInfoCenter("RACE START IN " + ((int)(20f - this.roundTime)) + (!(this.localRacingResult == string.Empty) ? ("\nLast Round\n" + this.localRacingResult) : "\n\n"));
-                    }
-                    else if (!this.startRacing)
-                    {
-                        this.ShowHUDInfoCenter(string.Empty);
-                        this.startRacing = true;
-                        this.endRacing = false;
-                        GameObject doors = CacheGameObject.Find("door");
-                        if (doors != null) doors.SetActive(false);
-                        if (this.racingDoors != null && FengGameManagerMKII.customLevelLoaded)
-                        {
-                            foreach (GameObject go in this.racingDoors)
-                                go.SetActive(false);
-                         //   this.racingDoors = null;
-                        }
-                            
-                       
-                    }
-                    else if (this.racingDoors != null && FengGameManagerMKII.customLevelLoaded)
-                    {
-                        foreach (GameObject go in this.racingDoors)
-                            go.SetActive(false);
-                        //this.racingDoors = null;
-                    }
-                }
-                if (IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !this.needChooseSide)
-                {
-                    this.myRespawnTime += Time.deltaTime;
-                    if (this.myRespawnTime > 1.5f)
-                    {
-                        this.myRespawnTime = 0f;
-                        IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
-                        if (this.checkpoint != null)
-                        {
-                            base.StartCoroutine(this.WaitAndRespawn2(0.1f, this.checkpoint));
-                        }
-                        else
-                        {
-                            base.StartCoroutine(this.WaitAndRespawn1(0.1f, this.myLastRespawnTag));
-                        }
-                        IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
-                        this.ShowHUDInfoCenter(string.Empty);
-                    }
-                }
-            }
-            if (this.timeElapse > 1f)
-            {
-                this.timeElapse -= 1f;
-                string text = string.Empty;
-                GAMEMODE gamemode2 = IN_GAME_MAIN_CAMERA.gamemode;
-                string text2;
-                switch (gamemode2)
-                {
-                    case GAMEMODE.KILL_TITAN:
-                        text = "Titan Left: " + FengGameManagerMKII.alltitans.Count + "  Time : ";
-                        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-                        {
-                            text += (int)this.timeTotalServer;
-                        }
-                        else
-                        {
-                            text += this.time - (int)this.timeTotalServer;
-                        }
-                        break;
-                    case GAMEMODE.PVP_AHSS:
-                    case GAMEMODE.CAGE_FIGHT:
-                        break;
-                    case GAMEMODE.ENDLESS_TITAN:
-                        text = "Time : " + (this.time - (int)this.timeTotalServer);
-                        break;
-                    case GAMEMODE.SURVIVE_MODE:
-                        text = string.Concat(new object[]
-                        {
-                    "Titan Left: ",
-                    FengGameManagerMKII.titans.Count.ToString(),
-                    " Wave : ",
-                    this.wave
-                        });
-                        break;
-                    case GAMEMODE.BOSS_FIGHT_CT:
-                        text = "Time : " + (this.time - (int)this.timeTotalServer) + "\nDefeat the Colossal Titan.\nPrevent abnormal titan from running to the north gate";
-                        break;
-                    default:
-                        if (gamemode2 == GAMEMODE.PVP_CAPTURE)
-                        {
-                            text2 = "| ";
-                            for (int i = 0; i < PVPcheckPoint.chkPts.Count; i++)
+                            myRespawnTime += Time.deltaTime;
+                            int seconds = 5;
+                            if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.isTitan]) == 2)
                             {
-                                text2 = text2 + (PVPcheckPoint.chkPts[i] as PVPcheckPoint).getStateString() + " ";
+                                seconds = 10;
                             }
-                            text2 += "|";
-                            text = string.Concat(new object[] { this.PVPtitanScoreMax - this.PVPtitanScore, "  ", text2, "  ", this.PVPhumanScoreMax - this.PVPhumanScore, "\n" }) + "Time : " + (this.time - ((int)this.timeTotalServer)).ToString();
+                            if (GameSettings.endlessMode > 0)
+                            {
+                                seconds = GameSettings.endlessMode;
+                            }
+                            //this shit spamming
+                            ShowHUDInfoCenterADD("Respawn in " + (seconds - (int)myRespawnTime) + "s.");
+                            if (myRespawnTime > (float)seconds)
+                            {
+                                myRespawnTime = 0f;
+                               IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+                                if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.isTitan]) == 2)
+                                {
+                                    SpawnNonAITitan2(myLastHero);
+                                }
+                                else
+                                {
+                                    StartCoroutine(WaitAndRespawn1(0.1f, myLastRespawnTag));
+                                }
+                               IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+                                ShowHUDInfoCenter(string.Empty);
+                            }
                         }
-                        break;
-                }
-                this.ShowHUDInfoTopCenter(text);
-                text = string.Empty;
-                if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
-                {
-                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-                    {
-                        text = "Time : " + (int)this.timeTotalServer;
                     }
-                    this.ShowHUDInfoTopRight(text);
-                }
-                text2 = ((IN_GAME_MAIN_CAMERA.difficulty >= 0) ? ((IN_GAME_MAIN_CAMERA.difficulty != 0) ? ((IN_GAME_MAIN_CAMERA.difficulty != 1) ? "Abnormal" : "Hard") : "Normal") : "Trainning");
-                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.CAGE_FIGHT)
-                {
-                    this.ShowHUDInfoTopRightMAPNAME(string.Concat(new object[]
+                    if (isLosing && IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING)
                     {
-                    (int)this.roundTime,
-                    "s\n",
-                    FengGameManagerMKII.level,
-                    " : ",
-                    text2
-                    }));
-                }
-                else
-                {
-                    this.ShowHUDInfoTopRightMAPNAME("\n" + FengGameManagerMKII.level + " : " + text2);
-                }
-                this.ShowHUDInfoTopRightMAPNAME("\nCamera(" + FengCustomInputs.Inputs.inputString[InputCode.camera] + "):" + IN_GAME_MAIN_CAMERA.cameraMode.ToString());
-                if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER && this.needChooseSide)
-                {
-                    this.ShowHUDInfoTopCenterADD("\n\nPRESS 1 TO ENTER GAME");
-                }
-            }
-            if (((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && 
-                (this.killInfoGO.Count > 0)) && (this.killInfoGO[0] == null))
-            {
-                this.killInfoGO.RemoveAt(0);
-            }
-            if (((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && PhotonNetwork.isMasterClient) && (this.timeTotalServer > this.time))
-            {
-                IN_GAME_MAIN_CAMERA.gametype = GAMETYPE.STOP;
-                Screen.lockCursor = (gameStart = !(Screen.showCursor = true));
-                string text3 = string.Empty;
-                string text4 = string.Empty;
-                string text5 = string.Empty;
-                string text6 = string.Empty;
-                string text7 = string.Empty;
-                string text8 = string.Empty;
-                foreach (PhotonPlayer photonPlayer in PhotonNetwork.playerList)
-                {
-                    ExitGames.Client.Photon.Hashtable customProperties;
-                    if (photonPlayer != null && (customProperties = photonPlayer.customProperties) != null)
-                    {
-                        text3 = text3 + customProperties["name"] + "\n";
-                        text4 = text4 + customProperties["kills"] + "\n";
-                        text5 = text5 + customProperties["deaths"] + "\n";
-                        text6 = text6 + customProperties["max_dmg"] + "\n";
-                        text7 = text7 + customProperties["total_dmg"] + "\n";
-                    }
-                }
-                if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
-                {
-                    text8 = string.Empty;
-                    for (int k = 0; k < this.teamScores.Length; k++)
-                    {
-                        text8 += ((k == 0) ? string.Concat(new object[]
+                        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
                         {
-                        "Team",
-                        (k + 1).ToString(),
-                        " ",
-                        this.teamScores[k],
-                        " "
-                        }) : " : ");
+                            ShowHUDInfoCenter("Survive " + wave + " Waves!\nGame Restart in " + (int)gameEndCD + "s\n\n");
+                        }
+                        else
+                        {
+                            ShowHUDInfoCenter("Humanity Fail!\nAgain!\nGame Restart in " + (int)gameEndCD + "s\n\n");
+                        }
+                        if (gameEndCD <= 0f)
+                        {
+                            gameEndCD = 0f;
+                            if (PhotonNetwork.isMasterClient)
+                            {
+                                restartRC();
+                            }
+                            ShowHUDInfoCenter(string.Empty);
+                        }
+                        else
+                        {
+                            gameEndCD -= Time.deltaTime;
+                        }
                     }
-                }
-                else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
-                {
-                    text8 = "Highest Wave : " + this.highestwave;
-                }
-                else
-                {
-                    text8 = string.Concat(new object[]
+                    if (isWinning)
                     {
-                    "Humanity ",
-                    this.humanScore,
-                    " : Titan ",
-                    this.titanScore
-                    });
+                        if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+                        {
+                            ShowHUDInfoCenter(localRacingResult + "\n\nGame Restart in " + (int)gameEndCD + "s");
+                        }
+                        else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.SURVIVE_MODE)
+                        {
+                            ShowHUDInfoCenter("Survive All Waves!\nGame Restart in " + (int)gameEndCD + "s\n\n");
+                        }
+                        else if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_AHSS)
+                        {
+                            if (GameSettings.pvpMode == 0 && GameSettings.bombMode == 0)
+                            {
+                                ShowHUDInfoCenter("Team " + teamWinner + " Win!\nGame Restart in " + (int)gameEndCD + "s\n\n");
+                            }
+                            else
+                            {
+                                ShowHUDInfoCenter(string.Concat(new object[3]
+                                {
+                            "Round Ended!\nGame Restart in ",
+                            (int)gameEndCD,
+                            "s\n\n"
+                                }));
+                            }
+                        }
+                        else
+                        {
+                            ShowHUDInfoCenter("Humanity Win!\nGame Restart in " + (int)gameEndCD + "s\n\n");
+                        }
+                        if (gameEndCD <= 0f)
+                        {
+                            gameEndCD = 0f;
+                            if (PhotonNetwork.isMasterClient)
+                            {
+                                restartRC();
+                            }
+                            ShowHUDInfoCenter(string.Empty);
+                        }
+                        else
+                        {
+                            gameEndCD -= Time.deltaTime;
+                        }
+                    }
+                    if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.RACING)
+                    {
+                        ShowHUDInfoTopCenter("Time : " + ((roundTime >= 20f) ? ((float)(int)(roundTime * 10f) * 0.1f - 20f).ToString() : "WAITING"));
+                        if (roundTime < 20f)
+                        {
+                            ShowHUDInfoCenter("RACE START IN " + (int)(20f - roundTime) + ((!(localRacingResult == string.Empty)) ? ("\nLast Round\n" + localRacingResult) : "\n\n"));
+                        }
+                        else if (!startRacing)
+                        {
+                            ShowHUDInfoCenter(string.Empty);
+                            startRacing = true;
+                            endRacing = false;
+
+                            Door = CacheGameObject.Find("door");
+                            Door.SetActive(value: false);
+                            if (racingDoors != null && customLevelLoaded)
+                            {
+                                foreach (GameObject racingDoor in racingDoors)
+                                {
+                                    racingDoor.SetActive(value: false);
+                                }
+                                racingDoors = null;
+                            }
+                        }
+                        else if (racingDoors != null && customLevelLoaded)
+                        {
+                            foreach (GameObject racingDoor2 in racingDoors)
+                            {
+                                racingDoor2.SetActive(value: false);
+                            }
+                            racingDoors = null;
+                        }
+                        if (Camera.main.GetComponent<IN_GAME_MAIN_CAMERA>().gameOver && !needChooseSide && customLevelLoaded)
+                        {
+                            myRespawnTime += Time.deltaTime;
+                            if (myRespawnTime > 1.5f)
+                            {
+                                myRespawnTime = 0f;
+                               IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+                                if (checkpoint != null)
+                                {
+                                    StartCoroutine(WaitAndRespawn2(0.1f, checkpoint));
+                                }
+                                else
+                                {
+                                    StartCoroutine(WaitAndRespawn1(0.1f, myLastRespawnTag));
+                                }
+                               IN_GAME_MAIN_CAMERA.mainCamera.gameOver = false;
+                                ShowHUDInfoCenter(string.Empty);
+                            }
+                        }
+                    }
+                    if (killInfoGO.Count > 0 && killInfoGO[0] == null)
+                    {
+                        killInfoGO.RemoveAt(0);
+                    }
+                    if (PhotonNetwork.isMasterClient && this.timeTotalServer > (float)this.time)
+                    {
+                        ShowGameResult();
+                    }
+                    break;
                 }
-                FengGameManagerMKII.PView.RPC("showResult", PhotonTargets.AllBuffered, new object[]
-                {
-                text3,
-                text4,
-                text5,
-                text6,
-                text7,
-                text8
-                });
-            }
-        }
-        this.core2();
-    }
-    
-    private void core2()
-    {
-        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
-        {
-            this.deltaTime += (Time.deltaTime - this.deltaTime) * 0.1f;
-            if (this.LabelInfoTopRight == null)
-            {
-                this.LabelInfoTopRight = CacheGameObject.Find<UILabel>("LabelInfoTopRight");
-            }
-            else
-            {
-                this.LabelInfoTopRight.text = string.Empty;
-                if (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)
-                {
-                    this.LabelInfoTopRight.text = RIGHTTOPINFO();
-                }
-            }
+            default:
+                break;
         }
     }
 
-    private string RIGHTTOPINFO()
-    {
-        string str6 = (IN_GAME_MAIN_CAMERA.difficulty >= 0)
-                      ? ((IN_GAME_MAIN_CAMERA.difficulty != 0)
-                          ? ((IN_GAME_MAIN_CAMERA.difficulty != 1) ? "Abnormal" : "Hard")
-                          : "Normal")
-                      : "Trainning";
-        string text6 = string.Empty;
-        string text7 = string.Empty;
-        int num = GameSettings.waveModeNum;
-        string content;
-        if (GameSettings.waveModeOn > 0)
-        {
-            object obj = text6;
-            text6 = string.Concat(new object[]
-            {
-                            obj,
-                            "\n",
-                            num,
-                            " WAVES"
-            });
-        }
-        int numpoint = GameSettings.pointMode;
-        if (GameSettings.pointMode > 0)
-        {
-            object obj4 = text6;
-            text6 = string.Concat(new object[]
-            {
-                            obj4,
-                            "\nPOINT MODE ",
-                            numpoint,
-                            "[-]"
-            });
-        }
-
-        char[] separator = new char[] { "`"[0] };
-        string text4 ="\n"+ PhotonNetwork.room.name.Split(separator)[0];
-        if (text4.Length > 20) text4 = text4.Remove(0x13) + "..."; 
-        
-        string text5 = string.Concat(new string[]
-        {
-                        "[ffc700](",
-                        PhotonNetwork.room.playerCount.ToString(),
-                        "/",
-                        PhotonNetwork.room.maxPlayers.ToString(),
-                        ")[-][-][7b001c]",
-        });
-       
-
-        string text3 = "Camera(" + FengCustomInputs.Inputs.inputString[InputCode.camera] + "):" + IN_GAME_MAIN_CAMERA.cameraMode.ToString();
-      
-
-        return content = string.Concat(new string[]
-        {
-                        text3,
-                        text4,
-                        text5,
-                        text7,
-                        text6,
-        });
-
-    }
+    #endregion
 
     private void coreadd()
     {
@@ -3475,7 +4004,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             {
                 fEMALE_TITAN.lateUpdate();
             }
-            this.core();
+            this.Core(IN_GAME_MAIN_CAMERA.gametype);
+            //this.core();
         }
     }
 
