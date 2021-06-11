@@ -1897,11 +1897,11 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 labelTextMapName = (IN_GAME_MAIN_CAMERA.difficulty < 0) ? "Training" : ((IN_GAME_MAIN_CAMERA.difficulty == 0) ? "Normal" : ((IN_GAME_MAIN_CAMERA.difficulty != 1) ? "Abnormal" : "Hard"));
             if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.CAGE_FIGHT)
             {
-                ShowHUDInfoTopRightMAPNAME((int)roundTime + "s\n" + level + " : " + labelTextMapName);
+                ShowHUDInfoTopRightMAPNAME((int)roundTime + "s\n" + level + ": " + labelTextMapName);
             }
             else
             {
-                ShowHUDInfoTopRightMAPNAME("\n" + level + " : " + labelTextMapName);
+                ShowHUDInfoTopRightMAPNAME("\n" + level + ": " + labelTextMapName);
             }
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
             {
@@ -2128,7 +2128,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         }
                     }
                     coreadd();
-                    ShowHUDInfoTopLeft(playerList);
+                    //ShowHUDInfoTopLeft(playerList);
                     if (Camera.main != null && IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING &&IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !needChooseSide && (int)settings[245] == 0)
                     {
                         //ShowHUDInfoCenter("Press [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.flare1] + "[-] to spectate the next player. \nPress [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.flare2] + "[-] to spectate the previous player.\nPress [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.attack1] + "[-] to enter the spectator mode.\n\n\n\n");
