@@ -2128,7 +2128,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         }
                     }
                     coreadd();
-                    //ShowHUDInfoTopLeft(playerList);
+                    //use  this.RecompilePlayerList(0.1f); in disconnected OR remove this showhud blabla so it won't spawn, but then remake hiddenplayerlist (call showhudinfo/copy it the moment you hide it AND call it somewhere here to show it, but just once
+                    //you cant replace it with updateplayerlist cause it would fuck teams since whole playerlist is used for that, and u would see normal playerlist
+                    ShowHUDInfoTopLeft(playerList); //if you ban someone they wont disappear because it's spammed and it overwrites updateplayerlist but waitandrecompile isn't called so it stays old
                     if (Camera.main != null && IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.RACING &&IN_GAME_MAIN_CAMERA.mainCamera.gameOver && !needChooseSide && (int)settings[245] == 0)
                     {
                         //ShowHUDInfoCenter("Press [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.flare1] + "[-] to spectate the next player. \nPress [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.flare2] + "[-] to spectate the previous player.\nPress [F7D358]" + FengCustomInputs.Inputs.inputString[InputCode.attack1] + "[-] to enter the spectator mode.\n\n\n\n");
@@ -10112,7 +10114,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             int[] numArray2 = new int[] { RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.kills]), RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.deaths]), RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.max_dmg]), RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.total_dmg]) };
             this.PreservedPlayerKDR.Add(key, numArray2);
         }
-        this.updatePlayerList();
+        this.RecompilePlayerList(0.1f);
+       // this.updatePlayerList();
     }
 
     public void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
@@ -13214,7 +13217,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     public void spawnTitanCustom(string type, int abnormal, int rate, bool punk)
     {
         int num8;
-        Vector3 position;
+        // Vector3 position;
         Quaternion rotation;
         GameObject[] objArray;
         int num9;
@@ -13282,35 +13285,36 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 pRate = 100f;
                 moreTitans = rate;
             }
-            for (num8 = 0; num8 < moreTitans; num8++)
+
+
+            List<Vector3> list;
+            if (RespawnPositions.TitanPositions.Length != 0)
             {
-                position = new Vector3(UnityEngine.Random.Range((float)-400f, (float)400f), 0f, UnityEngine.Random.Range((float)-400f, (float)400f));
-                rotation = new Quaternion(0f, 0f, 0f, 1f);
-                if (this.titanSpawns.Count > 0)
+                list = new List<Vector3>(RespawnPositions.TitanPositions);
+            }
+            else
+            {
+                list = new List<Vector3>((from x in new Vector3[moreTitans]
+                                          select new Vector3(UnityEngine.Random.Range(-100f, 100f), 0f, UnityEngine.Random.Range(-100f, 100f))).ToArray<Vector3>());
+            }
+
+            for (int j = 0; j < moreTitans; j++)
+            {
+                Vector3 position;
+                if (list.Count == 0)
                 {
-                    position = this.titanSpawns[UnityEngine.Random.Range(0, this.titanSpawns.Count)];
+                    position = RespawnPositions.RandomTitanPos;
                 }
                 else
                 {
-                    objArray = GameObject.FindGameObjectsWithTag("titanRespawn");
-                    if (objArray.Length > 0)
-                    {
-                        num9 = UnityEngine.Random.Range(0, objArray.Length);
-                        obj2 = objArray[num9];
-                        while (objArray[num9] == null)
-                        {
-                            num9 = UnityEngine.Random.Range(0, objArray.Length);
-                            obj2 = objArray[num9];
-                        }
-                        objArray[num9] = null;
-                        position = obj2.transform.position;
-                        rotation = obj2.transform.rotation;
-                    }
+                    int index = UnityEngine.Random.Range(0, list.Count);
+                    position = list[index];
+                    list.RemoveAt(index);
                 }
-                float num10 = UnityEngine.Random.Range((float)0f, (float)100f);
+                float num10 = UnityEngine.Random.Range(0f, 100f);
                 if (num10 <= ((((nRate + aRate) + jRate) + cRate) + pRate))
                 {
-                    GameObject obj3 = this.spawnTitanRaw(position, rotation);
+                    GameObject obj3 = this.spawnTitanRaw(position, Quaternion.identity);
                     if (num10 < nRate)
                     {
                         obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.NORMAL, false);
@@ -13336,41 +13340,129 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.NORMAL, false);
                     }
                 }
-                else
-                {
-                    this.spawnTitan(abnormal, position, rotation, punk);
-                }
+                else this.spawnTitan(rate, position, Quaternion.identity, punk);
+
             }
+            //return;
+
+            //normal code
+            //for (num8 = 0; num8 < moreTitans; num8++)
+            //{
+            //    position = new Vector3(UnityEngine.Random.Range((float)-400f, (float)400f), 0f, UnityEngine.Random.Range((float)-400f, (float)400f));
+            //    rotation = new Quaternion(0f, 0f, 0f, 1f);
+            //    if (this.titanSpawns.Count > 0) position = this.titanSpawns[UnityEngine.Random.Range(0, this.titanSpawns.Count)];
+            //    else
+            //    {
+            //        objArray = GameObject.FindGameObjectsWithTag("titanRespawn");
+            //        if (objArray.Length > 0)
+            //        {
+            //            num9 = UnityEngine.Random.Range(0, objArray.Length);
+            //            obj2 = objArray[num9];
+            //            while (objArray[num9] == null)
+            //            {
+            //                num9 = UnityEngine.Random.Range(0, objArray.Length);
+            //                obj2 = objArray[num9];
+            //            }
+            //            objArray[num9] = null;
+            //            position = obj2.transform.position;
+            //            rotation = obj2.transform.rotation;
+            //        }
+            //    }
+            //    //float num10 = UnityEngine.Random.Range((float)0f, (float)100f);
+            //    //if (num10 <= ((((nRate + aRate) + jRate) + cRate) + pRate))
+            //    //{
+            //    //    GameObject obj3 = this.spawnTitanRaw(position, rotation);
+            //    //    if (num10 < nRate)
+            //    //    {
+            //    //        obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.NORMAL, false);
+            //    //    }
+            //    //    else if ((num10 >= nRate) && (num10 < (nRate + aRate)))
+            //    //    {
+            //    //        obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.TYPE_I, false);
+            //    //    }
+            //    //    else if ((num10 >= (nRate + aRate)) && (num10 < ((nRate + aRate) + jRate)))
+            //    //    {
+            //    //        obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.TYPE_JUMPER, false);
+            //    //    }
+            //    //    else if ((num10 >= ((nRate + aRate) + jRate)) && (num10 < (((nRate + aRate) + jRate) + cRate)))
+            //    //    {
+            //    //        obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.TYPE_CRAWLER, true);
+            //    //    }
+            //    //    else if ((num10 >= (((nRate + aRate) + jRate) + cRate)) && (num10 < ((((nRate + aRate) + jRate) + cRate) + pRate)))
+            //    //    {
+            //    //        obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.TYPE_PUNK, false);
+            //    //    }
+            //    //    else
+            //    //    {
+            //    //        obj3.GetComponent<TITAN>().setAbnormalType2(AbnormalType.NORMAL, false);
+            //    //    }
+            //    //}
+            //    //else
+            //    //{
+            //    //    this.spawnTitan(abnormal, position, rotation, punk);
+            //    //}
+            //}
         }
         else if (level.StartsWith("Custom"))
         {
-            for (num8 = 0; num8 < moreTitans; num8++)
+            List<Vector3> list2;
+            //if (CustomLevel.spawnPositions["Titan"].Count > 0)
+            //{
+            //    list2 = new List<Vector3>(CustomLevel.spawnPositions["Titan"]);
+            //}
+            //else 
+            if (RespawnPositions.TitanPositions.Length != 0)
             {
-                position = new Vector3(UnityEngine.Random.Range((float)-400f, (float)400f), 0f, UnityEngine.Random.Range((float)-400f, (float)400f));
-                rotation = new Quaternion(0f, 0f, 0f, 1f);
-                if (this.titanSpawns.Count > 0)
+                list2 = new List<Vector3>(RespawnPositions.TitanPositions);
+            }
+            else
+            {
+                list2 = new List<Vector3>((from x in new Vector3[moreTitans]
+                                           select new Vector3(UnityEngine.Random.Range(-400f, 400f), 0f, UnityEngine.Random.Range(-400f, 400f))).ToArray<Vector3>());
+            }
+            for (int l = 0; l < moreTitans; l++)
+            {
+                Vector3 position2;
+                if (list2.Count == 0)
                 {
-                    position = this.titanSpawns[UnityEngine.Random.Range(0, this.titanSpawns.Count)];
+                    position2 = new Vector3(UnityEngine.Random.Range(-400f, 400f), 0f, UnityEngine.Random.Range(-400f, 400f));
                 }
                 else
                 {
-                    objArray = GameObject.FindGameObjectsWithTag("titanRespawn");
-                    if (objArray.Length > 0)
-                    {
-                        num9 = UnityEngine.Random.Range(0, objArray.Length);
-                        obj2 = objArray[num9];
-                        while (objArray[num9] == null)
-                        {
-                            num9 = UnityEngine.Random.Range(0, objArray.Length);
-                            obj2 = objArray[num9];
-                        }
-                        objArray[num9] = null;
-                        position = obj2.transform.position;
-                        rotation = obj2.transform.rotation;
-                    }
+                    int index2 = UnityEngine.Random.Range(0, list2.Count);
+                    position2 = list2[index2];
+                    list2.RemoveAt(index2);
                 }
-                this.spawnTitan(abnormal, position, rotation, punk);
+                this.spawnTitan(rate, position2, Quaternion.identity, punk);
             }
+
+            //for (num8 = 0; num8 < moreTitans; num8++)
+            //{
+            //    position = new Vector3(UnityEngine.Random.Range((float)-400f, (float)400f), 0f, UnityEngine.Random.Range((float)-400f, (float)400f));
+            //    rotation = new Quaternion(0f, 0f, 0f, 1f);
+            //    if (this.titanSpawns.Count > 0)
+            //    {
+            //        position = this.titanSpawns[UnityEngine.Random.Range(0, this.titanSpawns.Count)];
+            //    }
+            //    else
+            //    {
+            //        objArray = GameObject.FindGameObjectsWithTag("titanRespawn");
+            //        if (objArray.Length > 0)
+            //        {
+            //            num9 = UnityEngine.Random.Range(0, objArray.Length);
+            //            obj2 = objArray[num9];
+            //            while (objArray[num9] == null)
+            //            {
+            //                num9 = UnityEngine.Random.Range(0, objArray.Length);
+            //                obj2 = objArray[num9];
+            //            }
+            //            objArray[num9] = null;
+            //            position = obj2.transform.position;
+            //            rotation = obj2.transform.rotation;
+            //        }
+            //    }
+            //    this.spawnTitan(abnormal, position, rotation, punk);
+            //}
         }
         else
         {

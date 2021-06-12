@@ -45,6 +45,7 @@
     <Compile Include="CLEARSKIES\Pooling\PoolingGameObject.cs" />
     <Compile Include="CLEARSKIES\Pooling\PoolManager.cs" />
     <Compile Include="CLEARSKIES\Pooling\SetUpPooling.cs" />
+    <Compile Include="CLEARSKIES\RespawnPositions.cs" />
     <Compile Include="CLEARSKIES\Triplet.cs" />
     <Compile Include="CLEARSKIES\Yield.cs" />
     <Compile Include="GUIHelpers.cs" />
