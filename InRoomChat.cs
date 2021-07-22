@@ -26,6 +26,7 @@ public class InRoomChat : Photon.MonoBehaviour
 
     public void addLINE(string newLine)
     {
+        newLine = newLine.FilterSizeTag();
         messages.Add(newLine);
     }
 
@@ -475,6 +476,8 @@ public class InRoomChat : Photon.MonoBehaviour
                                 PhotonPlayer player = PhotonPlayer.Find(Convert.ToInt32(args[1]));
                                 FengGameManagerMKII.ignoreList.Remove(player.ID);
                                 FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+                                if (NetworkingPeer.instantiateCounter.ContainsKey(player))
+                                    NetworkingPeer.instantiateCounter[player].Clear();
                             }
                             else if (this.inputLine.StartsWith("/unban"))
                             {

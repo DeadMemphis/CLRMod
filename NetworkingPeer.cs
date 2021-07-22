@@ -950,9 +950,76 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
     }
 
+
+    #region 0xca instantiate antispam 
+   
+
+    public static Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>> instantiateCounter = new Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>>(); //made public to remove counter in ignore
+    public static int checkInstantiateSPAM(string str, PhotonPlayer sender)
+    {
+        str = str.ToLower();
+        switch (str)
+        {
+            case "aottg_hero 1":
+                return 5;
+
+            case "fx/flarebullet1":
+            case "fx/flarebullet2":
+            case "fx/flarebullet3":
+                return 5;
+
+            case "hook": //in case someone freezes and sends all at once
+            case "aot_supply":
+                return 30;
+
+            case "colossal_titan":
+            case "female_titan":
+                return 2;
+
+            case "fx/fxtitanspawn":
+            case "titan_ver3.1": //can spawn max 50 titans, restarts twice
+                return 101;
+
+            case "titan_eren_trost":
+                return 20;
+            case "titan_new_1": //these 2 models arent used
+            case "titan_new_2":
+                return 5;
+
+
+            default:
+                return 50;
+        }
+    }
+
+    public static bool tracktheseforkinInstantiate(PhotonPlayer sender, string key)  //questo lo metto in executerpc
+    {
+        key = key.ToLower();
+
+        // if (_excp.Contains(key)) return false;
+
+        if (!instantiateCounter.ContainsKey(sender))
+            instantiateCounter.Add(sender, new Dictionary<string, SpamCounter>());
+        if (!instantiateCounter[sender].ContainsKey(key))
+            instantiateCounter[sender].Add(key, new SpamCounter());
+        else
+            instantiateCounter[sender][key].count++;
+
+        if (instantiateCounter[sender][key].count > checkInstantiateSPAM(key, sender))
+        {
+            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Instantiate " + key + " SPAM (" + instantiateCounter[sender][key].count + ")");
+            return false;
+        }
+        else if (Time.time - instantiateCounter[sender][key].time > 1f)
+            instantiateCounter[sender][key].reset();
+        return true;
+    }
+    #endregion
+
+
     //2018 dabbing on infamous "photon modders" who make a stopwatch method on each rpc in assembly 2020 *censoring names*
     #region anti rpc spam
-    class SpamCounter
+    public class SpamCounter
     {
         public int count;
         public float time;
@@ -969,7 +1036,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             time = Time.time;
         }
     }
-
+    
     private static Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>> rpcCounter = new Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>>();
 
     //public static bool lengthCheck(object[] param, int length)
@@ -1129,6 +1196,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             #endregion
 
             #region 3 param and more
+            case "netsetlevel":
+                return CorrectLength(param, 3) ? 50 : 0;
             case "setvelocityandleft":
             case "sethairrpc2":
                 return CorrectLength(param, 3) ? 100 : 0;
@@ -1777,7 +1846,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             this.RemovePlayer(actorID, playerWithID);
             object[] parameters = new object[] { playerWithID };
             SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerDisconnected, parameters);
-
+            if (instantiateCounter.ContainsKey(playerWithID))
+                instantiateCounter[playerWithID].Clear();
             if (rpcCounter.ContainsKey(playerWithID))
                 rpcCounter[playerWithID].Clear();
         }
@@ -1823,6 +1893,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         {
             SendMonoMessage(PhotonNetworkingMessage.OnLeftRoom, new object[0]);
         }
+        instantiateCounter.Clear();
         rpcCounter.Clear();
     }
 
@@ -2164,6 +2235,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             }
                             if (evData.ContainsKey((byte)6))
                             {
+                                if (!sender.isLocal && sender != null) tracktheseforkinInstantiate(sender, str); //check valid spam
                                 int timestamp = (int)evData[(byte)6];
                                 this.DoInstantiate2(evData, sender, null); //more checks inside this method
                                 return;

@@ -383,27 +383,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     }
 
 
-
-    private string antiChatAbuse(string input, PhotonMessageInfo info)
-    {
-        MatchCollection matches = Regex.Matches(input, @"<size=(\w*)?>?");
-        int num = 12;
-        foreach (Match m in matches)
-        {
-            if (int.TryParse(m.Groups[1].Value, out num))
-            {
-                if (num < 13 || num > 18)
-                {
-                    if (num > 25) kickPlayerRC(info.sender, true, "big size");
-                    return Regex.Replace(input, "<size=(\\w*)?>?|<\\/size>?", string.Empty);
-                }
-            }
-        }
-
-        if (input.Contains("quad material")) input = "";
-        return input;
-    }
-
+    
     [RPC]
     private void Chat(string content, string sender, PhotonMessageInfo info)
     {
@@ -415,7 +395,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             if (!info.sender.isLocal) kickPlayerRC(info.sender, true, "long text (" + content.Length + ")");
             return;
         }
-        InRoomChat.Write(antiChatAbuse(content, info));
+        InRoomChat.Write(content);
+       // InRoomChat.Write(antiChatAbuse(content, info));
     }
 
 
@@ -430,7 +411,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "long text (" + content.Length + ")");
             return;
         }
-        InRoomChat.Write(antiChatAbuse(content, info));
+        InRoomChat.Write(content);
+      //  InRoomChat.Write(antiChatAbuse(content, info));
     }
 
 

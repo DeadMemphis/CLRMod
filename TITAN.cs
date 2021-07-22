@@ -121,10 +121,6 @@ public class TITAN : MONO
     private float turnDeg;
     private GameObject whoHasTauntMe;
 
-    //player pukn 
-    private float dashspeed = 7f;
-    private float regspeed = 7f;
-
     internal Transform chkOverHead;
     internal Transform chkFront;
     internal Transform chkFrontRight;
@@ -2071,18 +2067,6 @@ public class TITAN : MONO
         else
         {
             this.crossFadeIfNotPlaying("idle", 0.2f);
-            if (!this.nonAI && this.speed != this.regspeed)
-            {
-                if (this.abnormalType == AbnormalType.TYPE_PUNK)
-                {
-                    this.crossFade(this.runAnimation = "run_abnormal_1", 0.1f);
-                }
-                else
-                {
-                    this.crossFade(this.runAnimation = "run_abnormal", 0.1f);
-                }
-                this.speed = this.regspeed;
-            }
         }
     }
 
@@ -2648,13 +2632,6 @@ public class TITAN : MONO
             }
             baseA["attack_jumper_0"].speed = 7f;
             baseA["attack_crawler_jump_0"].speed = 4f;
-            this.dashspeed = (this.regspeed = this.speed) * 1.2f;
-        }
-        else
-        {
-            this.baseA["attack_jumper_0"].speed = 4f;
-            this.baseA["attack_crawler_jump_0"].speed = 4f;
-            this.dashspeed = (this.regspeed = this.speed) * 2f;
         }
         baseA["attack_combo_1"].speed = 1f;
         baseA["attack_combo_2"].speed = 1f;

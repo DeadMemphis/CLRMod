@@ -1,11 +1,37 @@
 ﻿using ExitGames.Client.Photon;
 using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using UnityEngine;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 
 public static class Extensions
 {
+    public static string FilterSizeTag(this string text)
+    {
+        MatchCollection matchCollection = Regex.Matches(text.ToLower(), "(<size=(.*?>))");
+        List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+        foreach (Match item in matchCollection)
+        {
+            if (!list.Any((KeyValuePair<int, string> p) => p.Key == item.Index))
+            {
+                list.Add(new KeyValuePair<int, string>(item.Index, item.Value));
+            }
+        }
+        foreach (KeyValuePair<int, string> item2 in list)
+        {
+            if (item2.Value.StartsWith("<size=") && item2.Value.Length > 9)
+            {
+                text = text.Remove(item2.Key, item2.Value.Length);
+                text = text.Substring(0, item2.Key) + "<size=20>" + text.Substring(item2.Key, text.Length - item2.Key);
+            }
+        }
+        if (text.Contains("quad material")) text = "";
+        return text;
+    }
+
     public static float Angleof(this Vector3 first, Vector3 second)
     {
         return Mathf.Abs(Mathf.Acos(Vector3.Dot(first.normalized, second.normalized)) * 57.29578f);
