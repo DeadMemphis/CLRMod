@@ -8,12 +8,12 @@ public class BTN_Server_SA : MonoBehaviour
         PhotonNetwork.Disconnect();
         //PhotonNetwork.ConnectToMaster("app-eu.exitgamescloud.com", 0x13bf, FengGameManagerMKII.applicationId, UIMainReferences.version);
         if (PhotonNetwork.networkingPeer.UsedProtocol == ExitGames.Client.Photon.ConnectionProtocol.Udp)
-            PhotonNetwork.ConnectToMaster("app-sa.exitgames.com", 5055, FengGameManagerMKII.applicationId, UIMainReferences.version);
+            PhotonNetwork.ConnectToMaster("172.107.193.233", 5055, FengGameManagerMKII.applicationId, UIMainReferences.version);
         else if (PhotonNetwork.networkingPeer.UsedProtocol == ExitGames.Client.Photon.ConnectionProtocol.WebSocket)
-            PhotonNetwork.ConnectToMaster("app-sa.exitgames.com", 9090, FengGameManagerMKII.applicationId, UIMainReferences.version);
+            PhotonNetwork.ConnectToMaster("172.107.193.233", 9090, FengGameManagerMKII.applicationId, UIMainReferences.version);
         else if (PhotonNetwork.networkingPeer.UsedProtocol == ExitGames.Client.Photon.ConnectionProtocol.Tcp)
-            PhotonNetwork.ConnectToMaster("app-sa.exitgames.com", 4530, FengGameManagerMKII.applicationId, UIMainReferences.version);
-        FengGameManagerMKII.OnPrivateServer = false;
+            PhotonNetwork.ConnectToMaster("172.107.193.233", 4530, FengGameManagerMKII.applicationId, UIMainReferences.version);
+        FengGameManagerMKII.OnPrivateServer = true;
     }
 }
 

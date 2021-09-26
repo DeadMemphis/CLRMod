@@ -28,7 +28,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     public bool isPlayerTTL = false;
     private object thread_locker = new object();
     public Dictionary<int, CannonValues> allowedToCannon;
-    public static string applicationId = "5578b046-8264-438c-99c5-fb15c71b6744";//new connection string /*"f1f6195c-df4a-40f9-bae5-4744c32901ef"; old connection string*/
+    public static string applicationId = "";//new connection string /*"f1f6195c-df4a-40f9-bae5-4744c32901ef"; old connection string*/
     public Dictionary<string, Texture2D> assetCacheTextures;
     public static ExitGames.Client.Photon.Hashtable banHash;
     public static ExitGames.Client.Photon.Hashtable boolVariables;
@@ -1802,7 +1802,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             labelTextTopCenter = "Titan Left: ";
                             labelTextTopCenter += GameObject.FindGameObjectsWithTag("titan").Length.ToString() + " Wave : " + wave;
                             labelTextTopRight = "Time : ";
-                            labelTextTopRight += (int)timeTotalServer;
+                            labelTextTopRight += (int)timeTotalServer + "\n";
                             break;
                         }
 
@@ -1883,7 +1883,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             }
             else
             {
-                ShowHUDInfoTopRightMAPNAME("\n" + level + ": " + labelTextMapName);
+                ShowHUDInfoTopRightMAPNAME(level + ": " + labelTextMapName);
             }
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
             {
@@ -3233,11 +3233,23 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     [RPC]
     private void ignorePlayer(int ID, PhotonMessageInfo info)
     {
-        //if (ID == PhotonNetwork.player.ID)
-        //{
-        //    StartCoroutine(this.RCBan());
-        //}
-       this.RecompilePlayerList(0.1f);
+        if (!info.sender.isMasterClient)
+        {
+            kickPlayerRC(info.sender, true, "invalid ignorePlayer");
+            return;
+        }
+        PhotonPlayer player = PhotonPlayer.Find(ID);
+        if ((player != null) && !ignoreList.Contains(ID))
+        {
+            for (int i = 0; i < PhotonNetwork.playerList.Length; i++)
+            {
+                if (PhotonNetwork.playerList[i] == player)
+                {
+                    ignoreList.Add(ID);
+                }
+            }
+        }
+        this.RecompilePlayerList(0.1f);
     }
 
     [RPC]
@@ -3248,8 +3260,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "invalid ignorePlayArray");
             return;
         }
-        if (info.sender.isMasterClient)
-        {
             for (int i = 0; i < IDS.Length; i++)
             {
                 int iD = IDS[i];
@@ -3270,7 +3280,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                 }
             }
-        }
         this.RecompilePlayerList(0.1f);
     }
 
@@ -3318,560 +3327,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         }
         return (num == num2);
     }
-
-    public void justRecompileThePlayerList()  // pvp
-    {
-        int num15;
-        string str3;
-        int num16;
-        int num17;
-        int num18;
-        int num19;
-        string str = string.Empty;
-        if (GameSettings.teamMode != 0)
-        {
-            int num10;
-            string str2;
-            int num = 0;
-            int num2 = 0;
-            int num3 = 0;
-            int num4 = 0;
-            int num5 = 0;
-            int num6 = 0;
-            int num7 = 0;
-            int num8 = 0;
-            Dictionary<int, PhotonPlayer> dictionary = new Dictionary<int, PhotonPlayer>();
-            Dictionary<int, PhotonPlayer> dictionary2 = new Dictionary<int, PhotonPlayer>();
-            Dictionary<int, PhotonPlayer> dictionary3 = new Dictionary<int, PhotonPlayer>();
-            foreach (PhotonPlayer player in PhotonNetwork.playerList)
-            {
-                if ((player.customProperties[PhotonPlayerProperty.dead] != null) && !ignoreList.Contains(player.ID))
-                {
-                    num10 = RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.RCteam]);
-                    switch (num10)
-                    {
-                        case 0:
-                            dictionary3.Add(player.ID, player);
-                            break;
-
-                        case 1:
-                            dictionary.Add(player.ID, player);
-                            num += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.kills]);
-                            num3 += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.deaths]);
-                            num5 += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.max_dmg]);
-                            num7 += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.total_dmg]);
-                            break;
-
-                        case 2:
-                            dictionary2.Add(player.ID, player);
-                            num2 += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.kills]);
-                            num4 += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.deaths]);
-                            num6 += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.max_dmg]);
-                            num8 += RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.total_dmg]);
-                            break;
-                    }
-                }
-            }
-            this.cyanKills = num;
-            this.magentaKills = num2;
-            if (PhotonNetwork.isMasterClient)
-            {
-                if (GameSettings.teamMode == 2)
-                {
-                    foreach (PhotonPlayer player2 in PhotonNetwork.playerList)
-                    {
-                        int num11 = 0;
-                        if (dictionary.Count > (dictionary2.Count + 1))
-                        {
-                            num11 = 2;
-                            if (dictionary.ContainsKey(player2.ID))
-                            {
-                                dictionary.Remove(player2.ID);
-                            }
-                            if (!dictionary2.ContainsKey(player2.ID))
-                            {
-                                dictionary2.Add(player2.ID, player2);
-                            }
-                        }
-                        else if (dictionary2.Count > (dictionary.Count + 1))
-                        {
-                            num11 = 1;
-                            if (!dictionary.ContainsKey(player2.ID))
-                            {
-                                dictionary.Add(player2.ID, player2);
-                            }
-                            if (dictionary2.ContainsKey(player2.ID))
-                            {
-                                dictionary2.Remove(player2.ID);
-                            }
-                        }
-                        if (num11 > 0)
-                        {
-                            PView.RPC("setTeamRPC", player2, new object[] { num11 });
-                        }
-                    }
-                }
-                else if (GameSettings.teamMode == 3)
-                {
-                    foreach (PhotonPlayer player3 in PhotonNetwork.playerList)
-                    {
-                        int num12 = 0;
-                        num10 = RCextensions.returnIntFromObject(player3.customProperties[PhotonPlayerProperty.RCteam]);
-                        if (num10 > 0)
-                        {
-                            switch (num10)
-                            {
-                                case 1:
-                                    {
-                                        int num13 = 0;
-                                        num13 = RCextensions.returnIntFromObject(player3.customProperties[PhotonPlayerProperty.kills]);
-                                        if (((num2 + num13) + 7) < (num - num13))
-                                        {
-                                            num12 = 2;
-                                            num2 += num13;
-                                            num -= num13;
-                                        }
-                                        break;
-                                    }
-                                case 2:
-                                    {
-                                        int num14 = 0;
-                                        num14 = RCextensions.returnIntFromObject(player3.customProperties[PhotonPlayerProperty.kills]);
-                                        if (((num + num14) + 7) < (num2 - num14))
-                                        {
-                                            num12 = 1;
-                                            num += num14;
-                                            num2 -= num14;
-                                        }
-                                        break;
-                                    }
-                            }
-                            if (num12 > 0)
-                            {
-                                PView.RPC("setTeamRPC", player3, new object[] { num12 });
-                            }
-                        }
-                    }
-                }
-            }
-            str = string.Concat(new object[] { str, "[00FFFF]TEAM CYAN", "[ffffff]:", this.cyanKills, "/", num3, "/", num5, "/", num7, "\n" });
-            foreach (PhotonPlayer player4 in dictionary.Values)
-            {
-                num10 = RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.RCteam]);
-                if ((player4.customProperties[PhotonPlayerProperty.dead] != null) && (num10 == 1))
-                {
-                    if (ignoreList.Contains(player4.ID))
-                    {
-                        str = str + "[FF0000][X] ";
-                    }
-                    if (player4.isLocal)
-                    {
-                        str = str + "[00CC00]";
-                    }
-                    else
-                    {
-                        str = str + "[FFCC00]";
-                    }
-                    str = str + "[" + Convert.ToString(player4.ID) + "] ";
-                    if (player4.isMasterClient)
-                    {
-                        str = str + "[ffffff][M] ";
-                    }
-                    if (RCextensions.returnBoolFromObject(player4.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[" + ColorSet.color_red + "] *dead* ";
-                    }
-                    if (RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.isTitan]) < 2)
-                    {
-                        num15 = RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.team]);
-                        if (num15 < 2)
-                        {
-                            str = str + "[" + ColorSet.color_human + "] H ";
-                        }
-                        else if (num15 == 2)
-                        {
-                            str = str + "[" + ColorSet.color_human_1 + "] A ";
-                        }
-                    }
-                    else if (RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.isTitan]) == 2)
-                    {
-                        str = str + "[" + ColorSet.color_titan_player + "] <T> ";
-                    }
-                    str2 = str;
-                    str3 = string.Empty;
-                    str3 = (player4.uiname.Length > 100) ? player4.uiname.Substring(0, 20) : player4.uiname;
-                    num16 = 0;
-                    num16 = RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.kills]);
-                    num17 = 0;
-                    num17 = RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.deaths]);
-                    num18 = 0;
-                    num18 = RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.max_dmg]);
-                    num19 = 0;
-                    num19 = RCextensions.returnIntFromObject(player4.customProperties[PhotonPlayerProperty.total_dmg]);
-                    str = string.Concat(new object[] { str2, string.Empty, str3, "[ffffff]:", num16, "/", num17, "/", num18, "/", num19 });
-                    if (RCextensions.returnBoolFromObject(player4.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[-]";
-                    }
-                    str = str + "\n";
-                }
-            }
-            str = string.Concat(new object[] { str, " \n", "[FF00FF]TEAM MAGENTA", "[ffffff]:", this.magentaKills, "/", num4, "/", num6, "/", num8, "\n" });
-            foreach (PhotonPlayer player5 in dictionary2.Values)
-            {
-                num10 = RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.RCteam]);
-                if ((player5.customProperties[PhotonPlayerProperty.dead] != null) && (num10 == 2))
-                {
-                    if (ignoreList.Contains(player5.ID))
-                    {
-                        str = str + "[FF0000][X] ";
-                    }
-                    if (player5.isLocal)
-                    {
-                        str = str + "[00CC00]";
-                    }
-                    else
-                    {
-                        str = str + "[FFCC00]";
-                    }
-                    str = str + "[" + Convert.ToString(player5.ID) + "] ";
-                    if (player5.isMasterClient)
-                    {
-                        str = str + "[ffffff][M] ";
-                    }
-                    if (RCextensions.returnBoolFromObject(player5.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[" + ColorSet.color_red + "] *dead* ";
-                    }
-                    if (RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.isTitan]) < 2)
-                    {
-                        num15 = RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.team]);
-                        if (num15 < 2)
-                        {
-                            str = str + "[" + ColorSet.color_human + "] H ";
-                        }
-                        else if (num15 == 2)
-                        {
-                            str = str + "[" + ColorSet.color_human_1 + "] A ";
-                        }
-                    }
-                    else if (RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.isTitan]) == 2)
-                    {
-                        str = str + "[" + ColorSet.color_titan_player + "] <T> ";
-                    }
-                    str2 = str;
-                    str3 = string.Empty;
-                    str3 = (player5.uiname.Length > 100) ? player5.uiname.Substring(0, 20) : player5.uiname;
-                    //str3 = RCextensions.returnStringFromObject(player5.customProperties[PhotonPlayerProperty.name]);
-                    num16 = 0;
-                    num16 = RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.kills]);
-                    num17 = 0;
-                    num17 = RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.deaths]);
-                    num18 = 0;
-                    num18 = RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.max_dmg]);
-                    num19 = 0;
-                    num19 = RCextensions.returnIntFromObject(player5.customProperties[PhotonPlayerProperty.total_dmg]);
-                    str = string.Concat(new object[] { str2, string.Empty, str3, "[ffffff]:", num16, "/", num17, "/", num18, "/", num19 });
-                    if (RCextensions.returnBoolFromObject(player5.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[-]";
-                    }
-                    str = str + "\n";
-                }
-            }
-            str = string.Concat(new object[] { str, " \n", "[00FF00]INDIVIDUAL\n" });
-            foreach (PhotonPlayer player6 in dictionary3.Values)
-            {
-                num10 = RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.RCteam]);
-                if ((player6.customProperties[PhotonPlayerProperty.dead] != null) && (num10 == 0))
-                {
-                    if (ignoreList.Contains(player6.ID))
-                    {
-                        str = str + "[FF0000][X] ";
-                    }
-                    if (player6.isLocal)
-                    {
-                        str = str + "[00CC00]";
-                    }
-                    else
-                    {
-                        str = str + "[FFCC00]";
-                    }
-                    str = str + "[" + Convert.ToString(player6.ID) + "] ";
-                    if (player6.isMasterClient)
-                    {
-                        str = str + "[ffffff][M] ";
-                    }
-                    if (RCextensions.returnBoolFromObject(player6.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[" + ColorSet.color_red + "] *dead* ";
-                    }
-                    if (RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.isTitan]) < 2)
-                    {
-                        num15 = RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.team]);
-                        if (num15 < 2)
-                        {
-                            str = str + "[" + ColorSet.color_human + "] H ";
-                        }
-                        else if (num15 == 2)
-                        {
-                            str = str + "[" + ColorSet.color_human_1 + "] A ";
-                        }
-                    }
-                    else if (RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.isTitan]) == 2)
-                    {
-                        str = str + "[" + ColorSet.color_titan_player + "] <T> ";
-                    }
-                    str2 = str;
-                    str3 = string.Empty;
-                    str3 = (player6.uiname.Length > 100) ? player6.uiname.Substring(0, 20) : player6.uiname;
-                    // str3 = RCextensions.returnStringFromObject(player6.customProperties[PhotonPlayerProperty.name]);
-                    num16 = 0;
-                    num16 = RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.kills]);
-                    num17 = 0;
-                    num17 = RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.deaths]);
-                    num18 = 0;
-                    num18 = RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.max_dmg]);
-                    num19 = 0;
-                    num19 = RCextensions.returnIntFromObject(player6.customProperties[PhotonPlayerProperty.total_dmg]);
-                    str = string.Concat(new object[] { str2, string.Empty, str3, "[ffffff]:", num16, "/", num17, "/", num18, "/", num19 });
-                    if (RCextensions.returnBoolFromObject(player6.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[-]";
-                    }
-                    str = str + "\n";
-                }
-            }
-        }
-        else
-        {
-            foreach (PhotonPlayer player7 in PhotonNetwork.playerList)
-            {
-                if (player7.customProperties[PhotonPlayerProperty.dead] != null)
-                {
-                    if (ignoreList.Contains(player7.ID))
-                    {
-                        str = str + "[FF0000][X] ";
-                    }
-                    if (player7.isLocal)
-                    {
-                        str = str + "[00CC00]";
-                    }
-                    else
-                    {
-                        str = str + "[FFCC00]";
-                    }
-                    str = str + "[" + Convert.ToString(player7.ID) + "] ";
-                    if (player7.isMasterClient)
-                    {
-                        str = str + "[ffffff][M] ";
-                    }
-                    if (RCextensions.returnBoolFromObject(player7.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[" + ColorSet.color_red + "] *dead* ";
-                    }
-                    if (RCextensions.returnIntFromObject(player7.customProperties[PhotonPlayerProperty.isTitan]) < 2)
-                    {
-                        num15 = RCextensions.returnIntFromObject(player7.customProperties[PhotonPlayerProperty.team]);
-                        if (num15 < 2)
-                        {
-                            str = str + "[" + ColorSet.color_human + "] H ";
-                        }
-                        else if (num15 == 2)
-                        {
-                            str = str + "[" + ColorSet.color_human_1 + "] A ";
-                        }
-                    }
-                    else if (RCextensions.returnIntFromObject(player7.customProperties[PhotonPlayerProperty.isTitan]) == 2)
-                    {
-                        str = str + "[" + ColorSet.color_titan_player + "] <T> ";
-                    }
-                    string str4 = str;
-                    str3 = string.Empty;
-                    str3 = (player7.uiname.Length > 100) ? player7.uiname.Substring(0, 20) : player7.uiname;
-                    //str3 = RCextensions.returnStringFromObject(player7.customProperties[PhotonPlayerProperty.name]);
-                    num16 = 0;
-                    num16 = RCextensions.returnIntFromObject(player7.customProperties[PhotonPlayerProperty.kills]);
-                    num17 = 0;
-                    num17 = RCextensions.returnIntFromObject(player7.customProperties[PhotonPlayerProperty.deaths]);
-                    num18 = 0;
-                    num18 = RCextensions.returnIntFromObject(player7.customProperties[PhotonPlayerProperty.max_dmg]);
-                    num19 = 0;
-                    num19 = RCextensions.returnIntFromObject(player7.customProperties[PhotonPlayerProperty.total_dmg]);
-                    str = string.Concat(new object[] { str4, string.Empty, str3, "[ffffff]:", num16, "/", num17, "/", num18, "/", num19 });
-                    if (RCextensions.returnBoolFromObject(player7.customProperties[PhotonPlayerProperty.dead]))
-                    {
-                        str = str + "[-]";
-                    }
-                    str = str + "\n";
-                }
-            }
-        }
-        this.playerList = str;
-        if (PhotonNetwork.isMasterClient && ((!this.isWinning && !this.isLosing) && (this.roundTime >= 5f)))
-        {
-            int num21;
-            if (GameSettings.infectionMode > 0)
-            {
-                int num20 = 0;
-                for (num21 = 0; num21 < PhotonNetwork.playerList.Length; num21++)
-                {
-                    PhotonPlayer targetPlayer = PhotonNetwork.playerList[num21];
-                    if ((!ignoreList.Contains(targetPlayer.ID) && (targetPlayer.customProperties[PhotonPlayerProperty.dead] != null)) && (targetPlayer.customProperties[PhotonPlayerProperty.isTitan] != null))
-                    {
-                        if (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.isTitan]) == 1)
-                        {
-                            if (RCextensions.returnBoolFromObject(targetPlayer.customProperties[PhotonPlayerProperty.dead]) && (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.deaths]) > 0))
-                            {
-                                if (!imatitan.ContainsKey(targetPlayer.ID))
-                                {
-                                    imatitan.Add(targetPlayer.ID, 2);
-                                }
-                                ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
-                                propertiesToSet.Add(PhotonPlayerProperty.isTitan, 2);
-                                targetPlayer.SetCustomProperties(propertiesToSet);
-                                PView.RPC("spawnTitanRPC", targetPlayer, new object[0]);
-                            }
-                            else if (imatitan.ContainsKey(targetPlayer.ID))
-                            {
-                                for (int i = 0; i < heroes.Count; i++)
-                                {
-                                    HERO hero = heroes[i];
-                                    if (hero.photonView.owner == targetPlayer)
-                                    {
-                                        hero.markDie();
-                                        hero.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "noswitchingfagt" });
-                                    }
-                                }
-                            }
-                        }
-                        else if (!((RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.isTitan]) != 2) || RCextensions.returnBoolFromObject(targetPlayer.customProperties[PhotonPlayerProperty.dead])))
-                        {
-                            num20++;
-                        }
-                    }
-                }
-                if ((num20 <= 0) && (IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.KILL_TITAN))
-                {
-                    this.gameWin2();
-                }
-            }
-            else if (GameSettings.pointMode > 0)
-            {
-                if (GameSettings.teamMode > 0)
-                {
-                    if (this.cyanKills >= GameSettings.pointMode)
-                    {
-                        object[] parameters = new object[] { "<color=#00FFFF>Team Cyan wins! </color>", string.Empty };
-                        PView.RPC("Chat", PhotonTargets.All, parameters);
-                        this.gameWin2();
-                    }
-                    else if (this.magentaKills >= GameSettings.pointMode)
-                    {
-                        object[] objArray2 = new object[] { "<color=#FF00FF>Team Magenta wins! </color>", string.Empty };
-                        PView.RPC("Chat", PhotonTargets.All, objArray2);
-                        this.gameWin2();
-                    }
-                }
-                else if (GameSettings.teamMode == 0)
-                {
-                    for (num21 = 0; num21 < PhotonNetwork.playerList.Length; num21++)
-                    {
-                        PhotonPlayer player9 = PhotonNetwork.playerList[num21];
-                        if (RCextensions.returnIntFromObject(player9.customProperties[PhotonPlayerProperty.kills]) >= GameSettings.pointMode)
-                        {
-                            object[] objArray4 = new object[] { "<color=#FFCC00>" + RCextensions.returnStringFromObject(player9.customProperties[PhotonPlayerProperty.name]).hexColor() + " wins!</color>", string.Empty };
-                            PView.RPC("Chat", PhotonTargets.All, objArray4);
-                            this.gameWin2();
-                        }
-                    }
-                }
-            }
-            else if ((GameSettings.pointMode <= 0) && ((GameSettings.bombMode == 1) || (GameSettings.pvpMode > 0)))
-            {
-                if ((GameSettings.teamMode > 0) && (PhotonNetwork.playerList.Length > 1))
-                {
-                    int num23 = 0;
-                    int num24 = 0;
-                    int num25 = 0;
-                    int num26 = 0;
-                    for (num21 = 0; num21 < PhotonNetwork.playerList.Length; num21++)
-                    {
-                        PhotonPlayer player10 = PhotonNetwork.playerList[num21];
-                        if ((!ignoreList.Contains(player10.ID) && (player10.customProperties[PhotonPlayerProperty.RCteam] != null)) && (player10.customProperties[PhotonPlayerProperty.dead] != null))
-                        {
-                            if (RCextensions.returnIntFromObject(player10.customProperties[PhotonPlayerProperty.RCteam]) == 1)
-                            {
-                                num25++;
-                                if (!RCextensions.returnBoolFromObject(player10.customProperties[PhotonPlayerProperty.dead]))
-                                {
-                                    num23++;
-                                }
-                            }
-                            else if (RCextensions.returnIntFromObject(player10.customProperties[PhotonPlayerProperty.RCteam]) == 2)
-                            {
-                                num26++;
-                                if (!RCextensions.returnBoolFromObject(player10.customProperties[PhotonPlayerProperty.dead]))
-                                {
-                                    num24++;
-                                }
-                            }
-                        }
-                    }
-                    if ((num25 > 0) && (num26 > 0))
-                    {
-                        if (num23 == 0)
-                        {
-                            object[] objArray5 = new object[] { "<color=#FF00FF>Team Magenta wins! </color>", string.Empty };
-                            PView.RPC("Chat", PhotonTargets.All, objArray5);
-                            this.gameWin2();
-                        }
-                        else if (num24 == 0)
-                        {
-                            object[] objArray6 = new object[] { "<color=#00FFFF>Team Cyan wins! </color>", string.Empty };
-                            PView.RPC("Chat", PhotonTargets.All, objArray6);
-                            this.gameWin2();
-                        }
-                    }
-                }
-                else if ((GameSettings.teamMode == 0) && (PhotonNetwork.playerList.Length > 1))
-                {
-                    int num27 = 0;
-                    string text = "Nobody";
-                    PhotonPlayer player11 = PhotonNetwork.playerList[0];
-                    for (num21 = 0; num21 < PhotonNetwork.playerList.Length; num21++)
-                    {
-                        PhotonPlayer player12 = PhotonNetwork.playerList[num21];
-                        if (!((player12.customProperties[PhotonPlayerProperty.dead] == null) || RCextensions.returnBoolFromObject(player12.customProperties[PhotonPlayerProperty.dead])))
-                        {
-                            text = (player11 = player12).uiname;
-                            //player11 = player12;
-                            num27++;
-                        }
-                    }
-                    if (num27 <= 1)
-                    {
-                        string str6 = " 5 points added.";
-                        if (text == "Nobody")
-                        {
-                            str6 = string.Empty;
-                        }
-                        else
-                        {
-                            for (num21 = 0; num21 < 5; num21++)
-                            {
-                                this.playerKillInfoUpdate(player11, 0);
-                            }
-                        }
-                        object[] objArray7 = new object[] { "<color=#FFCC00>" + text.hexColor() + " wins." + str6 + "</color>", string.Empty };
-                        PView.RPC("Chat", PhotonTargets.All, objArray7);
-                        this.gameWin2();
-                    }
-                }
-            }
-        }
-    }
-
+    
     private void kickPhotonPlayer(string name)
     {
         UnityEngine.MonoBehaviour.print("KICK " + name + "!!!");
@@ -3909,37 +3365,42 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             this.tryKick(state);
         }
     }
-
+    
     public void kickPlayerRC(PhotonPlayer player, bool ban, string reason)
     {
-        string str;
-        if (OnPrivateServer)
-        {
-            str = string.Empty;
-            str = RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]);
-            ServerCloseConnection(player, ban, str);
-        }
-        else
+        string str = string.Empty;
+        str = RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]);
+        //if (OnPrivateServer)
+        //{
+        //    str = string.Empty;
+        //    str = RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]);
+        //    ServerCloseConnection(player, ban, str);
+        //    //need to add to banlist
+        //    if (!(!ban || banHash.ContainsKey(player.ID)))
+        //    {
+        //        str = string.Empty;
+        //        str = RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]);
+        //        banHash.Add(player.ID, str);
+        //    }
+        //}
+        //else
         {
             if (PhotonNetwork.isMasterClient)
             {
                 PhotonNetwork.DestroyPlayerObjects(player);
-                PhotonNetwork.CloseConnection(player);
+                if (OnPrivateServer) ServerCloseConnection(player, ban, str);
+                else PhotonNetwork.CloseConnection(player);
                 PView.RPC("ignorePlayer", PhotonTargets.Others, new object[] { player.ID });
-               
-                if (!(!ban || banHash.ContainsKey(player.ID)))
-                {
-                    str = string.Empty;
-                    str = RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]);
-                    banHash.Add(player.ID, str);
-                }
-
             }
-            if (!ignoreList.Contains(player.ID))
+            if (!ignoreList.Contains(player.ID)) ignoreList.Add(player.ID);
+
+            if (ban && !banHash.ContainsKey(player.ID) && !banHash.ContainsValue(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]))) //this way doesnt ban same people
             {
-                ignoreList.Add(player.ID);
-                if (reason != string.Empty)
-                    InRoomChat.ChatInstanse.addLINE("Player " + player.ID.ToString() + " was " + (PhotonNetwork.isMasterClient ? "autobanned" : "ignored") + ". Reason:" + reason);
+                banHash.Add(player.ID, str);
+            }
+            if (reason != string.Empty)
+            {
+                InRoomChat.ChatInstanse.addLINE("Player " + player.ID.ToString() + " was " + (PhotonNetwork.isMasterClient ? "autobanned" : "ignored") + ". Reason:" + reason);
             }
             this.RecompilePlayerList(0.1f);
         }
@@ -7467,9 +6928,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 string[] Pol = new string[] { "None", "Interpolation", "Extrapolation" };
                                 FengGameManagerMKII.settings[294] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 380, 280f, 40), (int)FengGameManagerMKII.settings[294], Pol, 3);
 
-                                GUI.Label(new Rect(num7 + 72f, num8 + 410, 190f, 20f), "Physics Update rate (restart):", "Label");
+                                GUI.Label(new Rect(num7 + 72f, num8 + 420, 190f, 20f), "Physics Update rate (restart):", "Label");
                                 string[] PhysicsType = new string[] { "50/s \n(aottg)", "60/s", "75/s" };
-                                FengGameManagerMKII.settings[295] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 435, 280f, 40), (int)FengGameManagerMKII.settings[295], PhysicsType, 3);
+                                FengGameManagerMKII.settings[295] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 445, 280f, 40), (int)FengGameManagerMKII.settings[295], PhysicsType, 3);
 
 
 
@@ -7685,7 +7146,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 strArray16 = new string[] { "Off", "Speed", "Damage" };
                                 settings[0xbd] = GUI.SelectionGrid(new Rect(num7 + 480f, num8 + 305f, 140f, 60f), (int)settings[0xbd], strArray16, 1, GUI.skin.toggle);
                                 AudioListener.volume = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 191f, 150f, 20f), AudioListener.volume, 0f, 1f);
-                                this.mouseSlider = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 216f, 150f, 20f), this.mouseSlider, 0.01f, 1f);
+                                this.mouseSlider = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 216f, 150f, 20f), this.mouseSlider, 0.01f, 1.2f);
                                 PlayerPrefs.SetFloat("MouseSensitivity", this.mouseSlider);
                                 IN_GAME_MAIN_CAMERA.sensitivityMulti = PlayerPrefs.GetFloat("MouseSensitivity");
                                 this.distanceSlider = GUI.HorizontalSlider(new Rect(num7 + 478f, num8 + 241f, 150f, 20f), this.distanceSlider, 0f, 1f);
@@ -11352,7 +10813,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         }
         PhotonNetwork.player.SetCustomProperties(propertiesToSet);
         this.resetGameSettings();
-        banHash = new ExitGames.Client.Photon.Hashtable();
+        //banHash = new ExitGames.Client.Photon.Hashtable();
         imatitan = new ExitGames.Client.Photon.Hashtable();
         oldScript = string.Empty;
         ignoreList = new List<int>();
@@ -12636,6 +12097,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     [RPC]
     public void someOneIsDead(int id = -1)
     {
+        if (!PhotonNetwork.isMasterClient) return; //it must be sent TO mc only, else it makes you send netgamelose in certain conditions
         if (IN_GAME_MAIN_CAMERA.gamemode == GAMEMODE.PVP_CAPTURE)
         {
             if (id != 0)
@@ -13508,7 +12970,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating("blockInvisibleClose", 0, 10f);
         base.name = "MultiplayerManager";
         HeroCostume.init2();
         CharacterMaterials.init();
@@ -13900,7 +13361,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
                         if (ignoreList.Contains(photonPlayer.ID))  text += "[FF0000][X] "; 
 
-                        if (photonPlayer.isLocal)  text += "[00CC00]"; 
+                        if (photonPlayer.isLocal)  text += "[00CC00][RCOpt]"; 
                         else text += "[FFCC00]";
                         text += "[" + photonPlayer.ID + "] "; // Convert.ToString(photonPlayer.ID)
 
@@ -13970,7 +13431,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         }
                         //  iteratorVariable1 = iteratorVariable1 + "[" + MainColor + "][[7b001c]" + Checkmod(player7) + "[" + MainColor + "]] ";
 
-                        if (player7.isLocal) iteratorVariable1 += "[00CC00]";
+                        if (player7.isLocal) iteratorVariable1 += "[00CC00][RCOpt]";
                         else iteratorVariable1 += "[FFCC00]";
                         iteratorVariable1 = iteratorVariable1 + "[" + Convert.ToString(player7.ID) + "] ";
 
@@ -14162,7 +13623,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (player4.isLocal)
                     {
-                        iteratorVariable1 = iteratorVariable1 + "[00CC00]";
+                        iteratorVariable1 = iteratorVariable1 + "[00CC00][RCOpt]";
                     }
                     else
                     {
@@ -14224,7 +13685,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (player5.isLocal)
                     {
-                        iteratorVariable1 = iteratorVariable1 + "[00CC00]";
+                        iteratorVariable1 = iteratorVariable1 + "[00CC00][RCOpt]";
                     }
                     else
                     {
@@ -14286,7 +13747,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (player6.isLocal)
                     {
-                        iteratorVariable1 = iteratorVariable1 + "[00CC00]";
+                        iteratorVariable1 = iteratorVariable1 + "[00CC00][RCOpt]";
                     }
                     else
                     {

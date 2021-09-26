@@ -643,11 +643,12 @@ public class InRoomChat : Photon.MonoBehaviour
                                             if (num8 == player3.ID)
                                             {
                                                 flag2 = true;
-                                                if (FengGameManagerMKII.OnPrivateServer)
-                                                {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(player3, false, "");
-                                                }
-                                                else if (PhotonNetwork.isMasterClient)
+                                                //if (FengGameManagerMKII.OnPrivateServer)
+                                                //{
+                                                //    FengGameManagerMKII.instance.kickPlayerRC(player3, false, "");
+                                                //}
+                                                //else 
+                                                if (PhotonNetwork.isMasterClient)
                                                 {
                                                     FengGameManagerMKII.instance.kickPlayerRC(player3, false, "");
                                                     objArray7 = new object[] { "<color=#FFCC00>" + RCextensions.returnStringFromObject(player3.customProperties[PhotonPlayerProperty.name]) + " has been kicked from the server!</color>", string.Empty };
@@ -691,11 +692,12 @@ public class InRoomChat : Photon.MonoBehaviour
                                                 if (num8 == player3.ID)
                                                 {
                                                     flag2 = true;
-                                                    if (FengGameManagerMKII.OnPrivateServer)
-                                                    {
-                                                        FengGameManagerMKII.instance.kickPlayerRC(player3, true, "");
-                                                    }
-                                                    else if (PhotonNetwork.isMasterClient)
+                                                    //if (FengGameManagerMKII.OnPrivateServer)
+                                                    //{
+                                                    //    FengGameManagerMKII.instance.kickPlayerRC(player3, true, "");
+                                                    //}
+                                                    //else 
+                                                    if (PhotonNetwork.isMasterClient)
                                                     {
                                                         FengGameManagerMKII.instance.kickPlayerRC(player3, true, "");
                                                         objArray7 = new object[] { "<color=#FFCC00>" + RCextensions.returnStringFromObject(player3.customProperties[PhotonPlayerProperty.name]) + " has been banned from the server!</color>", string.Empty };

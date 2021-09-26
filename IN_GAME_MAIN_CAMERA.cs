@@ -762,12 +762,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         {
             mainHERO = mainobject.GetComponent<HERO>();
             main_objectR = mainobject.rigidbody;
-            if (((int)FengGameManagerMKII.settings[294]) == 0)
-                main_objectR.interpolation = RigidbodyInterpolation.None;
-            else if (((int)FengGameManagerMKII.settings[294]) == 1)
-                main_objectR.interpolation = RigidbodyInterpolation.Interpolate;
-            else if (((int)FengGameManagerMKII.settings[294]) == 2)
-                main_objectR.interpolation = RigidbodyInterpolation.Extrapolate;
             headT = head.transform;
             distanceMulti = this.heightMulti = 0.64f;
             if (resetRotation)

@@ -5633,6 +5633,8 @@ public class HERO : MONO
         }
         else
         {
+            this.SetInterpolationIfEnabled();
+
             this.triggerLeft = this.checkBoxLeft.GetComponent<TriggerColliderWeapon>();
             this.triggerRight = this.checkBoxRight.GetComponent<TriggerColliderWeapon>();
             this.loadskin();
@@ -5644,6 +5646,19 @@ public class HERO : MONO
         {
             this.bombImmune = true;
             base.StartCoroutine(this.stopImmunity());
+        }
+    }
+
+    public void SetInterpolationIfEnabled()
+    {
+        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE || base.photonView.isMine)
+        {
+            if (((int)FengGameManagerMKII.settings[294]) == 2)
+                baseR.interpolation = RigidbodyInterpolation.Extrapolate;
+            else if (((int)FengGameManagerMKII.settings[294]) == 0)
+                baseR.interpolation = RigidbodyInterpolation.None;
+            else if (((int)FengGameManagerMKII.settings[294]) == 1)
+                baseR.interpolation = RigidbodyInterpolation.Interpolate;
         }
     }
 
