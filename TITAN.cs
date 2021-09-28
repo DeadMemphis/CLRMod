@@ -723,8 +723,13 @@ public class TITAN : MONO
     }
 
     [RPC]
-    public void DieByCannon(int viewID)
+    public void DieByCannon(int viewID, PhotonMessageInfo info)
     {
+        if (!FengGameManagerMKII.level.StartsWith("Custom"))
+        {
+           FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "Shot by cannons not in custom maps");
+            return;
+        }
         PhotonView view = PhotonView.Find(viewID);
         if (view != null)
         {

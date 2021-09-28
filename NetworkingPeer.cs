@@ -1080,7 +1080,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "nettauntattack":
             case "someoneisdead":
             case "hitanklerpc":
-                return sender.isMasterClient ? 150 : 130;
+                return sender.isMasterClient ? 50 : 30;
             #endregion
 
             #region 0 parameters
@@ -1118,6 +1118,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             #endregion
 
             #region 1 param
+            case "diebycannon": //18 cannons dc you, and you need to ignore in time so u put 10 not 15
+                return CorrectLength(param, 1) ? 10 : 0;
+
             case "mountcharacter":
             case "unmountcharacter":
             case "blowaway":
@@ -1151,7 +1154,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "netrefreshracingresult":
             case "whoismyerentitan":
             case "hiteyerpc":
-            case "diebycannon":
             case "spawncannonrpc":
             case "setteamrpc":
             case "ignoreplayerarray":
@@ -1189,7 +1191,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "clearlevel":
             case "titangethit":
             case "netupdatephase1":
-                return CorrectLength(param, 2) ? (sender.isMasterClient ? 50 : 30) : 0;
+                return CorrectLength(param, 2) ? (sender.isMasterClient ? /*1*/50 : /*1*/30) : 0;
             case "mymasteris":
             case "rpchookedbyhuman":
                 return CorrectLength(param, 2) ? 200 : 0;
@@ -1210,7 +1212,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "showresult":
                 return CorrectLength(param, 6) ? 20 : 0;
             case "refreshstatus":
-                return CorrectLength(param, 8) ? (sender.isMasterClient ? 70 : 60) : 0;
+                return CorrectLength(param, 8) ? (sender.isMasterClient ? 50 : 30) : 0;
             #endregion
 
             #region custom rpcs
@@ -1313,8 +1315,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
 
 
             default:
-                return sender.isMasterClient ? 150 : 130;
+                return sender.isMasterClient ? 50 : 30;
         }
+
     }
 
     static List<string> _excp = new List<string>(new string[] { "netcrossfade", "setmytarget", "setphase", "netpauseanimation", /*"netplayanimation",*/ "net3dmgsmoke" });
@@ -2021,6 +2024,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     }
 
     //was comparing mine to bahaa's to see how to fuck his leaked mod, after finding exploits and fixing them was too lazy to bring mine back Lol
+
     private bool CheckOSR(object Evdata, PhotonPlayer sender)
     {
         if (sender == null) return true;
@@ -2043,6 +2047,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                 return false;
                             }
                         }
+
+
                         foreach (object obj in hashtable.Keys)
                         {
                             if (obj is byte)
@@ -2053,20 +2059,20 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                     return false;
                                 }
                             }
-                            else
+                        }
+
+                        short index = 2;
+                        if (!hashtable.ContainsKey((byte)1)) index--;
+                        for (short i = index; i < hashtable.Count; i++)
+                        {
+                            if (hashtable[(short)i] is ExitGames.Client.Photon.Hashtable hashtable2 /*&& hashtable2 != null*/)
                             {
-                                if (!(obj is short))
+                                if (hashtable2 == null)
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR invalid key" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR hashtable2 null" + hashtable);
                                     return false;
                                 }
                                 containsshorts = true;
-                                if (!(hashtable[obj] is ExitGames.Client.Photon.Hashtable))
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR object not hash" + hashtable);
-                                    return false;
-                                }
-                                ExitGames.Client.Photon.Hashtable hashtable2 = hashtable[obj] as ExitGames.Client.Photon.Hashtable;
                                 if (hashtable2.Keys.Count != 2)
                                 {
                                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR keys length" + hashtable);
@@ -2092,15 +2098,53 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                 object[] array = hashtable2[(byte)1] as object[];
                                 if (!(array.Length == 2 || array.Length == 3 || array.Length == 4))
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR objArray length (" + array.Length + ")");
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR invalid objArray length (" + array.Length + ")" + hashtable);
+                                    return false;
+                                }
+
+                                bool IsCustomType = false;
+                                switch (array.Length)
+                                {
+                                    case 2: //when titans are killed
+                                        {
+                                            if (array[0] is Vector3 && array[1] is Quaternion)
+                                            {
+                                                IsCustomType = true;
+                                            }
+                                            break;
+                                        }
+                                    case 3: //titans
+                                        {
+                                            if (array[0] is Vector3 && array[1] is Quaternion && array[2] is Vector3)
+                                            {
+                                                IsCustomType = true;
+                                            }
+                                            break;
+                                        }
+                                    case 4: //characters
+                                        {
+                                            if (array[0] is Vector3 && array[1] is Quaternion && array[2] is Vector3 && array[3] is Quaternion)
+                                            {
+                                                IsCustomType = true;
+                                            }
+                                            break;
+                                        }
+                                }
+                                if (!IsCustomType)
+                                {
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR objArray not customType (" + array.Length + ")" + hashtable);
                                     return false;
                                 }
 
                             }
-                            bool missingShorts = !containsshorts;
-                            if (missingShorts)
+                            else
                             {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR missing short" + hashtable);
+                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR invalid index " + hashtable);
+                                return false;
+                            }
+                            if (!containsshorts)
+                            {
+                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR not (short)2" + hashtable);
                                 return false;
                             }
                         }
@@ -2120,12 +2164,11 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             }
             else
             {
-                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR doesn't have hash "+ Evdata);
+                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR not hash");
                 return false;
             }
         }
     }
-
 
     public void OnEvent(EventData photonEvent)
     {
@@ -2192,7 +2235,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 break;
             case 201: //0xc9 OSR or OnSerializeRead, pos rotation etc
             case 206: //0xce
-                if (base.ByteCountCurrentDispatch > 3700)
+                if (base.ByteCountCurrentDispatch > 5800)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
                     return;
@@ -2486,7 +2529,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 break;
             case 253:
-                if (base.ByteCountCurrentDispatch > 300)
+                if (base.ByteCountCurrentDispatch > 500)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
                     return;
