@@ -31,8 +31,8 @@ public class PVPcheckPoint : Photon.MonoBehaviour
     private bool titanOn;
     public float titanPt;
     public float titanPtMax = 40f;
-    float _lastTitanPt;
-    float _lastHumanPt;
+    float _lastTitanPt; //aottg2
+    float _lastHumanPt; //aottg2
 
     [RPC]
     private void changeHumanPt(float pt)

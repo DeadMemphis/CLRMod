@@ -14,8 +14,8 @@ using Utility;
 
 public class HERO : MONO
 {
-    private bool _cancelGasDisable = false;
-    private bool _animationStopped = false;
+    private bool _cancelGasDisable = false; //aottg2
+    private bool _animationStopped = false; //aottg2
     private HERO_STATE _state;
     private bool almostSingleHook;
     private string attackAnimation;
@@ -1481,7 +1481,7 @@ public class HERO : MONO
                             }
                         }
                     }
-                    if (this.grounded)
+                    if (this.grounded) //aottg2
                     {
                         Vector3 vector7;
                         Vector3 zero = Vector3.zero;
@@ -1649,7 +1649,7 @@ public class HERO : MONO
                             baseT.position = this.myHorse.transform.position + ((Vector3)(Vector3.up * 1.65f));
                             baseT.rotation = this.myHorse.transform.rotation;
                             this.isMounted = true;
-                            if (!base.animation.IsPlaying("horse_idle"))
+                            if (!baseA.IsPlaying("horse_idle")) //aottg2 checks on cross fades
                                 this.crossFade("horse_idle", 0.1f);
                             this.myHorse.GetComponent<Horse>().mounted();
                         }

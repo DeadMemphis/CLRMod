@@ -11,10 +11,10 @@ using UnityEngine;
 
 public class TITAN : MONO
 {
-    private HashSet<string> _ignoreLookTargetAnimations;
-    private HashSet<string> _fastHeadRotationAnimations;
-    private bool _ignoreLookTarget;
-    private bool _fastHeadRotation;
+    private HashSet<string> _ignoreLookTargetAnimations; //aottg2
+    private HashSet<string> _fastHeadRotationAnimations; //aottg2
+    private bool _ignoreLookTarget; //aottg2
+    private bool _fastHeadRotation; //aottg2
     private static Dictionary<string, int> f__switchmap7;
     private Vector3 abnorma_jump_bite_horizon_v;
     public AbnormalType abnormalType;
@@ -399,7 +399,7 @@ public class TITAN : MONO
         }
     }
 
-    private void CheckAnimationLookTarget(string animation)
+    private void CheckAnimationLookTarget(string animation) //aottg2
     {
         _ignoreLookTarget = _ignoreLookTargetAnimations.Contains(animation);
         _fastHeadRotation = _fastHeadRotationAnimations.Contains(animation);
@@ -606,7 +606,7 @@ public class TITAN : MONO
         return null;
     }
 
-    private void crossFadeIfNotPlaying(string aniName, float time)
+    private void crossFadeIfNotPlaying(string aniName, float time) //aottg2
     {
         if (!base.animation.IsPlaying(aniName))
             crossFade(aniName, time);
@@ -1851,7 +1851,7 @@ public class TITAN : MONO
 
 
 
-    public void headMovement2()
+    public void headMovement2() //aottg2
     {
         if (!this.hasDie)
         {
@@ -2735,7 +2735,7 @@ public class TITAN : MONO
         }
     }
 
-    public void UpdateHeroDistance()
+    public void UpdateHeroDistance() //aottg2
     {
         if ((!IN_GAME_MAIN_CAMERA.isPausing || IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER) && myDifficulty >= 0 && !nonAI)
         {
@@ -4308,7 +4308,7 @@ public class TITAN : MONO
                     this.getdownTime -= Time.deltaTime;
                     if (baseA.IsPlaying("sit_hunt_down") && (baseA["sit_hunt_down"].normalizedTime >= 1f))
                     {
-                        if (!base.animation.IsPlaying("sit_idle"))
+                        if (!base.animation.IsPlaying("sit_idle")) //aottg2
                             this.playAnimation("sit_idle");
                     }
                     if (this.getdownTime <= 0f)

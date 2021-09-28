@@ -13,7 +13,7 @@ public class Horse : MONO
     private float speed = 45f;
     private string State = "idle";
     private float timeElapsed;
-    private float _idleTime = 0f;
+    private float _idleTime = 0f; //aottg2
 
 
     public Animation baseA;
@@ -377,8 +377,8 @@ public class Horse : MONO
                     this.basePV.RPC("setDust", PhotonTargets.Others, objArray2);
                 }
             }
-        }
-        else
+        }//aottg2
+        else 
         {
             if (_idleTime <= 0f)
             {
