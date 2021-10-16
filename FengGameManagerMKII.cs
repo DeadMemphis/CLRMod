@@ -3365,7 +3365,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             this.tryKick(state);
         }
     }
-    
+
+    public List<string> DCPeopleList;
+
     public void kickPlayerRC(PhotonPlayer player, bool ban, string reason)
     {
         string str = string.Empty;
@@ -3393,6 +3395,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 PView.RPC("ignorePlayer", PhotonTargets.Others, new object[] { player.ID });
             }
             if (!ignoreList.Contains(player.ID)) ignoreList.Add(player.ID);
+
+            string fullName = RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]);
+            if (!FengGameManagerMKII.instance.DCPeopleList.Contains(fullName))
+                instance.DCPeopleList.Add(fullName);
 
             if (ban && !banHash.ContainsKey(player.ID) && !banHash.ContainsValue(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]))) //this way doesnt ban same people
             {
@@ -13367,6 +13373,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
                         // text += "[" + MainColor + "][[7b001c]" + Checkmod(photonPlayer) + "[" + MainColor + "]] ";
 
+                        if (DCPeopleList.Contains(RCextensions.returnStringFromObject(photonPlayer.customProperties[PhotonPlayerProperty.name]))) text += "[000000][BanList][-]";
                         if (photonPlayer.isMasterClient)
                         {
                             text += "[ffffff][M][-] ";
@@ -13436,6 +13443,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         iteratorVariable1 = iteratorVariable1 + "[" + Convert.ToString(player7.ID) + "] ";
 
 
+                        if (DCPeopleList.Contains(RCextensions.returnStringFromObject(player7.customProperties[PhotonPlayerProperty.name]))) iteratorVariable1 += "[000000][BanList][-]";
                         if (player7.isMasterClient)
                         {
                             iteratorVariable1 = iteratorVariable1 + "[ffffff][M] ";
@@ -13630,6 +13638,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         iteratorVariable1 = iteratorVariable1 + "[FFCC00]";
                     }
                     iteratorVariable1 = iteratorVariable1 + "[" + Convert.ToString(player4.ID) + "] ";
+
+                    if (DCPeopleList.Contains(RCextensions.returnStringFromObject(player4.customProperties[PhotonPlayerProperty.name]))) iteratorVariable1 += "[000000][BanList][-]";
                     if (player4.isMasterClient)
                     {
                         iteratorVariable1 = iteratorVariable1 + "[ffffff][M] ";
@@ -13692,6 +13702,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         iteratorVariable1 = iteratorVariable1 + "[FFCC00]";
                     }
                     iteratorVariable1 = iteratorVariable1 + "[" + Convert.ToString(player5.ID) + "] ";
+
+                    if (DCPeopleList.Contains(RCextensions.returnStringFromObject(player5.customProperties[PhotonPlayerProperty.name]))) iteratorVariable1 += "[000000][BanList][-]";
                     if (player5.isMasterClient)
                     {
                         iteratorVariable1 = iteratorVariable1 + "[ffffff][M] ";
@@ -13754,6 +13766,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         iteratorVariable1 = iteratorVariable1 + "[FFCC00]";
                     }
                     iteratorVariable1 = iteratorVariable1 + "[" + Convert.ToString(player6.ID) + "] ";
+
+                    if (DCPeopleList.Contains(RCextensions.returnStringFromObject(player6.customProperties[PhotonPlayerProperty.name]))) iteratorVariable1 += "[000000][BanList][-]";
                     if (player6.isMasterClient)
                     {
                         iteratorVariable1 = iteratorVariable1 + "[ffffff][M] ";

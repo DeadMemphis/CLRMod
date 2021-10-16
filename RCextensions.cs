@@ -14,6 +14,14 @@ using System.ComponentModel;
 
 public static class RCextensions
 {
+    public static void Chat(this PhotonPlayer player, string msg, string sender = "")
+    {
+        FengGameManagerMKII.instance.photonView.RPC("Chat", player, new object[2]
+        {
+            msg, sender
+        });
+    }
+
     [Description("Removes all HTML formatted color codes from string")]
     public static string StripColor(this string s)
     {

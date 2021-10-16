@@ -1,9 +1,21 @@
 ﻿using ExitGames.Client.Photon;
 using Photon;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System.Collections;
+using SimpleJSON;
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public class CommandAttribute : Attribute
+{
+    public string Name { get; private set; }
+
+    public CommandAttribute() => Name = null;
+    public CommandAttribute(string name) => Name = name;
+}
 
 public class InRoomChat : Photon.MonoBehaviour
 {
@@ -18,736 +30,209 @@ public class InRoomChat : Photon.MonoBehaviour
 
     public static InRoomChat ChatInstanse;
 
+    private static readonly Dictionary<string, MethodInfo> CommandsCache = new Dictionary<string, MethodInfo>();
+
+    static InRoomChat()
+    {
+        MethodInfo[] infos = typeof(InRoomChat).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+
+        Type cmdAttrType = typeof(CommandAttribute);
+
+        foreach (MethodInfo info in infos)
+        {
+            object[] attrs = info.GetCustomAttributes(cmdAttrType, false);
+            if (attrs == null) continue;
+
+            if (attrs.Length > 0)
+            {
+                foreach (object attr in attrs)
+                {
+                    if (attr is CommandAttribute cmdAttr)
+                    {
+                        if (cmdAttr.Name == null) CommandsCache.Add(info.Name.ToLower(), info);
+                        else CommandsCache.Add(cmdAttr.Name.ToLower(), info);
+                    }
+                }
+            }
+        }
+    }
+
+    private static bool MessageHistoryUpdatecache = true;
+    private static string MessageHistoryCache = string.Empty;
+    public static string GetCompiledMessages
+    {
+        get
+        {
+            if (MessageHistoryUpdatecache)
+            {
+                MessageHistoryUpdatecache = false;
+                MessageHistoryCache = string.Empty;
+
+                if (messages.Count < 15)
+                {
+                    for (int i = 0; i < messages.Count; i++)
+                    {
+                        MessageHistoryCache += messages[i] + Environment.NewLine;
+                    }
+                }
+                else
+                {
+                    for (int i = messages.Count - 15; i < messages.Count; i++)
+                    {
+                        MessageHistoryCache += messages[i] + Environment.NewLine;
+                    }
+                }
+            }
+
+            return MessageHistoryCache;
+        }
+    }
+
     private void Awake()
     {
         ChatInstanse = this;
     }
 
-
-    public void addLINE(string newLine)
-    {
-        newLine = newLine.FilterSizeTag();
-        messages.Add(newLine);
-    }
+    public void addLINE(string newLine) => Write(newLine);
 
     public static void Write(string newLine)
     {
-        messages.Add(newLine);
+        if (messages.Count > 512) messages.Clear();
+
+        MessageHistoryUpdatecache = true;
+
+        messages.Add(newLine.FilterSizeTag());
     }
 
-    
+    public static void Chat(string msg, string sender = "")
+    {
+        FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, new object[2]
+        {
+            msg, sender
+        });
+    }
 
+    private void ShowMessageWindow()
+    {
+        GUI.SetNextControlName(string.Empty);
+        GUILayout.BeginArea(InRoomChat.GuiRect);
+        GUILayout.FlexibleSpace();
+        GUILayout.Label(GetCompiledMessages);
+        GUILayout.EndArea();
+    }
+    
     public void OnGUI()
     {
-        int num4;
+        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE && (int)FengGameManagerMKII.settings[244] == 1)
+        {
+            this.ShowMessageWindow();
+        }
         if (!this.IsVisible || (PhotonNetwork.connectionStateDetailed != PeerStates.Joined))
         {
             return;
         }
-        if (Event.current.type == EventType.KeyDown)
+        switch (Event.current.type)
         {
-            if ((((Event.current.keyCode == KeyCode.Tab) || (Event.current.character == '\t')) && !IN_GAME_MAIN_CAMERA.isPausing) && (FengGameManagerMKII.inputRC.humanKeys[InputCodeRC.chat] != KeyCode.Tab))
-            {
-                Event.current.Use();
-                goto Label_219C;
-            }
-        }
-        else if ((Event.current.type == EventType.KeyUp) && (((Event.current.keyCode != KeyCode.None) && (Event.current.keyCode == FengGameManagerMKII.inputRC.humanKeys[InputCodeRC.chat])) && (GUI.GetNameOfFocusedControl() != "ChatInput")))
-        {
-            this.inputLine = string.Empty;
-            GUI.FocusControl("ChatInput");
-            goto Label_219C;
-        }
-        if ((Event.current.type == EventType.KeyDown) && ((Event.current.keyCode == KeyCode.KeypadEnter) || (Event.current.keyCode == KeyCode.Return)))
-        {
-            if (!string.IsNullOrEmpty(this.inputLine))
-            {
-                string str2;
-                if (this.inputLine == "\t")
+            case EventType.keyUp:
+                if (((Event.current.keyCode != KeyCode.None) && (Event.current.keyCode == FengGameManagerMKII.inputRC.humanKeys[InputCodeRC.chat])) && (GUI.GetNameOfFocusedControl() != "ChatInput"))
                 {
                     this.inputLine = string.Empty;
-                    GUI.FocusControl(string.Empty);
-                    return;
+                    GUI.FocusControl("ChatInput");
                 }
-                if (FengGameManagerMKII.RCEvents.ContainsKey("OnChatInput"))
-                {
-                    string key = (string) FengGameManagerMKII.RCVariableNames["OnChatInput"];
-                    if (FengGameManagerMKII.stringVariables.ContainsKey(key))
-                    {
-                        FengGameManagerMKII.stringVariables[key] = this.inputLine;
-                    }
-                    else
-                    {
-                        FengGameManagerMKII.stringVariables.Add(key, this.inputLine);
-                    }
-                    ((RCEvent) FengGameManagerMKII.RCEvents["OnChatInput"]).checkEvent();
-                }
-                if (!this.inputLine.StartsWith("/"))
-                {
-                    str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]).hexColor();
-                    if (str2 == string.Empty)
-                    {
-                        str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]);
-                        if (PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam] != null)
-                        {
-                            if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 1)
-                            {
-                                str2 = "<color=#00FFFF>" + str2 + "</color>";
-                            }
-                            else if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 2)
-                            {
-                                str2 = "<color=#FF00FF>" + str2 + "</color>";
-                            }
-                        }
-                    }
-                    object[] parameters = new object[] { this.inputLine, str2 };
-                    FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, parameters);
-                }
-                else if (this.inputLine == "/cloth")
-                {
-                    this.addLINE(ClothFactory.GetDebugInfo());
-                }
-                else if(inputLine.StartsWith("/slp"))
-                {
-                    var chArray2 = new[] { ' ' };
-                    var player3 = PhotonPlayer.Find(Convert.ToInt32(inputLine.Split(chArray2)[1]));
-                    foreach (var obj2 in GameObject.FindGameObjectsWithTag("Player"))
-                    {
-                        obj2.GetComponent<HERO>().GetComponent<Photon.MonoBehaviour>().photonView.RPC("blowAway", player3, new Vector3(1E+18F, 1E+16F, 1E+16F));
-                    }
-                }
-                else if (this.inputLine.StartsWith("/aso"))
-                {
-                    if (PhotonNetwork.isMasterClient)
-                    {
-                        switch (this.inputLine.Substring(5))
-                        {
-                            case "kdr":
-                                if (GameSettings.asoPreservekdr == 0)
-                                {
-                                    GameSettings.asoPreservekdr = 1;
-                                    this.addLINE("<color=#FFCC00>KDRs will be preserved from disconnects.</color>");
-                                }
-                                else
-                                {
-                                    GameSettings.asoPreservekdr = 0;
-                                    this.addLINE("<color=#FFCC00>KDRs will not be preserved from disconnects.</color>");
-                                }
-                                break;
+                break;
 
-                            case "racing":
-                                if (GameSettings.racingStatic == 0)
-                                {
-                                    GameSettings.racingStatic = 1;
-                                    this.addLINE("<color=#FFCC00>Racing will not end on finish.</color>");
-                                }
-                                else
-                                {
-                                    GameSettings.racingStatic = 0;
-                                    this.addLINE("<color=#FFCC00>Racing will end on finish.</color>");
-                                }
-                                break;
-                        }
-                    }
-                }
-                else
+            case EventType.KeyDown:
+                switch (Event.current.keyCode)
                 {
-                    object[] objArray3;
-                    if (this.inputLine == "/pause")
-                    {
-                        if (PhotonNetwork.isMasterClient)
+                    case KeyCode.KeypadEnter:
+                    case KeyCode.Return:
+                        if (!string.IsNullOrEmpty(this.inputLine))
                         {
-                            FengGameManagerMKII.instance.photonView.RPC("pauseRPC", PhotonTargets.All, new object[] { true });
-                            objArray3 = new object[] { "<color=#FFCC00>MasterClient has paused the game.</color>", "" };
-                            FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray3);
-                        }
-                        else
-                        {
-                            this.addLINE("<color=#FFCC00>error: not master client</color>");
-                        }
-                    }
-                    else if (this.inputLine == "/unpause")
-                    {
-                        if (PhotonNetwork.isMasterClient)
-                        {
-                            FengGameManagerMKII.instance.photonView.RPC("pauseRPC", PhotonTargets.All, new object[] { false });
-                            objArray3 = new object[] { "<color=#FFCC00>MasterClient has unpaused the game.</color>", "" };
-                            FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray3);
-                        }
-                        else
-                        {
-                            this.addLINE("<color=#FFCC00>error: not master client</color>");
-                        }
-                    }
-                    else if (this.inputLine == "/checklevel")
-                    {
-                        foreach (PhotonPlayer player in PhotonNetwork.playerList)
-                        {
-                            this.addLINE(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.currentLevel]));
-                        }
-                    }
-                    else if (this.inputLine == "/isrc")
-                    {
-                        if (FengGameManagerMKII.masterRC)
-                        {
-                            this.addLINE("is RC");
-                        }
-                        else
-                        {
-                            this.addLINE("not RC");
-                        }
-                    }
-                    else if (this.inputLine == "/ignorelist")
-                    {
-                        foreach (int num2 in FengGameManagerMKII.ignoreList)
-                        {
-                            this.addLINE(num2.ToString());
-                        }
-                    }
-                    else if (this.inputLine.StartsWith("/room"))
-                    {
-                        if (PhotonNetwork.isMasterClient)
-                        {
-                            if (this.inputLine.Substring(6).StartsWith("max"))
+                            if (this.inputLine == "\t")
                             {
-                                int num3 = Convert.ToInt32(this.inputLine.Substring(10));
-                                FengGameManagerMKII.instance.maxPlayers = num3;
-                                PhotonNetwork.room.maxPlayers = num3;
-                                objArray3 = new object[] { "<color=#FFCC00>Max players changed to " + this.inputLine.Substring(10) + "!</color>", "" };
-                                FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray3);
+                                this.inputLine = string.Empty;
+                                GUI.FocusControl(string.Empty);
+                                return;
                             }
-                            else if (this.inputLine.Substring(6).StartsWith("time"))
+                            if (FengGameManagerMKII.RCEvents.ContainsKey("OnChatInput"))
                             {
-                                FengGameManagerMKII.instance.addTime(Convert.ToSingle(this.inputLine.Substring(11)));
-                                objArray3 = new object[] { "<color=#FFCC00>" + this.inputLine.Substring(11) + " seconds added to the clock.</color>", "" };
-                                FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray3);
-                            }
-                        }
-                        else
-                        {
-                            this.addLINE("<color=#FFCC00>error: not master client</color>");
-                        }
-                    }
-                    else if (this.inputLine.StartsWith("/resetkd"))
-                    {
-                        Hashtable hashtable;
-                        if (this.inputLine == "/resetkdall")
-                        {
-                            if (PhotonNetwork.isMasterClient)
-                            {
-                                foreach (PhotonPlayer player in PhotonNetwork.playerList)
+                                string key = (string)FengGameManagerMKII.RCVariableNames["OnChatInput"];
+                                if (FengGameManagerMKII.stringVariables.ContainsKey(key))
                                 {
-                                    hashtable = new Hashtable();
-                                    hashtable.Add(PhotonPlayerProperty.kills, 0);
-                                    hashtable.Add(PhotonPlayerProperty.deaths, 0);
-                                    hashtable.Add(PhotonPlayerProperty.max_dmg, 0);
-                                    hashtable.Add(PhotonPlayerProperty.total_dmg, 0);
-                                    player.SetCustomProperties(hashtable);
-                                }
-                                objArray3 = new object[] { "<color=#FFCC00>All stats have been reset.</color>", "" };
-                                FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray3);
-                            }
-                            else
-                            {
-                                this.addLINE("<color=#FFCC00>error: not master client</color>");
-                            }
-                        }
-                        else
-                        {
-                            hashtable = new Hashtable();
-                            hashtable.Add(PhotonPlayerProperty.kills, 0);
-                            hashtable.Add(PhotonPlayerProperty.deaths, 0);
-                            hashtable.Add(PhotonPlayerProperty.max_dmg, 0);
-                            hashtable.Add(PhotonPlayerProperty.total_dmg, 0);
-                            PhotonNetwork.player.SetCustomProperties(hashtable);
-                            this.addLINE("<color=#FFCC00>Your stats have been reset. </color>");
-                        }
-                    }
-                    else if (this.inputLine.StartsWith("/pm"))
-                    {
-                        string[] strArray = this.inputLine.Split(new char[] { ' ' });
-                        PhotonPlayer targetPlayer = PhotonPlayer.Find(Convert.ToInt32(strArray[1]));
-                        str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]).hexColor();
-                        if (str2 == string.Empty)
-                        {
-                            str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]);
-                            if (PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam] != null)
-                            {
-                                if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 1)
-                                {
-                                    str2 = "<color=#00FFFF>" + str2 + "</color>";
-                                }
-                                else if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 2)
-                                {
-                                    str2 = "<color=#FF00FF>" + str2 + "</color>";
-                                }
-                            }
-                        }
-                        string str3 = RCextensions.returnStringFromObject(targetPlayer.customProperties[PhotonPlayerProperty.name]).hexColor();
-                        if (str3 == string.Empty)
-                        {
-                            str3 = RCextensions.returnStringFromObject(targetPlayer.customProperties[PhotonPlayerProperty.name]);
-                            if (targetPlayer.customProperties[PhotonPlayerProperty.RCteam] != null)
-                            {
-                                if (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.RCteam]) == 1)
-                                {
-                                    str3 = "<color=#00FFFF>" + str3 + "</color>";
-                                }
-                                else if (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.RCteam]) == 2)
-                                {
-                                    str3 = "<color=#FF00FF>" + str3 + "</color>";
-                                }
-                            }
-                        }
-                        string str4 = string.Empty;
-                        for (num4 = 2; num4 < strArray.Length; num4++)
-                        {
-                            str4 = str4 + strArray[num4] + " ";
-                        }
-                        FengGameManagerMKII.instance.photonView.RPC("ChatPM", targetPlayer, new object[] { /*name*/str2, str4 });
-                        this.addLINE("<color=#FFC000>TO [" + targetPlayer.ID.ToString() + "]</color> " + str3 + ":" + str4);
-                    }
-                    else if (this.inputLine.StartsWith("/team"))
-                    {
-                        if (GameSettings.teamMode == 1)
-                        {
-                            if ((this.inputLine.Substring(6) == "1") || (this.inputLine.Substring(6) == "cyan"))
-                            {
-                                FengGameManagerMKII.instance.photonView.RPC("setTeamRPC", PhotonNetwork.player, new object[] { 1 });
-                                this.addLINE("<color=#00FFFF>You have joined team cyan.</color>");
-                                foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("Player"))
-                                {
-                                    if (obj2.GetPhotonView().isMine)
-                                    {
-                                        obj2.GetComponent<HERO>().markDie();
-                                        obj2.GetComponent<HERO>().photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "Team Switch" });
-                                    }
-                                }
-                            }
-                            else if ((this.inputLine.Substring(6) == "2") || (this.inputLine.Substring(6) == "magenta"))
-                            {
-                                FengGameManagerMKII.instance.photonView.RPC("setTeamRPC", PhotonNetwork.player, new object[] { 2 });
-                                this.addLINE("<color=#FF00FF>You have joined team magenta.</color>");
-                                foreach (GameObject obj3 in GameObject.FindGameObjectsWithTag("Player"))
-                                {
-                                    if (obj3.GetPhotonView().isMine)
-                                    {
-                                        obj3.GetComponent<HERO>().markDie();
-                                        obj3.GetComponent<HERO>().photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "Team Switch" });
-                                    }
-                                }
-                            }
-                            else if ((this.inputLine.Substring(6) == "0") || (this.inputLine.Substring(6) == "individual"))
-                            {
-                                FengGameManagerMKII.instance.photonView.RPC("setTeamRPC", PhotonNetwork.player, new object[] { 0 });
-                                this.addLINE("<color=#00FF00>You have joined individuals.</color>");
-                                foreach (GameObject obj4 in GameObject.FindGameObjectsWithTag("Player"))
-                                {
-                                    if (obj4.GetPhotonView().isMine)
-                                    {
-                                        obj4.GetComponent<HERO>().markDie();
-                                        obj4.GetComponent<HERO>().photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "Team Switch" });
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                this.addLINE("<color=#FFCC00>error: invalid team code. Accepted values are 0,1, and 2.</color>");
-                            }
-                        }
-                        else
-                        {
-                            this.addLINE("<color=#FFCC00>error: teams are locked or disabled. </color>");
-                        }
-                    }
-                    else if (this.inputLine == "/restart")
-                    {
-                        if (PhotonNetwork.isMasterClient)
-                        {
-                            objArray3 = new object[] { "<color=#FFCC00>MasterClient has restarted the game!</color>", "" };
-                            FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray3);
-                            FengGameManagerMKII.instance.restartRC();
-                        }
-                        else
-                        {
-                            this.addLINE("<color=#FFCC00>error: not master client</color>");
-                        }
-                    }
-                    else if (this.inputLine.StartsWith("/specmode"))
-                    {
-                        if (((int) FengGameManagerMKII.settings[0xf5]) == 0)
-                        {
-                            FengGameManagerMKII.settings[0xf5] = 1;
-                            FengGameManagerMKII.instance.EnterSpecMode(true);
-                            this.addLINE("<color=#FFCC00>You have entered spectator mode.</color>");
-                        }
-                        else
-                        {
-                            FengGameManagerMKII.settings[0xf5] = 0;
-                            FengGameManagerMKII.instance.EnterSpecMode(false);
-                            this.addLINE("<color=#FFCC00>You have exited spectator mode.</color>");
-                        }
-                    }
-                    else if (this.inputLine.StartsWith("/fov"))
-                    {
-                        int num6 = Convert.ToInt32(this.inputLine.Substring(5));
-                        Camera.main.fieldOfView = num6;
-                        this.addLINE("<color=#FFCC00>Field of vision set to " + num6.ToString() + ".</color>");
-                    }
-                    else if (this.inputLine == "/colliders")
-                    {
-                        int num7 = 0;
-                        foreach (TITAN titan in FengGameManagerMKII.titans)
-                        {
-                            if (titan.myTitanTrigger.isCollide)
-                            {
-                                num7++;
-                            }
-                        }
-                        InRoomChat.ChatInstanse.addLINE(num7.ToString());
-                    }
-                    else
-                    {
-                        int num8;
-                        if (this.inputLine.StartsWith("/spectate"))
-                        {
-                            num8 = Convert.ToInt32(this.inputLine.Substring(10));
-                            foreach (GameObject obj5 in GameObject.FindGameObjectsWithTag("Player"))
-                            {
-                                if (obj5.GetPhotonView().owner.ID == num8)
-                                {
-                                    IN_GAME_MAIN_CAMERA.mainCamera.setMainObject(obj5, true, false);
-                                    IN_GAME_MAIN_CAMERA.mainCamera.setSpectorMode(false);
-                                }
-                            }
-                        }
-                        else if (!this.inputLine.StartsWith("/kill"))
-                        {
-                            object[] objArray5;
-                            if (this.inputLine.StartsWith("/revive"))
-                            {
-                                if (PhotonNetwork.isMasterClient)
-                                {
-                                    if (this.inputLine == "/reviveall")
-                                    {
-                                        objArray5 = new object[] { "<color=#FFCC00>All players have been revived.</color>", string.Empty };
-                                        FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray5);
-                                        foreach (PhotonPlayer player in PhotonNetwork.playerList)
-                                        {
-                                            if (((player.customProperties[PhotonPlayerProperty.dead] != null) && RCextensions.returnBoolFromObject(player.customProperties[PhotonPlayerProperty.dead])) && (RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.isTitan]) != 2))
-                                            {
-                                                FengGameManagerMKII.instance.photonView.RPC("respawnHeroInNewRound", player, new object[0]);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        num8 = Convert.ToInt32(this.inputLine.Substring(8));
-                                        foreach (PhotonPlayer player in PhotonNetwork.playerList)
-                                        {
-                                            if (player.ID == num8)
-                                            {
-                                                this.addLINE("<color=#FFCC00>Player " + num8.ToString() + " has been revived.</color>");
-                                                if (((player.customProperties[PhotonPlayerProperty.dead] != null) && RCextensions.returnBoolFromObject(player.customProperties[PhotonPlayerProperty.dead])) && (RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.isTitan]) != 2))
-                                                {
-                                                    objArray5 = new object[] { "<color=#FFCC00>You have been revived by the master client.</color>", string.Empty };
-                                                    FengGameManagerMKII.instance.photonView.RPC("Chat", player, objArray5);
-                                                    FengGameManagerMKII.instance.photonView.RPC("respawnHeroInNewRound", player, new object[0]);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    FengGameManagerMKII.stringVariables[key] = this.inputLine;
                                 }
                                 else
                                 {
-                                    this.addLINE("<color=#FFCC00>error: not master client</color>");
+                                    FengGameManagerMKII.stringVariables.Add(key, this.inputLine);
                                 }
+                                ((RCEvent)FengGameManagerMKII.RCEvents["OnChatInput"]).checkEvent();
                             }
-                            else if (this.inputLine.StartsWith("/ignore"))
+                            if (!this.inputLine.StartsWith("/"))
                             {
-                                string[] args = inputLine.Split(new char[] { ' ' });
-                                PhotonPlayer player = PhotonPlayer.Find(Convert.ToInt32(args[1]));
-                                FengGameManagerMKII.ignoreList.Add(player.ID);
-                                FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
-                            }
-                            else if (this.inputLine.StartsWith("/unignore"))
-                            {
-                                string[] args = inputLine.Split(new char[] { ' ' });
-                                PhotonPlayer player = PhotonPlayer.Find(Convert.ToInt32(args[1]));
-                                FengGameManagerMKII.ignoreList.Remove(player.ID);
-                                FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
-                                if (NetworkingPeer.instantiateCounter.ContainsKey(player))
-                                    NetworkingPeer.instantiateCounter[player].Clear();
-                            }
-                            else if (this.inputLine.StartsWith("/unban"))
-                            {
-                                if (FengGameManagerMKII.OnPrivateServer)
+                                string str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]).hexColor();
+                                if (str2 == string.Empty)
                                 {
-                                    FengGameManagerMKII.ServerRequestUnban(this.inputLine.Substring(7));
-                                }
-                                else if (PhotonNetwork.isMasterClient)
-                                {
-                                    int num9 = Convert.ToInt32(this.inputLine.Substring(7));
-                                    if (FengGameManagerMKII.banHash.ContainsKey(num9))
+                                    str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]);
+                                    if (PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam] != null)
                                     {
-                                        objArray5 = new object[] { "<color=#FFCC00>" + ((string) FengGameManagerMKII.banHash[num9]) + " has been unbanned from the server. </color>", string.Empty };
-                                        FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray5);
-                                        FengGameManagerMKII.banHash.Remove(num9);
-                                    }
-                                    else
-                                    {
-                                        this.addLINE("error: no such player");
+                                        if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 1)
+                                        {
+                                            str2 = "<color=#00FFFF>" + str2 + "</color>";
+                                        }
+                                        else if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 2)
+                                        {
+                                            str2 = "<color=#FF00FF>" + str2 + "</color>";
+                                        }
                                     }
                                 }
-                                else
-                                {
-                                    this.addLINE("<color=#FFCC00>error: not master client</color>");
-                                }
-                            }
-                            else if (this.inputLine.StartsWith("/rules"))
-                            {
-                                this.addLINE("<color=#FFCC00>Currently activated gamemodes:</color>");
-                                if (GameSettings.bombMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Bomb mode is on.</color>");
-                                }
-                                if (GameSettings.teamMode > 0)
-                                {
-                                    if (GameSettings.teamMode == 1)
-                                    {
-                                        this.addLINE("<color=#FFCC00>Team mode is on (no sort).</color>");
-                                    }
-                                    else if (GameSettings.teamMode == 2)
-                                    {
-                                        this.addLINE("<color=#FFCC00>Team mode is on (sort by size).</color>");
-                                    }
-                                    else if (GameSettings.teamMode == 3)
-                                    {
-                                        this.addLINE("<color=#FFCC00>Team mode is on (sort by skill).</color>");
-                                    }
-                                }
-                                if (GameSettings.pointMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Point mode is on (" + Convert.ToString(GameSettings.pointMode) + ").</color>");
-                                }
-                                if (GameSettings.disableRock > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Punk Rock-Throwing is disabled.</color>");
-                                }
-                                if (GameSettings.spawnMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Custom spawn rate is on (" + GameSettings.nRate.ToString("F2") + "% Normal, " + GameSettings.aRate.ToString("F2") + "% Abnormal, " + GameSettings.jRate.ToString("F2") + "% Jumper, " + GameSettings.cRate.ToString("F2") + "% Crawler, " + GameSettings.pRate.ToString("F2") + "% Punk </color>");
-                                }
-                                if (GameSettings.explodeMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Titan explode mode is on (" + Convert.ToString(GameSettings.explodeMode) + ").</color>");
-                                }
-                                if (GameSettings.healthMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Titan health mode is on (" + Convert.ToString(GameSettings.healthLower) + "-" + Convert.ToString(GameSettings.healthUpper) + ").</color>");
-                                }
-                                if (GameSettings.infectionMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Infection mode is on (" + Convert.ToString(GameSettings.infectionMode) + ").</color>");
-                                }
-                                if (GameSettings.damageMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Minimum nape damage is on (" + Convert.ToString(GameSettings.damageMode) + ").</color>");
-                                }
-                                if (GameSettings.moreTitans > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Custom titan is on (" + Convert.ToString(GameSettings.moreTitans) + ").</color>");
-                                }
-                                if (GameSettings.sizeMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Custom titan size is on (" + GameSettings.sizeLower.ToString("F2") + "," + GameSettings.sizeUpper.ToString("F2") + ").</color>");
-                                }
-                                if (GameSettings.banEren > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Anti-Eren is on. Using Titan eren will get you kicked.</color>");
-                                }
-                                if (GameSettings.waveModeOn == 1)
-                                {
-                                    this.addLINE("<color=#FFCC00>Custom wave mode is on (" + Convert.ToString(GameSettings.waveModeNum) + ").</color>");
-                                }
-                                if (GameSettings.friendlyMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Friendly-Fire disabled. PVP is prohibited.</color>");
-                                }
-                                if (GameSettings.pvpMode > 0)
-                                {
-                                    if (GameSettings.pvpMode == 1)
-                                    {
-                                        this.addLINE("<color=#FFCC00>AHSS/Blade PVP is on (team-based).</color>");
-                                    }
-                                    else if (GameSettings.pvpMode == 2)
-                                    {
-                                        this.addLINE("<color=#FFCC00>AHSS/Blade PVP is on (FFA).</color>");
-                                    }
-                                }
-                                if (GameSettings.maxWave > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Max Wave set to " + GameSettings.maxWave.ToString() + "</color>");
-                                }
-                                if (GameSettings.horseMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Horses are enabled.</color>");
-                                }
-                                if (GameSettings.ahssReload > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>AHSS Air-Reload disabled.</color>");
-                                }
-                                if (GameSettings.punkWaves > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Punk override every 5 waves enabled.</color>");
-                                }
-                                if (GameSettings.endlessMode > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Endless Respawn is enabled (" + GameSettings.endlessMode.ToString() + " seconds).</color>");
-                                }
-                                if (GameSettings.globalDisableMinimap > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Minimaps are disabled.</color>");
-                                }
-                                if (GameSettings.motd != string.Empty)
-                                {
-                                    this.addLINE("<color=#FFCC00>MOTD:" + GameSettings.motd + "</color>");
-                                }
-                                if (GameSettings.deadlyCannons > 0)
-                                {
-                                    this.addLINE("<color=#FFCC00>Cannons will kill humans.</color>");
-                                }
+
+                                object[] parameters = new object[] { this.inputLine, str2 };
+                                FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, parameters);
+                                
                             }
                             else
                             {
-                                object[] objArray6;
-                                bool flag2;
-                                object[] objArray7;
-                                if (this.inputLine.StartsWith("/kick"))
+                                string[] args = this.inputLine.Substring(1).Split(' ');
+
+                                if (CommandsCache.TryGetValue(args[0], out MethodInfo info))
                                 {
-                                    num8 = Convert.ToInt32(this.inputLine.Substring(6));
-                                    if (num8 == PhotonNetwork.player.ID)
-                                    {
-                                        this.addLINE("error:can't kick yourself.");
-                                    }
-                                    else if (!(FengGameManagerMKII.OnPrivateServer || PhotonNetwork.isMasterClient))
-                                    {
-                                        objArray6 = new object[] { "/kick #" + Convert.ToString(num8), LoginFengKAI.player.name };
-                                        FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray6);
-                                    }
-                                    else
-                                    {
-                                        flag2 = false;
-                                        foreach (PhotonPlayer player3 in PhotonNetwork.playerList)
-                                        {
-                                            if (num8 == player3.ID)
-                                            {
-                                                flag2 = true;
-                                                //if (FengGameManagerMKII.OnPrivateServer)
-                                                //{
-                                                //    FengGameManagerMKII.instance.kickPlayerRC(player3, false, "");
-                                                //}
-                                                //else 
-                                                if (PhotonNetwork.isMasterClient)
-                                                {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(player3, false, "");
-                                                    objArray7 = new object[] { "<color=#FFCC00>" + RCextensions.returnStringFromObject(player3.customProperties[PhotonPlayerProperty.name]) + " has been kicked from the server!</color>", string.Empty };
-                                                    FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray7);
-                                                }
-                                            }
-                                        }
-                                        if (!flag2)
-                                        {
-                                            this.addLINE("error:no such player.");
-                                        }
-                                    }
+                                    if (info.IsStatic) info.Invoke(null, new object[1] { args });
+                                    else info.Invoke(this, new object[1] { args });
                                 }
-                                else if (this.inputLine.StartsWith("/ban"))
+                                else
                                 {
-                                    if (this.inputLine == "/banlist")
-                                    {
-                                        this.addLINE("<color=#FFCC00>List of banned players:</color>");
-                                        foreach (int num10 in FengGameManagerMKII.banHash.Keys)
-                                        {
-                                            this.addLINE("<color=#FFCC00>" + Convert.ToString(num10) + ":" + ((string) FengGameManagerMKII.banHash[num10]) + "</color>");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        num8 = Convert.ToInt32(this.inputLine.Substring(5));
-                                        if (num8 == PhotonNetwork.player.ID)
-                                        {
-                                            this.addLINE("error:can't kick yourself.");
-                                        }
-                                        else if (!(FengGameManagerMKII.OnPrivateServer || PhotonNetwork.isMasterClient))
-                                        {
-                                            objArray6 = new object[] { "/kick #" + Convert.ToString(num8), LoginFengKAI.player.name };
-                                            FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray6);
-                                        }
-                                        else
-                                        {
-                                            flag2 = false;
-                                            foreach (PhotonPlayer player3 in PhotonNetwork.playerList)
-                                            {
-                                                if (num8 == player3.ID)
-                                                {
-                                                    flag2 = true;
-                                                    //if (FengGameManagerMKII.OnPrivateServer)
-                                                    //{
-                                                    //    FengGameManagerMKII.instance.kickPlayerRC(player3, true, "");
-                                                    //}
-                                                    //else 
-                                                    if (PhotonNetwork.isMasterClient)
-                                                    {
-                                                        FengGameManagerMKII.instance.kickPlayerRC(player3, true, "");
-                                                        objArray7 = new object[] { "<color=#FFCC00>" + RCextensions.returnStringFromObject(player3.customProperties[PhotonPlayerProperty.name]) + " has been banned from the server!</color>", string.Empty };
-                                                        FengGameManagerMKII.instance.photonView.RPC("Chat", PhotonTargets.All, objArray7);
-                                                    }
-                                                }
-                                            }
-                                            if (!flag2)
-                                            {
-                                                this.addLINE("error:no such player.");
-                                            }
-                                        }
-                                    }
+                                    Write($"No such command as {args[0]}");
                                 }
                             }
+
+                            this.inputLine = string.Empty;
+                            GUI.FocusControl(string.Empty);
+                            return;
                         }
-                    }
+                        this.inputLine = "\t";
+                        GUI.FocusControl("ChatInput");
+                        break;
+
+                    default:
+                        if ((((Event.current.keyCode == KeyCode.Tab) || (Event.current.character == '\t')) && !IN_GAME_MAIN_CAMERA.isPausing) && (FengGameManagerMKII.inputRC.humanKeys[InputCodeRC.chat] != KeyCode.Tab))
+                        {
+                            Event.current.Use();
+                        }
+                        break;
                 }
-                this.inputLine = string.Empty;
-                GUI.FocusControl(string.Empty);
-                return;
-            }
-            this.inputLine = "\t";
-            GUI.FocusControl("ChatInput");
+                break;
         }
-    Label_219C:
+
         GUI.SetNextControlName(string.Empty);
         GUILayout.BeginArea(GuiRect);
         GUILayout.FlexibleSpace();
-        string text = string.Empty;
-        if (messages.Count < 15)
-        {
-            for (num4 = 0; num4 < messages.Count; num4++)
-            {
-                text = text + messages[num4] + "\n";
-            }
-        }
-        else
-        {
-            for (int i = messages.Count - 15; i < messages.Count; i++)
-            {
-                text = text + messages[i] + "\n";
-            }
-        }
-        GUILayout.Label(text, new GUILayoutOption[0]);
+        GUILayout.Label(GetCompiledMessages);
         GUILayout.EndArea();
+
         GUILayout.BeginArea(GuiRect2);
         GUILayout.BeginHorizontal(new GUILayoutOption[0]);
         GUI.SetNextControlName("ChatInput");
-        this.inputLine = GUILayout.TextField(this.inputLine, new GUILayoutOption[0]);
+        this.inputLine = GUILayout.TextField(this.inputLine, new GUILayoutOption[] { GUILayout.MaxWidth(280f) });
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
     }
@@ -756,8 +241,8 @@ public class InRoomChat : Photon.MonoBehaviour
     {
         if (this.AlignBottom)
         {
-            GuiRect = new Rect(0f, (float) (Screen.height - 500), 300f, 470f);
-            GuiRect2 = new Rect(30f, (float) ((Screen.height - 300) + 0x113), 300f, 25f);
+            GuiRect = new Rect(5f, (float)(Screen.height - 500), 330f, 470f);
+            GuiRect2 = new Rect(30f, (float)((Screen.height - 300) + 0x113), 300f, 25f);
         }
     }
 
@@ -766,5 +251,647 @@ public class InRoomChat : Photon.MonoBehaviour
         if (ChatInstanse == null) ChatInstanse = this;
         this.setPosition();
     }
-}
 
+    //void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Space) && FengGameManagerMKII.timeofAutorejoin.IsRunning && !PhotonNetwork.inRoom)
+    //    {
+    //        FengGameManagerMKII.timeofAutorejoin.Stop();
+    //        FengGameManagerMKII.timeofAutorejoin.Reset();
+    //        FengGameManagerMKII.shallRejoin[0] = false;
+    //        UnityEngine.Object.Destroy(GameObject.Find("MultiplayerManager"));
+    //        Application.LoadLevel("menu");
+    //    }
+    //}
+
+    [Command("r")]
+    [Command("restart")]
+    private void GameRestart(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            Chat("<color=#FFCC00>MasterClient has restarted the game!</color>");
+            FengGameManagerMKII.instance.restartRC();
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+    
+    [Command("aso")]
+    private void ASORules(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            if (args.Length != 2)
+            {
+                Write("<color=#FFCC00>Usage: /aso <kdr|racing> </color>");
+                return;
+            }
+
+            switch (args[1])
+            {
+                case "kdr":
+                    if (GameSettings.asoPreservekdr == 0)
+                    {
+                        GameSettings.asoPreservekdr = 1;
+                        Write("<color=#FFCC00>KDRs will be preserved from disconnects.</color>");
+                    }
+                    else
+                    {
+                        GameSettings.asoPreservekdr = 0;
+                        Write("<color=#FFCC00>KDRs will not be preserved from disconnects.</color>");
+                    }
+                    break;
+
+                case "racing":
+                    if (GameSettings.racingStatic == 0)
+                    {
+                        GameSettings.racingStatic = 1;
+                        Write("<color=#FFCC00>Racing will not end on finish.</color>");
+                    }
+                    else
+                    {
+                        GameSettings.racingStatic = 0;
+                        Write("<color=#FFCC00>Racing will end on finish.</color>");
+                    }
+                    break;
+
+                default:
+                    Write("<color=#FFCC00>Usage: /aso <kdr|racing> </color>");
+                    break;
+            }
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+
+    [Command("pause")]
+    private void GamePause(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            Chat("<color=#FFCC00>MasterClient has paused the game.</color>");
+            FengGameManagerMKII.instance.photonView.RPC("pauseRPC", PhotonTargets.All, new object[] { true });
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+
+    [Command("unpause")]
+    private void GameUnPause(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            Chat("<color=#FFCC00>MasterClient has unpaused the game.</color>");
+            FengGameManagerMKII.instance.photonView.RPC("pauseRPC", PhotonTargets.All, new object[] { false });
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+
+    [Command("clear")]
+    private void ChatClear(string[] args)
+    {
+        messages.Clear();
+        Write("Cleared");
+    }
+
+    [Command("ignorelist")]
+    private void IgnoreList(string[] args)
+    {
+        string str = string.Empty;
+
+        foreach (int num2 in FengGameManagerMKII.ignoreList)
+        {
+            str += $"{num2}{Environment.NewLine}";
+        }
+
+        Write(str);
+    }
+
+    //[Command("mute")]
+    //private void PlayerMute(string[] args)
+    //{
+    //    if (NetworkingPeer.mActors.TryGetValue(Convert.ToInt32(args[1]), out PhotonPlayer player))
+    //    {
+    //        FengGameManagerMKII.instance.muteList.Add(player.ID);
+    //        FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+    //    }
+    //}
+
+    //[Command("unmute")]
+    //private void PlayerUnMute(string[] args)
+    //{
+    //    if (NetworkingPeer.mActors.TryGetValue(Convert.ToInt32(args[1]), out PhotonPlayer player))
+    //    {
+    //        FengGameManagerMKII.instance.muteList.Remove(player.ID);
+    //        FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+    //    }
+    //}
+
+    [Command("room")]
+    private void Room(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            switch (args[1])
+            {
+                case "max":
+                    int max = Convert.ToInt32(args[2]);
+                    FengGameManagerMKII.instance.maxPlayers = max;
+                    PhotonNetwork.room.maxPlayers = max;
+                    Chat($"<color=#FFCC00>Max players changed to {max}!</color>");
+                    break;
+
+                case "time":
+                    float time = Convert.ToSingle(args[2]);
+                    FengGameManagerMKII.instance.addTime(time);
+                    Chat($"<color=#FFCC00> {time} seconds added to the clock.</color>");
+                    break;
+
+                default:
+                    Write("<color=#FFCC00>Usage: /room <max|time> <number> </color>");
+                    break;
+            }
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+
+    [Command("ign")]
+    private void PlayerIgnore(string[] args)
+    {
+        if (NetworkingPeer.mActors.TryGetValue(Convert.ToInt32(args[1]), out PhotonPlayer player))
+        {
+            FengGameManagerMKII.ignoreList.Add(player.ID);
+            FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+        }
+    }
+
+    [Command("uni")]
+    private void PlayerUnIgnore(string[] args)
+    {
+        if (NetworkingPeer.mActors.TryGetValue(Convert.ToInt32(args[1]), out PhotonPlayer player))
+        {
+            if (FengGameManagerMKII.ignoreList.Contains(player.ID))
+                FengGameManagerMKII.ignoreList.Remove(player.ID);
+
+            if (NetworkingPeer.instantiateCounter.ContainsKey(player))
+                NetworkingPeer.instantiateCounter[player].Clear();
+
+            if (NetworkingPeer.rpcCounter.ContainsKey(player))
+                NetworkingPeer.rpcCounter[player].Clear();
+
+            FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+        }
+    }
+
+    [Command("remove")]
+    private void PlayerRemoveFromDC(string[] args)
+    {
+        if (NetworkingPeer.mActors.TryGetValue(Convert.ToInt32(args[1]), out PhotonPlayer player))
+        {
+            FengGameManagerMKII.ignoreList.Remove(player.ID);
+
+            if (FengGameManagerMKII.instance.DCPeopleList.Contains(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name])))
+                FengGameManagerMKII.instance.DCPeopleList.Remove(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]));
+
+            if (NetworkingPeer.instantiateCounter.ContainsKey(player))
+                NetworkingPeer.instantiateCounter[player].Clear();
+
+            if (NetworkingPeer.rpcCounter.ContainsKey(player))
+                NetworkingPeer.rpcCounter[player].Clear();
+
+            FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+        }
+    }
+
+    [Command("resetkd")]
+    private void ResetKD(string[] args)
+    {
+        PhotonNetwork.player.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+        {
+            { PhotonPlayerProperty.kills, 0 },
+            { PhotonPlayerProperty.deaths, 0 },
+            { PhotonPlayerProperty.max_dmg, 0 },
+            { PhotonPlayerProperty.total_dmg, 0 }
+        });
+
+        Write("<color=#FFCC00>Your stats have been reset. </color>");
+    }
+
+    [Command("resetkdall")]
+    private void ResetKDAll(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable
+            {
+                { PhotonPlayerProperty.kills, 0 },
+                { PhotonPlayerProperty.deaths, 0 },
+                { PhotonPlayerProperty.max_dmg, 0 },
+                { PhotonPlayerProperty.total_dmg, 0 }
+            };
+
+            foreach (PhotonPlayer player in PhotonNetwork.playerList)
+                player.SetCustomProperties(hash);
+
+            Chat("<color=#FFCC00>All stats have been reset.</color>");
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+
+    [Command("pm")]
+    private void PlayerPrivateMessage(string[] args)
+    {
+        if (NetworkingPeer.mActors.TryGetValue(Convert.ToInt32(args[1]), out PhotonPlayer targetPlayer))
+        {
+            string str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]).hexColor();
+            if (str2 == string.Empty)
+            {
+                str2 = RCextensions.returnStringFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.name]);
+                if (PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam] != null)
+                {
+                    if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 1)
+                    {
+                        str2 = "<color=#00FFFF>" + str2 + "</color>";
+                    }
+                    else if (RCextensions.returnIntFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.RCteam]) == 2)
+                    {
+                        str2 = "<color=#FF00FF>" + str2 + "</color>";
+                    }
+                }
+            }
+            string str3 = RCextensions.returnStringFromObject(targetPlayer.customProperties[PhotonPlayerProperty.name]).hexColor();
+            if (str3 == string.Empty)
+            {
+                str3 = RCextensions.returnStringFromObject(targetPlayer.customProperties[PhotonPlayerProperty.name]);
+                if (targetPlayer.customProperties[PhotonPlayerProperty.RCteam] != null)
+                {
+                    if (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.RCteam]) == 1)
+                    {
+                        str3 = "<color=#00FFFF>" + str3 + "</color>";
+                    }
+                    else if (RCextensions.returnIntFromObject(targetPlayer.customProperties[PhotonPlayerProperty.RCteam]) == 2)
+                    {
+                        str3 = "<color=#FF00FF>" + str3 + "</color>";
+                    }
+                }
+            }
+            string str4 = string.Join(" ", args, 2, args.Length - 2);
+            
+                FengGameManagerMKII.instance.photonView.RPC("ChatPM", targetPlayer, new object[] { str2, str4 });
+                Write("<color=#FFC000>TO [" + targetPlayer.ID.ToString() + "]</color> " + str3 + ":" + str4);
+           
+        }
+        else Write($"<color=#FFCC00>No player with id {args[1]}</color>");
+    }
+    
+
+    [Command("specmode")]
+    private void SpectateMode(string[] args)
+    {
+        if (((int)FengGameManagerMKII.settings[0xf5]) == 0)
+        {
+            FengGameManagerMKII.settings[0xf5] = 1;
+            FengGameManagerMKII.instance.EnterSpecMode(true);
+            Write("<color=#FFCC00>You have entered spectator mode.</color>");
+        }
+        else
+        {
+            FengGameManagerMKII.settings[0xf5] = 0;
+            FengGameManagerMKII.instance.EnterSpecMode(false);
+            Write("<color=#FFCC00>You have exited spectator mode.</color>");
+        }
+    }
+
+    [Command("spec")]
+    [Command("spectate")]
+    private void PlayerSpectate(string[] args)
+    {
+        int ID = Convert.ToInt32(args[1]);
+
+        foreach (GameObject obj5 in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (obj5.GetPhotonView().owner.ID == ID)
+            {
+                IN_GAME_MAIN_CAMERA.mainCamera.setMainObject(obj5, true, false);
+                IN_GAME_MAIN_CAMERA.mainCamera.setSpectorMode(false);
+            }
+        }
+    }
+
+    [Command("rev")]
+    [Command("revive")]
+    private void PlayerRevive(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            int ID = Convert.ToInt32(args[1]);
+
+            if (NetworkingPeer.mActors.TryGetValue(ID, out PhotonPlayer player))
+            {
+                Write($"<color=#FFCC00>Player {ID} has been revived.</color>");
+                if (((player.customProperties[PhotonPlayerProperty.dead] != null) && RCextensions.returnBoolFromObject(player.customProperties[PhotonPlayerProperty.dead])) && (RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.isTitan]) != 2))
+                {
+                    player.Chat("<color=#FFCC00>You have been revived by the master client.</color>");
+                    FengGameManagerMKII.instance.photonView.RPC("respawnHeroInNewRound", player, new object[0]);
+                }
+            }
+        }
+    }
+
+    [Command("revall")]
+    [Command("reviveall")]
+    private void PlayerReviveAll(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            Chat("<color=#FFCC00>All players have been revived.</color>");
+            foreach (PhotonPlayer player in PhotonNetwork.playerList)
+            {
+                if (((player.customProperties[PhotonPlayerProperty.dead] != null) && RCextensions.returnBoolFromObject(player.customProperties[PhotonPlayerProperty.dead])) && (RCextensions.returnIntFromObject(player.customProperties[PhotonPlayerProperty.isTitan]) != 2))
+                {
+                    FengGameManagerMKII.instance.photonView.RPC("respawnHeroInNewRound", player, new object[0]);
+                }
+            }
+        }
+    }
+
+    [Command("kick")]
+    private void PlayerKick(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            if (args.Length > 1)
+            {
+                for (int i = 1; i < args.Length; i++)
+                {
+                    int ID = Convert.ToInt32(args[i]);
+                    if (ID == PhotonNetwork.player.ID)
+                    {
+                        Write("error: can't kick yourself.");
+                    }
+                    else
+                    {
+                        if (NetworkingPeer.mActors.TryGetValue(ID, out PhotonPlayer player))
+                        {
+                            FengGameManagerMKII.instance.kickPlayerRC(player, false, "");
+
+                            Chat($"<color=#FFCC00>{RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name])} has been kicked from the server!</color>");
+                        }
+                        else Write("error: no such player.");
+                    }
+                }
+            }
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+
+    [Command("ban")]
+    private void PlayerBan(string[] args)
+    {
+        if (PhotonNetwork.isMasterClient)
+        {
+            if (args.Length > 1)
+            {
+                for (int i = 1; i < args.Length; i++)
+                {
+                    int ID = Convert.ToInt32(args[i]);
+                    if (ID == PhotonNetwork.player.ID)
+                    {
+                        Write("error: can't ban yourself.");
+                    }
+                    else
+                    {
+                        if (NetworkingPeer.mActors.TryGetValue(ID, out PhotonPlayer player))
+                        {
+                            FengGameManagerMKII.instance.kickPlayerRC(player, true, "");
+
+                            Chat($"<color=#FFCC00>{RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name])} has been banned from the server!</color>");
+                        }
+                        else Write("error: no such player.");
+                    }
+                }
+            }
+        }
+        else Write("<color=#FFCC00>error: not master client</color>");
+    }
+
+    [Command("banlist")]
+    private void PlayerBanlist(string[] args)
+    {
+        Write("<color=#FFCC00>List of banned players:</color>");
+        string str = string.Empty;
+        foreach (int ID in FengGameManagerMKII.banHash.Keys)
+        {
+            str += $"<color=#FFCC00>{ID} : {FengGameManagerMKII.banHash[ID]} </color>{Environment.NewLine}";
+        }
+
+        Write(str);
+    }
+
+    [Command("unban")]
+    private void PlayerUnBan(string[] args)
+    {
+        int ID = Convert.ToInt32(args[1]);
+        if (FengGameManagerMKII.banHash.ContainsKey(ID))
+        {
+
+            string name = ((string)FengGameManagerMKII.banHash[ID]);
+
+            if (FengGameManagerMKII.instance.DCPeopleList.Contains(name))
+                FengGameManagerMKII.instance.DCPeopleList.Remove(name);
+
+            FengGameManagerMKII.banHash.Remove(ID);
+            FengGameManagerMKII.banHash.Remove(name); //must clear dclist first and then banhash, or move num9 in name
+
+            if (NetworkingPeer.mActors.TryGetValue(ID, out PhotonPlayer player))
+            {
+                FengGameManagerMKII.ignoreList.Remove(player.ID);
+            }
+
+            FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
+            Chat($"<color=#FFCC00>{name} has been unbanned from the server. </color>");
+        }
+        else Write("error: no such player");
+    }
+
+    [Command("team")]
+    private void ChangeTeam(string[] args)
+    {
+        if (GameSettings.teamMode == 1)
+        {
+            switch (args[1])
+            {
+                case "0":
+                case "individual":
+                    FengGameManagerMKII.instance.photonView.RPC("setTeamRPC", PhotonNetwork.player, new object[] { 0 });
+                    Write("<color=#00FFFF>You have joined individuals.</color>");
+                    foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("Player"))
+                    {
+                        if (obj2.GetPhotonView().isMine)
+                        {
+                            HERO hero = obj2.GetComponent<HERO>();
+                            hero.markDie();
+                            hero.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "Team Switch" });
+                        }
+                    }
+                    break;
+
+                case "1":
+                case "cyan":
+                    FengGameManagerMKII.instance.photonView.RPC("setTeamRPC", PhotonNetwork.player, new object[] { 1 });
+                    Write("<color=#00FFFF>You have joined team cyan.</color>");
+                    foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("Player"))
+                    {
+                        if (obj2.GetPhotonView().isMine)
+                        {
+                            HERO hero = obj2.GetComponent<HERO>();
+                            hero.markDie();
+                            hero.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "Team Switch" });
+                        }
+                    }
+                    break;
+
+                case "2":
+                case "magenta":
+                    FengGameManagerMKII.instance.photonView.RPC("setTeamRPC", PhotonNetwork.player, new object[] { 2 });
+                    Write("<color=#00FFFF>You have joined team magenta.</color>");
+                    foreach (GameObject obj2 in GameObject.FindGameObjectsWithTag("Player"))
+                    {
+                        if (obj2.GetPhotonView().isMine)
+                        {
+                            HERO hero = obj2.GetComponent<HERO>();
+                            hero.markDie();
+                            hero.photonView.RPC("netDie2", PhotonTargets.All, new object[] { -1, "Team Switch" });
+                        }
+                    }
+                    break;
+
+                default:
+                    Write("<color=#FFCC00>Usage: /team <0|1|2> OR /team <cyan|magenta|individual>.</color>");
+                    break;
+            }
+        }
+        else Write("<color=#FFCC00>error: teams are locked or disabled. </color>");
+    }
+
+    [Command("para")]
+    private void Rejoin(string[] args)
+    {
+        PhotonNetwork.networkingPeer.OnStatusChanged(StatusCode.DisconnectByServerLogic);
+    }
+
+
+    [Command("rules")]
+    private void Rules(string[] args)
+    {
+        Write("<color=#FFCC00>Currently activated gamemodes:</color>");
+        if (GameSettings.bombMode > 0)
+        {
+            Write("<color=#FFCC00>Bomb mode is on.</color>");
+        }
+        if (GameSettings.teamMode > 0)
+        {
+            if (GameSettings.teamMode == 1)
+            {
+                Write("<color=#FFCC00>Team mode is on (no sort).</color>");
+            }
+            else if (GameSettings.teamMode == 2)
+            {
+                Write("<color=#FFCC00>Team mode is on (sort by size).</color>");
+            }
+            else if (GameSettings.teamMode == 3)
+            {
+                Write("<color=#FFCC00>Team mode is on (sort by skill).</color>");
+            }
+        }
+        if (GameSettings.pointMode > 0)
+        {
+            Write("<color=#FFCC00>Point mode is on (" + Convert.ToString(GameSettings.pointMode) + ").</color>");
+        }
+        if (GameSettings.disableRock > 0)
+        {
+            Write("<color=#FFCC00>Punk Rock-Throwing is disabled.</color>");
+        }
+        if (GameSettings.spawnMode > 0)
+        {
+            Write("<color=#FFCC00>Custom spawn rate is on (" + GameSettings.nRate.ToString("F2") + "% Normal, " + GameSettings.aRate.ToString("F2") + "% Abnormal, " + GameSettings.jRate.ToString("F2") + "% Jumper, " + GameSettings.cRate.ToString("F2") + "% Crawler, " + GameSettings.pRate.ToString("F2") + "% Punk </color>");
+        }
+        if (GameSettings.explodeMode > 0)
+        {
+            Write("<color=#FFCC00>Titan explode mode is on (" + Convert.ToString(GameSettings.explodeMode) + ").</color>");
+        }
+        if (GameSettings.healthMode > 0)
+        {
+            Write("<color=#FFCC00>Titan health mode is on (" + Convert.ToString(GameSettings.healthLower) + "-" + Convert.ToString(GameSettings.healthUpper) + ").</color>");
+        }
+        if (GameSettings.infectionMode > 0)
+        {
+            Write("<color=#FFCC00>Infection mode is on (" + Convert.ToString(GameSettings.infectionMode) + ").</color>");
+        }
+        if (GameSettings.damageMode > 0)
+        {
+            Write("<color=#FFCC00>Minimum nape damage is on (" + Convert.ToString(GameSettings.damageMode) + ").</color>");
+        }
+        if (GameSettings.moreTitans > 0)
+        {
+            Write("<color=#FFCC00>Custom titan is on (" + Convert.ToString(GameSettings.moreTitans) + ").</color>");
+        }
+        if (GameSettings.sizeMode > 0)
+        {
+            Write("<color=#FFCC00>Custom titan size is on (" + GameSettings.sizeLower.ToString("F2") + "," + GameSettings.sizeUpper.ToString("F2") + ").</color>");
+        }
+        if (GameSettings.banEren > 0)
+        {
+            Write("<color=#FFCC00>Anti-Eren is on. Using Titan eren will get you kicked.</color>");
+        }
+        if (GameSettings.waveModeOn == 1)
+        {
+            Write("<color=#FFCC00>Custom wave mode is on (" + Convert.ToString(GameSettings.waveModeNum) + ").</color>");
+        }
+        if (GameSettings.friendlyMode > 0)
+        {
+            Write("<color=#FFCC00>Friendly-Fire disabled. PVP is prohibited.</color>");
+        }
+        if (GameSettings.pvpMode > 0)
+        {
+            if (GameSettings.pvpMode == 1)
+            {
+                Write("<color=#FFCC00>AHSS/Blade PVP is on (team-based).</color>");
+            }
+            else if (GameSettings.pvpMode == 2)
+            {
+                Write("<color=#FFCC00>AHSS/Blade PVP is on (FFA).</color>");
+            }
+        }
+        if (GameSettings.maxWave > 0)
+        {
+            Write("<color=#FFCC00>Max Wave set to " + GameSettings.maxWave.ToString() + "</color>");
+        }
+        if (GameSettings.horseMode > 0)
+        {
+            Write("<color=#FFCC00>Horses are enabled.</color>");
+        }
+        if (GameSettings.ahssReload > 0)
+        {
+            Write("<color=#FFCC00>AHSS Air-Reload disabled.</color>");
+        }
+        if (GameSettings.punkWaves > 0)
+        {
+            Write("<color=#FFCC00>Punk override every 5 waves enabled.</color>");
+        }
+        if (GameSettings.endlessMode > 0)
+        {
+            Write("<color=#FFCC00>Endless Respawn is enabled (" + GameSettings.endlessMode.ToString() + " seconds).</color>");
+        }
+        if (GameSettings.globalDisableMinimap > 0)
+        {
+            Write("<color=#FFCC00>Minimaps are disabled.</color>");
+        }
+        if (GameSettings.motd != string.Empty)
+        {
+            Write("<color=#FFCC00>MOTD:" + GameSettings.motd + "</color>");
+        }
+        if (GameSettings.deadlyCannons > 0)
+        {
+            Write("<color=#FFCC00>Cannons will kill humans.</color>");
+        }
+    }
+}

@@ -93,6 +93,7 @@ public class UIMainReferences : MonoBehaviour
         }
         if (isGAMEFirstLaunch)
         {
+            FengGameManagerMKII.instance.DCPeopleList = new List<string>();
             version = fengVersion;
             isGAMEFirstLaunch = false;
             GameObject target = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("InputManagerController"));

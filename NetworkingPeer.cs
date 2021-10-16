@@ -1037,7 +1037,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
     }
     
-    private static Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>> rpcCounter = new Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>>();
+    public static Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>> rpcCounter = new Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>>();
 
     //public static bool lengthCheck(object[] param, int length)
     //   => param.Length > length;
@@ -1080,7 +1080,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "nettauntattack":
             case "someoneisdead":
             case "hitanklerpc":
-                return sender.isMasterClient ? 50 : 30;
+                return sender.isMasterClient ? 60 : 30; //label rpc 1 for titan, consider 10 pts
             #endregion
 
             #region 0 parameters
@@ -1207,8 +1207,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 return CorrectLength(param, 4) ? 50 : 0;
             case "updatekillinfo":
                 return CorrectLength(param, 5) ? 30 : 0;
-            case "sethairprc":
-                return CorrectLength(param, 5) ? 105 : 0;
+            case "sethairprc"://50 titans + 10 pts
+                return CorrectLength(param, 5) ? 120 : 0;
             case "showresult":
                 return CorrectLength(param, 6) ? 20 : 0;
             case "refreshstatus":
@@ -1315,7 +1315,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
 
 
             default:
-                return sender.isMasterClient ? 50 : 30;
+                return sender.isMasterClient ? 70 : 30; // was 50, better raise to 70 cause of aot2 servers
         }
 
     }
@@ -2043,7 +2043,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         {
                             if (!(hashtable[(byte)1] is short))
                             {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR invalid (byte)1" + hashtable);
+                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid (byte)1" + hashtable);
                                 return false;
                             }
                         }
@@ -2055,7 +2055,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             {
                                 if ((byte)obj >= 2)
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR byte keys length" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) byte keys length" + hashtable);
                                     return false;
                                 }
                             }
@@ -2069,36 +2069,36 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             {
                                 if (hashtable2 == null)
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR hashtable2 null" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) hashtable2 null" + hashtable);
                                     return false;
                                 }
                                 containsshorts = true;
                                 if (hashtable2.Keys.Count != 2)
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR keys length" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) keys length" + hashtable);
                                     return false;
                                 }
                                 if (!(hashtable2.ContainsKey((byte)0) && hashtable2.ContainsKey((byte)1)))
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR missing key(s)" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) missing key(s)" + hashtable);
                                     return false;
                                 }
                                 if (!(hashtable[(byte)0] is int && hashtable2[(byte)1] is object[]))
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR invalid value type" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid value type" + hashtable);
                                     return false;
                                 }
                                 int num = (int)hashtable2[(byte)0];
                                 bool pview = num / 1000 == sender.ID;
                                 if (!pview)
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR photonview" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) photonview" + hashtable);
                                     return false;
                                 }
                                 object[] array = hashtable2[(byte)1] as object[];
                                 if (!(array.Length == 2 || array.Length == 3 || array.Length == 4))
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR invalid objArray length (" + array.Length + ")" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid objArray length (" + array.Length + ")" + hashtable);
                                     return false;
                                 }
 
@@ -2132,19 +2132,19 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                 }
                                 if (!IsCustomType)
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR objArray not customType (" + array.Length + ")" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) objArray not customType (" + array.Length + ")" + hashtable);
                                     return false;
                                 }
 
                             }
                             else
                             {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR invalid index " + hashtable);
+                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid index " + hashtable);
                                 return false;
                             }
                             if (!containsshorts)
                             {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR not (short)2" + hashtable);
+                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) not (short)2" + hashtable);
                                 return false;
                             }
                         }
@@ -2152,19 +2152,19 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     }
                     else
                     {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR missing (byte)0" + hashtable);
+                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) missing (byte)0" + hashtable);
                         return false;
                     }
                 }
                 else
                 {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR missing (byte)1" + hashtable);
+                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) missing (byte)1" + hashtable);
                     return false;
                 }
             }
             else
             {
-                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR not hash");
+                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) not hash");
                 return false;
             }
         }
@@ -2221,7 +2221,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         return;
                     }
                 }
-                else if (base.ByteCountCurrentDispatch > 1200)
+                else if (base.ByteCountCurrentDispatch > 2000) //was 1200, but loadskinrpc can be 2k :/
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
                     return;
@@ -2262,7 +2262,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 break;
             case 202: //202-oxca DoInstantiate or DI: used to instantiate gameobjects like titans etc
-                if (base.ByteCountCurrentDispatch > 100)
+                if (base.ByteCountCurrentDispatch > 200) //biggest i saw was 101
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
                     return;
@@ -2335,7 +2335,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 PhotonNetwork.LeaveRoom();
                 break;
             case 204: //0xcc to remove instantiated GameObjects
-                if (base.ByteCountCurrentDispatch > 27)
+                if (base.ByteCountCurrentDispatch > 100)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
                     return;
@@ -2368,7 +2368,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 break;
             case 207: //0xcf destroy the game objects of someone, like bodys character
-                if (base.ByteCountCurrentDispatch > 25)
+                if (base.ByteCountCurrentDispatch > 100)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
                     return;
@@ -2431,13 +2431,13 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 int num10 = (int)hashtable[(byte)1];
                 if (sender == null || !sender.isMasterClient || num10 != sender.ID)
                 {
-                    if (!(sender == null || sender.isMasterClient || sender.isLocal))
+                    if ((sender != null || !sender.isMasterClient) || !sender.isLocal)
                     {
+                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "passing/stealing MC."); //if mc is passed to u on aottg2 servers u get dced for sending rpcs from not real mc
                         if (PhotonNetwork.isMasterClient)
                         {
                             FengGameManagerMKII.noRestart = true;
                             PhotonNetwork.SetMasterClient(PhotonNetwork.player);
-                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "stealing MC.");
                         }
                         break;
                     }
@@ -2688,6 +2688,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                         break;
                                     }
                                 }
+                                if (FengGameManagerMKII.instance.DCPeopleList.Contains(RCextensions.returnStringFromObject(sender.customProperties[PhotonPlayerProperty.name])))
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "DC List");
                             }
                         }
                     }
@@ -2741,6 +2743,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                     SendMonoMessage(PhotonNetworkingMessage.OnCreatedRoom);
                 }
                 SendMonoMessage(PhotonNetworkingMessage.OnJoinedRoom);
+                if (FengGameManagerMKII.instance.DCPeopleList.Contains(RCextensions.returnStringFromObject(sender.customProperties[PhotonPlayerProperty.name])))
+                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "DC List");
                 break;
 
 
