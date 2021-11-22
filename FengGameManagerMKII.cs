@@ -6931,7 +6931,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             if (((int)settings[0x40]) == 0)
                             {
                                 int num47;
-                                string[] Pol = new string[] { "None", "Interpolation", "Extrapolation" };
+                                string[] Pol = new string[] { "Interpolation",  "Extrapolation", "None" };
                                 FengGameManagerMKII.settings[294] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 380, 280f, 40), (int)FengGameManagerMKII.settings[294], Pol, 3);
 
                                 GUI.Label(new Rect(num7 + 72f, num8 + 420, 190f, 20f), "Physics Update rate (restart):", "Label");

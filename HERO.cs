@@ -1602,11 +1602,11 @@ public class HERO : MONO
                         }
                         else if (this.state == HERO_STATE.Land)
                         {
-                            zero = (Vector3)(baseR.velocity * 0.96f);
+                            zero = (Vector3)(baseR.velocity * 0.96f/*added for stocks for different fu*/* 50 * Time.fixedDeltaTime);
                         }
                         else if (this.state == HERO_STATE.Slide)
                         {
-                            zero = (Vector3)(baseR.velocity * 0.99f);
+                            zero = (Vector3)(baseR.velocity * 0.99f/*added for stocks for different fu*/* 50 * Time.fixedDeltaTime);
                             if (this.currentSpeed < (this.speed * 1.2f))
                             {
                                 this.idle();
@@ -3047,7 +3047,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable32 = new WWW(iteratorVariable2[9]);
                             //yield return iteratorVariable32;
-                            Texture2D iteratorVariable33 = RCextensions.loadimage(iteratorVariable32, mipmap, 0x7a120);
+                            Texture2D iteratorVariable33 = RCextensions.loadimage(iteratorVariable32, mipmap, 1000000);
                             iteratorVariable32.Dispose();
                             if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[9]))
                             {
@@ -3079,7 +3079,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable34 = new WWW(iteratorVariable2[10]);
                             //yield return iteratorVariable34;
-                            Texture2D iteratorVariable35 = RCextensions.loadimage(iteratorVariable34, mipmap, 0x30d40);
+                            Texture2D iteratorVariable35 = RCextensions.loadimage(iteratorVariable34, mipmap, 500000);
                             iteratorVariable34.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[10]))
                             {
@@ -3111,7 +3111,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable36 = new WWW(iteratorVariable2[11]);
                             //yield return iteratorVariable36;
-                            Texture2D iteratorVariable37 = RCextensions.loadimage(iteratorVariable36, mipmap, 0x30d40);
+                            Texture2D iteratorVariable37 = RCextensions.loadimage(iteratorVariable36, mipmap, 200000);
                             iteratorVariable36.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[11]))
                             {
@@ -3151,7 +3151,7 @@ public class HERO : MONO
                                 {
                                     WWW iteratorVariable40 = new WWW(iteratorVariable2[0]);
                                     //yield return iteratorVariable40;
-                                    Texture2D iteratorVariable41 = RCextensions.loadimage(iteratorVariable40, mipmap, 0x7a120);
+                                    Texture2D iteratorVariable41 = RCextensions.loadimage(iteratorVariable40, mipmap, 1000000);
                                     iteratorVariable40.Dispose();
                                     if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[0]))
                                     {
@@ -3184,7 +3184,7 @@ public class HERO : MONO
                 {
                     WWW iteratorVariable42 = new WWW(iteratorVariable2[12]);
                     //yield return iteratorVariable42;
-                    Texture2D iteratorVariable43 = RCextensions.loadimage(iteratorVariable42, mipmap, 0x30d40);
+                    Texture2D iteratorVariable43 = RCextensions.loadimage(iteratorVariable42, mipmap, 500000);
                     iteratorVariable42.Dispose();
                     if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[12]))
                     {
@@ -3356,7 +3356,7 @@ public class HERO : MONO
                     {
                         WWW link = new WWW(iteratorVariable2[1]);
                         yield return link;
-                        Texture2D iteratorVariable8 = RCextensions.loadimage(link, mipmap, 0x30d40);
+                        Texture2D iteratorVariable8 = RCextensions.loadimage(link, mipmap, 1000000);
                         link.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
                         {
@@ -3396,7 +3396,7 @@ public class HERO : MONO
                     {
                         WWW iteratorVariable10 = new WWW(iteratorVariable2[7]);
                         yield return iteratorVariable10;
-                        Texture2D iteratorVariable11 = RCextensions.loadimage(iteratorVariable10, mipmap, 0x30d40);
+                        Texture2D iteratorVariable11 = RCextensions.loadimage(iteratorVariable10, mipmap, 500000);
                         iteratorVariable10.Dispose();
                         if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
                         {
@@ -3432,7 +3432,7 @@ public class HERO : MONO
                     {
                         WWW iteratorVariable13 = new WWW(iteratorVariable2[6]);
                         yield return iteratorVariable13;
-                        Texture2D iteratorVariable14 = RCextensions.loadimage(iteratorVariable13, mipmap, 0x7a120);
+                        Texture2D iteratorVariable14 = RCextensions.loadimage(iteratorVariable13, mipmap, 2000000);
                         iteratorVariable13.Dispose();
                         if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
                         {
@@ -3469,7 +3469,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable16 = new WWW(iteratorVariable2[1]);
                             yield return iteratorVariable16;
-                            Texture2D iteratorVariable17 = RCextensions.loadimage(iteratorVariable16, mipmap, 0x30d40);
+                            Texture2D iteratorVariable17 = RCextensions.loadimage(iteratorVariable16, mipmap, 1000000);
                             iteratorVariable16.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[1]))
                             {
@@ -3508,7 +3508,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable18 = new WWW(iteratorVariable2[2]);
                             yield return iteratorVariable18;
-                            Texture2D iteratorVariable19 = RCextensions.loadimage(iteratorVariable18, mipmap, 0x30d40);
+                            Texture2D iteratorVariable19 = RCextensions.loadimage(iteratorVariable18, mipmap, 500000);
                             iteratorVariable18.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[2]))
                             {
@@ -3545,7 +3545,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable20 = new WWW(iteratorVariable2[3]);
                             yield return iteratorVariable20;
-                            Texture2D iteratorVariable21 = RCextensions.loadimage(iteratorVariable20, mipmap, 0x30d40);
+                            Texture2D iteratorVariable21 = RCextensions.loadimage(iteratorVariable20, mipmap, 500000);
                             iteratorVariable20.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[3]))
                             {
@@ -3582,7 +3582,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable22 = new WWW(iteratorVariable2[4]);
                             yield return iteratorVariable22;
-                            Texture2D iteratorVariable23 = RCextensions.loadimage(iteratorVariable22, mipmap, 0x30d40);
+                            Texture2D iteratorVariable23 = RCextensions.loadimage(iteratorVariable22, mipmap, 500000);
                             iteratorVariable22.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[4]))
                             {
@@ -3619,7 +3619,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable24 = new WWW(iteratorVariable2[5]);
                             yield return iteratorVariable24;
-                            Texture2D iteratorVariable25 = RCextensions.loadimage(iteratorVariable24, mipmap, 0x30d40);
+                            Texture2D iteratorVariable25 = RCextensions.loadimage(iteratorVariable24, mipmap, 1000000);
                             iteratorVariable24.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[5]))
                             {
@@ -3654,7 +3654,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable26 = new WWW(iteratorVariable2[6]);
                             yield return iteratorVariable26;
-                            Texture2D iteratorVariable27 = RCextensions.loadimage(iteratorVariable26, mipmap, 0x7a120);
+                            Texture2D iteratorVariable27 = RCextensions.loadimage(iteratorVariable26, mipmap, 2000000);
                             iteratorVariable26.Dispose();
                             if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[6]))
                             {
@@ -3689,7 +3689,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable28 = new WWW(iteratorVariable2[7]);
                             yield return iteratorVariable28;
-                            Texture2D iteratorVariable29 = RCextensions.loadimage(iteratorVariable28, mipmap, 0x30d40);
+                            Texture2D iteratorVariable29 = RCextensions.loadimage(iteratorVariable28, mipmap, 500000);
                             iteratorVariable28.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[7]))
                             {
@@ -3724,7 +3724,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable30 = new WWW(iteratorVariable2[8]);
                             yield return iteratorVariable30;
-                            Texture2D iteratorVariable31 = RCextensions.loadimage(iteratorVariable30, mipmap, 0x7a120);
+                            Texture2D iteratorVariable31 = RCextensions.loadimage(iteratorVariable30, mipmap, 1000000);
                             iteratorVariable30.Dispose();
                             if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[8]))
                             {
@@ -3794,7 +3794,7 @@ public class HERO : MONO
                         {
                             WWW iteratorVariable34 = new WWW(iteratorVariable2[10]);
                             yield return iteratorVariable34;
-                            Texture2D iteratorVariable35 = RCextensions.loadimage(iteratorVariable34, mipmap, 0x30d40);
+                            Texture2D iteratorVariable35 = RCextensions.loadimage(iteratorVariable34, mipmap, 500000);
                             iteratorVariable34.Dispose();
                             if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[10]))
                             {
@@ -3872,7 +3872,7 @@ public class HERO : MONO
                                 {
                                     WWW iteratorVariable40 = new WWW(iteratorVariable2[0]);
                                     yield return iteratorVariable40;
-                                    Texture2D iteratorVariable41 = RCextensions.loadimage(iteratorVariable40, mipmap, 0x7a120);
+                                    Texture2D iteratorVariable41 = RCextensions.loadimage(iteratorVariable40, mipmap, 1000000);
                                     iteratorVariable40.Dispose();
                                     if (!FengGameManagerMKII.linkHash[1].ContainsKey(iteratorVariable2[0]))
                                     {
@@ -3908,7 +3908,7 @@ public class HERO : MONO
                 {
                     WWW iteratorVariable42 = new WWW(iteratorVariable2[12]);
                     yield return iteratorVariable42;
-                    Texture2D iteratorVariable43 = RCextensions.loadimage(iteratorVariable42, mipmap, 0x30d40);
+                    Texture2D iteratorVariable43 = RCextensions.loadimage(iteratorVariable42, mipmap, 500000);
                     iteratorVariable42.Dispose();
                     if (!FengGameManagerMKII.linkHash[0].ContainsKey(iteratorVariable2[12]))
                     {
@@ -5633,7 +5633,7 @@ public class HERO : MONO
         }
         else
         {
-            this.SetInterpolationIfEnabled();
+            this.SetInterpolationIfEnabled(true);
 
             this.triggerLeft = this.checkBoxLeft.GetComponent<TriggerColliderWeapon>();
             this.triggerRight = this.checkBoxRight.GetComponent<TriggerColliderWeapon>();
@@ -5649,17 +5649,18 @@ public class HERO : MONO
         }
     }
 
-    public void SetInterpolationIfEnabled()
+    public void SetInterpolationIfEnabled(bool interpolate)
     {
-        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE || base.photonView.isMine)
+        if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE || base.photonView.isMine && interpolate)
         {
-            if (((int)FengGameManagerMKII.settings[294]) == 2)
-                baseR.interpolation = RigidbodyInterpolation.Extrapolate;
-            else if (((int)FengGameManagerMKII.settings[294]) == 0)
-                baseR.interpolation = RigidbodyInterpolation.None;
-            else if (((int)FengGameManagerMKII.settings[294]) == 1)
+            if (((int)FengGameManagerMKII.settings[294]) == 0)
                 baseR.interpolation = RigidbodyInterpolation.Interpolate;
+            else if (((int)FengGameManagerMKII.settings[294]) == 1)
+                baseR.interpolation = RigidbodyInterpolation.Extrapolate;
+           else if (((int)FengGameManagerMKII.settings[294]) == 2)
+                baseR.interpolation = RigidbodyInterpolation.None;
         }
+        else if (!interpolate) baseR.interpolation = RigidbodyInterpolation.None;
     }
 
     public IEnumerator stopImmunity()

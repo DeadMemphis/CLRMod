@@ -1117,10 +1117,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 return NoLength(param) ? 200 : 0;
             #endregion
 
-            #region 1 param
+            #region 1 param 
             case "diebycannon": //18 cannons dc you, and you need to ignore in time so u put 10 not 15
                 return CorrectLength(param, 1) ? 10 : 0;
-
             case "mountcharacter":
             case "unmountcharacter":
             case "blowaway":
@@ -2113,9 +2112,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                             }
                                             break;
                                         }
-                                    case 3: //titans
+                                    case 3: //titans and cannons
                                         {
-                                            if (array[0] is Vector3 && array[1] is Quaternion && array[2] is Vector3)
+                                            if (array[0] is Vector3 && array[1] is Quaternion && (/*titans*/array[2] is Vector3 || /*cannons*/array[2] is Quaternion))
                                             {
                                                 IsCustomType = true;
                                             }
@@ -2132,7 +2131,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                                 }
                                 if (!IsCustomType)
                                 {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) objArray not customType (" + array.Length + ")" + hashtable);
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) objArray not customType (length: " + array.Length + ")" + hashtable
+                                        + "\n0:" + array[0] + ", 1:" + array[1] + ",2:" + array[2]);
                                     return false;
                                 }
 
@@ -2235,7 +2235,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 break;
             case 201: //0xc9 OSR or OnSerializeRead, pos rotation etc
             case 206: //0xce
-                if (base.ByteCountCurrentDispatch > 5800)
+                if (base.ByteCountCurrentDispatch > 6500)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
                     return;
