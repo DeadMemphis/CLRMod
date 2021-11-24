@@ -1169,7 +1169,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "getracingresult":
                 return CorrectLength(param, 2) ? (sender.isMasterClient ? 10 : 5) : 0;
             case "chatpm":
-                return CorrectLength(param, 2) ? 5 : 0;
+            case "emotetextrpc":
+            case "emoteemojirpc":
+                return CorrectLength(param, 2) ? 10 : 0;
             case "chat":
             case "dieheadblowrpc":
             case "dieblowrpc":
@@ -1202,6 +1204,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case "setvelocityandleft":
             case "sethairrpc2": //50 titans + 10 pts
                 return CorrectLength(param, 3) ? 120 : 0;
+            case "emcustommaprpc":
+                return CorrectLength(param, 4) ? 10 : 0;
             case "initrpc":
                 return CorrectLength(param, 4) ? 50 : 0;
             case "updatekillinfo":
@@ -1210,6 +1214,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 return CorrectLength(param, 5) ? 120 : 0;
             case "showresult":
                 return CorrectLength(param, 6) ? 20 : 0;
+            case "setweatherrpc":
+                return CorrectLength(param, 6) ? (sender.isMasterClient ? 20 : 0) : 0;
             case "refreshstatus":
                 return CorrectLength(param, 8) ? (sender.isMasterClient ? 50 : 30) : 0;
             #endregion
@@ -1419,10 +1425,38 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         return;
                     }
                     str = (string)rpcData[(byte)3];
-                    if (!sender.isLocal && str == "loadskinRPC" && (int)rpcData[(byte)0] / 1000 == this.mLocalActor.ID)
+                   
+                    if (!sender.isLocal)
                     {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Change skin");
-                        return;
+                        if (str == "loadskinRPC" && (int)rpcData[(byte)0] / 1000 == this.mLocalActor.ID)
+                        {
+                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Change skin");
+                            return;
+                        }
+                        if (str == "loadskinRPC" || str == "SetWeatherRPC")
+                        {
+                            if (base.ByteCountCurrentDispatch > 2500)
+                            {
+                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge (skin/weather) - ({ByteCountCurrentDispatch})");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (FengGameManagerMKII.level.StartsWith("Custom"))
+                            {
+                                if (base.ByteCountCurrentDispatch > 20000)
+                                {
+                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge (200) - ({ByteCountCurrentDispatch})");
+                                    return;
+                                }
+                            }
+                            else if (base.ByteCountCurrentDispatch > 1200)
+                            {
+                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge (200) - ({ByteCountCurrentDispatch})");
+                                return;
+                            }
+                        }
                     }
                 }
                 object[] parameters = null;
@@ -2213,25 +2247,12 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 return;
             case 200: //rpcs
-                if (FengGameManagerMKII.level.StartsWith("Custom"))
-                {
-                    if (base.ByteCountCurrentDispatch > 20000)
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                        return;
-                    }
-                }
-                else if (base.ByteCountCurrentDispatch > 2000) //was 1200, but loadskinrpc can be 2k :/
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
                 if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC not hash " + photonEvent.Parameters.ToStringFull());
                     return;
                 }
-                ExecuteRPC(photonEvent[245] as ExitGames.Client.Photon.Hashtable, sender);
+                try { ExecuteRPC(photonEvent[245] as ExitGames.Client.Photon.Hashtable, sender); } catch { }
                 break;
             case 201: //0xc9 OSR or OnSerializeRead, pos rotation etc
             case 206: //0xce

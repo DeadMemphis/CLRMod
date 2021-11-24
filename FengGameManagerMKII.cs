@@ -13956,19 +13956,19 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (num28 <= 1)
                     {
-                        string str4 = " 5 points added.";
-                        if (text == "Nobody")
-                        {
-                            str4 = string.Empty;
-                        }
-                        else
-                        {
-                            for (num22 = 0; num22 < 5; num22++)
-                            {
-                                this.playerKillInfoUpdate(player11, 0);
-                            }
-                        }
-                        object[] objArray7 = new object[] { "<color=#FFCC00>" + text.hexColor() + " wins." + str4 + "</color>", string.Empty };
+                        //string str4 = " 5 points added.";
+                        //if (text == "Nobody")
+                        //{
+                        //    str4 = string.Empty;
+                        //}
+                        //else
+                        //{
+                        //    for (num22 = 0; num22 < 5; num22++)
+                        //    {
+                        //        this.playerKillInfoUpdate(player11, 0);
+                        //    }
+                        //}
+                        object[] objArray7 = new object[] { "<color=#FFCC00>" + text.hexColor() + " wins." /*+ str4 */+ "</color>", string.Empty };
                         PView.RPC("Chat", PhotonTargets.All, objArray7);
                         this.gameWin2();
                     }
