@@ -206,7 +206,7 @@ public static class PhotonNetwork
         networkingPeer.SetApp(appID, gameVersion);
         networkingPeer.IsUsingNameServer = false;
         networkingPeer.IsInitialConnect = true;
-        networkingPeer.MasterServerAddress = masterServerAddress + ":" + port;
+        networkingPeer.MasterServerAddress = masterServerAddress + ":" + port + (PhotonNetwork.networkingPeer.UsedProtocol == ConnectionProtocol.WebSocket ? "/Master" : ""); //ws on aottg2 servers 
         return networkingPeer.Connect(networkingPeer.MasterServerAddress, ServerConnection.MasterServer);
     }
 

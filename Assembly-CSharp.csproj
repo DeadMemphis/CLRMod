@@ -35,7 +35,15 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BTN_Server_AU.cs" />
+    <Compile Include="BTN_Server_CAE.cs" />
+    <Compile Include="BTN_Server_IN.cs" />
+    <Compile Include="BTN_Server_KR.cs" />
     <Compile Include="BTN_Server_SA.cs" />
+    <Compile Include="BTN_Server_TR.cs" />
+    <Compile Include="BTN_Server_USSC.cs" />
+    <Compile Include="BTN_Server_USW.cs" />
+    <Compile Include="BTN_Server_ZA.cs" />
     <Compile Include="CLEARSKIES\AsyncHelper.cs" />
     <Compile Include="CLEARSKIES\CacheGameObject.cs" />
     <Compile Include="CLEARSKIES\CacheResources.cs" />

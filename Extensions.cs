@@ -32,6 +32,13 @@ public static class Extensions
         return text;
     }
 
+
+    public static int ToInt32(this object l)
+    {
+        return Convert.ToInt32(l);
+    }
+
+
     public static float Angleof(this Vector3 first, Vector3 second)
     {
         return Mathf.Abs(Mathf.Acos(Vector3.Dot(first.normalized, second.normalized)) * 57.29578f);

@@ -35,8 +35,8 @@ public class UIMainReferences : MonoBehaviour
     {
         UIMainReferences.UIRefer = null;
     }
-   
-        
+
+
 
     public IEnumerator request(string versionShow, string versionForm)
     {
@@ -63,15 +63,6 @@ public class UIMainReferences : MonoBehaviour
         }
     }
 
-    private void CreateSAButton()
-    {
-        GameObject gameObject = this.panelMultiStart.transform.Find("ButtonServer1").gameObject;
-        GameObject gameObject2 = NGUITools.AddChild(this.panelMultiStart, gameObject);
-        UnityEngine.Object.Destroy(gameObject2.GetComponent<BTN_ServerUS>());
-        gameObject2.AddComponent<BTN_Server_SA>();
-        gameObject2.transform.localPosition = new Vector3(-110f, -85f, 0f);
-        gameObject2.transform.Find("Label").GetComponent<UILabel>().text = "SA";
-    }
 
     private void Start()
     {
@@ -96,7 +87,7 @@ public class UIMainReferences : MonoBehaviour
             FengGameManagerMKII.instance.DCPeopleList = new List<string>();
             version = fengVersion;
             isGAMEFirstLaunch = false;
-            GameObject target = (GameObject) UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("InputManagerController"));
+            GameObject target = (GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("InputManagerController"));
             target.name = "InputManagerController";
             UnityEngine.Object.DontDestroyOnLoad(target);
             CLEARSKIES.CacheGameObject.Find("VERSION").GetComponent<UILabel>().text = "Client verified. Last updated " + versionShow + ".";
@@ -107,5 +98,15 @@ public class UIMainReferences : MonoBehaviour
         this.CreateSAButton();
     }
 
+    private void CreateSAButton()
+    {
+        GameObject gameObject = this.panelMultiStart.transform.Find("ButtonServer1").gameObject;
+        GameObject gameObject2 = NGUITools.AddChild(this.panelMultiStart, gameObject);
+        UnityEngine.Object.Destroy(gameObject2.GetComponent<BTN_ServerUS>());
+        gameObject2.AddComponent<BTN_Server_SA>();
+        gameObject2.transform.localPosition = new Vector3(-110f, -85f, 0f);
+        gameObject2.transform.Find("Label").GetComponent<UILabel>().text = "Sao Paolo";
+    }
+    
 }
 

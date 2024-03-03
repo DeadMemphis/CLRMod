@@ -147,6 +147,7 @@ public class TriggerColliderWeapon : MonoBehaviour
                                                 titan.die();
                                                 this.napeMeat(this.hero.rigidbody.velocity, componentTroot);
                                                 FengGameManagerMKII.instance.netShowDamage(num2);
+                                                GameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().ReportKillToChatFeed("You", titan.transform.root.GetComponent<TITAN>().name, num2);
                                                 FengGameManagerMKII.instance.playerKillInfoSingleUpdate(num2);
                                             }
                                             else

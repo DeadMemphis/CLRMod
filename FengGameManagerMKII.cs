@@ -28,7 +28,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     public bool isPlayerTTL = false;
     private object thread_locker = new object();
     public Dictionary<int, CannonValues> allowedToCannon;
-    public static string applicationId = "";//new connection string /*"f1f6195c-df4a-40f9-bae5-4744c32901ef"; old connection string*/
+    public static string applicationId = "";//e3341a7b-1cb9-4b6c-90e4-39b796e52876 if aottg2 servers day use this, and add all the buttons in UIMainRef, like SA button (classes are made)
     public Dictionary<string, Texture2D> assetCacheTextures;
     public static ExitGames.Client.Photon.Hashtable banHash;
     public static ExitGames.Client.Photon.Hashtable boolVariables;
@@ -225,18 +225,30 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     void OnApplicationFocus(bool focus)
     {
         if (!focus)
-        {
-            //removes fullscreen going to windowed so application keeps working when going in background
-            Screen.SetResolution(960, 600, false);
-            IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
-            //minimize (not necessary, but without, the windowed resolution will not be hidden when u press windows/alt tab)
-            var handle = GetActiveWindow();
-            ShowWindow(handle, 11);
+        { 
+            Application.targetFrameRate = 60;
         }
-        else if (focus && !Screen.fullScreen)
+        else
+        { 
+            int num2 = Convert.ToInt32((string)settings[184]); 
+            if (int.TryParse((string)settings[184], out num2) && (num2 > 0))
+                Application.targetFrameRate = num2;
+            else Application.targetFrameRate = -1;
+        }
+        
+        if (!UIMainReferences.isGAMEFirstLaunch) //when uimainref is loaded, only then u can do alt tab
         {
-            //this adjusts resolution on windowed, on fullsc u need to backspace manually
-            if (/*UIMainReferences.UIRefer.thirdLine.Contains("False") &&*/ !UIMainReferences.isGAMEFirstLaunch) //firstlaunch check so that it doesnt run when app is being opened, it's when borderless window is put
+            //if fullscreen goes window and hides the app
+            if (!focus && Screen.fullScreen)
+            {
+                // removes fullscreen going to windowed so application keeps working when going in background
+                Screen.SetResolution(Screen.width, Screen.height, false);
+                //minimize (not necessary, but without, the windowed resolution will not be hidden when u press windows/alt tab)
+                var handle = GetActiveWindow();
+                ShowWindow(handle, 11);
+            }
+            //goes back to app
+            else if (focus && /*windowed after left*/ !Screen.fullScreen)//firstlaunch check so that it doesnt run when app is being opened, it's when borderless window is put
             {
                 Screen.SetResolution(Screen.width, Screen.height, false);
                 base.StartCoroutine(sethud());
@@ -389,11 +401,20 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     {
         if (sender != string.Empty) content = sender + ":" + content;
         content = "<color=#FFC000>[" + Convert.ToString(info.sender.ID) + "]</color> " + content;
-
-        if ((content.Length > 4000 || content.StripColor().StripHex().Length > 1000))
+         
+        if (!info.sender.isLocal)
         {
-            if (!info.sender.isLocal) kickPlayerRC(info.sender, true, "long text (" + content.Length + ")");
-            return;
+            if (!ignoreList.Contains(info.sender.ID) && (content.Length > 4000 || content.StripColor().StripHex().Length > 1000))
+            {
+
+                kickPlayerRC(info.sender, true, "long text spam (" + content.Length + ")");
+                return;
+            }
+            else if (content.Contains("quad material"))
+            {
+                kickPlayerRC(info.sender, true, "quad material");
+                return;
+            }
         }
         InRoomChat.Write(content);
        // InRoomChat.Write(antiChatAbuse(content, info));
@@ -406,10 +427,18 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         content = sender + ":" + content;
         content = "<color=#FFC000>FROM [" + Convert.ToString(info.sender.ID) + "]</color> " + content;
 
-        if ((content.Length > 4000 || content.StripColor().StripHex().Length > 1000))
+        if (!info.sender.isLocal)
         {
-            FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "long text (" + content.Length + ")");
-            return;
+            if (!ignoreList.Contains(info.sender.ID) && (content.Length > 4000 || content.StripColor().StripHex().Length > 1000))
+            {
+                kickPlayerRC(info.sender, true, "long text spam (" + content.Length + ")");
+                return;
+            }
+            else if (content.Contains("quad material"))
+            {
+                kickPlayerRC(info.sender, true, "quad material");
+                return;
+            }
         }
         InRoomChat.Write(content);
       //  InRoomChat.Write(antiChatAbuse(content, info));
@@ -5100,9 +5129,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 return;
                             }
                             GUI.Label(new Rect(20f, 80f, 45f, 20f), "Name:", "Label");
-                            FengGameManagerMKII.nameField = GUI.TextField(new Rect(65f, 80f, 145f, 20f), FengGameManagerMKII.nameField, 40);
+                            FengGameManagerMKII.nameField = GUI.TextField(new Rect(65f, 80f, 145f, 20f), FengGameManagerMKII.nameField, 80);
                             GUI.Label(new Rect(20f, 105f, 45f, 20f), "Guild:", "Label");
-                            LoginFengKAI.player.guildname = GUI.TextField(new Rect(65f, 105f, 145f, 20f), LoginFengKAI.player.guildname, 40);
+                            LoginFengKAI.player.guildname = GUI.TextField(new Rect(65f, 105f, 145f, 20f), LoginFengKAI.player.guildname, 80);
                             if (GUI.Button(new Rect(80f, 140f, 80f, 25f), "Save"))
                             {
                                 PlayerPrefs.SetString("name", FengGameManagerMKII.nameField);
@@ -5155,7 +5184,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             }
                             if ((int)FengGameManagerMKII.settings[187] == 2)
                             {
-                                if (applicationId == "5578b046-8264-438c-99c5-fb15c71b6744")
+                                if (applicationId == "e3341a7b-1cb9-4b6c-90e4-39b796e52876")
                                 {
                                     GUI.Label(new Rect(37f, 75f, 190f, 25f), "Connected to public AppID.", "Label");
                                 }
@@ -5167,7 +5196,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 GUI.Label(new Rect(20f, 125f, 60f, 25f), "Custom:", "Label");
                                 if (GUI.Button(new Rect(160f, 100f, 60f, 20f), "Connect"))
                                 {
-                                    applicationId = "5578b046-8264-438c-99c5-fb15c71b6744";
+                                    applicationId = "e3341a7b-1cb9-4b6c-90e4-39b796e52876";
                                 }
                                 else if (GUI.Button(new Rect(160f, 125f, 60f, 20f), "Connect"))
                                 {
@@ -6516,7 +6545,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         GUI.Label(new Rect(num7 + 168f, num8 + 310f, 20f, 22f), ((int)settings[0xfd]).ToString(), "Label");
                         int num43 = (((20 - ((int)settings[250])) - ((int)settings[0xfb])) - ((int)settings[0xfc])) - ((int)settings[0xfd]);
                         GUI.Label(new Rect(num7 + 168f, num8 + 335f, 20f, 22f), num43.ToString(), "Label");
-                        if (GUI.Button(new Rect(num7 + 190f, num8 + 235f, 20f, 20f), "-"))
+
+                        if (GUI.Button(new Rect(num7 + 190f, num8 + 235f, 20f, 20f), "-") && ((int)settings[250]) > 4)
                         {
                             if (((int)settings[250]) > 0)
                             {
@@ -6529,6 +6559,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             settings[250] = ((int)settings[250]) + 1;
                             PlayerPrefs.SetInt("bombRadius", (int)settings[250]);
                         }
+
                         if (GUI.Button(new Rect(num7 + 190f, num8 + 260f, 20f, 20f), "-"))
                         {
                             if (((int)settings[0xfb]) > 0)
@@ -6537,11 +6568,12 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 PlayerPrefs.SetInt("bombRange", (int)settings[251]);
                             }
                         }
-                        else if (GUI.Button(new Rect(num7 + 215f, num8 + 260f, 20f, 20f), "+") && ((((int)settings[0xfb]) < 10) && (num43 > 0)))
+                        else if (GUI.Button(new Rect(num7 + 215f, num8 + 260f, 20f, 20f), "+") && ((((int)settings[251]) <3) && (num43 > 0)))
                         {
                             settings[0xfb] = ((int)settings[0xfb]) + 1;
                             PlayerPrefs.SetInt("bombRange", (int)settings[251]);
                         }
+
                         if (GUI.Button(new Rect(num7 + 190f, num8 + 285f, 20f, 20f), "-"))
                         {
                             if (((int)settings[0xfc]) > 0)
@@ -6555,7 +6587,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             settings[0xfc] = ((int)settings[0xfc]) + 1;
                             PlayerPrefs.SetInt("bombSpeed", (int)settings[0xfc]);
                         }
-                        if (GUI.Button(new Rect(num7 + 190f, num8 + 310f, 20f, 20f), "-"))
+                        if (GUI.Button(new Rect(num7 + 190f, num8 + 310f, 20f, 20f), "-") && ((int)settings[0xfd]) > 4)
                         {
                             if (((int)settings[0xfd]) > 0)
                             {
@@ -10512,6 +10544,31 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.single_totalDamage += dmg;
     }
 
+    public void ReportKillToChatFeed(string killer, string victim, int damage)
+    {
+        if ((int)settings[244] == 1)
+        {
+            string text = string.Concat(new string[]
+            {
+                "<color=#FFC000>(",
+                this.roundTime.ToString("F2"),
+                ")</color> ",
+                killer.hexColor(),
+                " killed "
+            });
+            string newLine = string.Concat(new string[]
+            {
+                text,
+                victim.hexColor(),
+                " for ",
+                damage.ToString(),
+                " damage."
+            });
+            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) InRoomChat.Write(newLine);
+           // else FleurConsole.instance.Log("" + newLine, FleurConsole.DebugType.LOG);
+        }
+    }
+
     public void playerKillInfoUpdate(PhotonPlayer player, int dmg)
     {
         ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable();
@@ -12974,6 +13031,13 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         //sky5.SetTexture("_DownTex", ImageDown);
     }
 
+    private void AutoLoad()
+    {
+        nameField = PlayerPrefs.GetString("name", "someguest");
+        LoginFengKAI.player.name = nameField;
+        LoginFengKAI.player.guildname = PlayerPrefs.GetString("guildname", "someguest");
+    }
+
     private void Start()
     {
         base.name = "MultiplayerManager";
@@ -12987,6 +13051,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.cT = new ArrayList();
         this.hooks = new ArrayList();
         this.name = string.Empty;
+        AutoLoad();
         allheroes.Clear();
         if (nameField == null)
         {
@@ -13205,7 +13270,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
         if (PhotonNetwork.inRoom || (GameObject.Find("ButtonCREDITS") != null && GameObject.Find("ButtonCREDITS").transform.parent.gameObject != null && NGUITools.GetActive(GameObject.Find("ButtonCREDITS").transform.parent.gameObject)))
         {
-
             #region connection protocols
 
             if ((int)FengGameManagerMKII.settings[267] == 0)
@@ -13238,25 +13302,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             else
                 PhotonNetwork.networkingPeer.SocketImplementationConfig.Add(ExitGames.Client.Photon.ConnectionProtocol.WebSocket, typeof(ExitGames.Client.Photon.SocketWebTcp));
             #endregion
-
         }
-        //if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.MULTIPLAYER)
-        //{
-        //    if (FengGameManagerMKII.LabelNetworkStatus != null)
-        //    {
-        //        FengGameManagerMKII.LabelNetworkStatus.text = PhotonNetwork.connectionStateDetailed.ToString();
-        //        if (PhotonNetwork.connected)
-        //        {
-        //            UILabel expr_53 = FengGameManagerMKII.LabelNetworkStatus;
-        //            expr_53.text = expr_53.text + " ping:" + PhotonNetwork.GetPing();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        FengGameManagerMKII.LabelNetworkStatus = LoginFengKAI.Log.output.GetComponent<UILabel>();
-        //        //CLEARSKIES.CacheGameObject.Find("LabelNetworkStatus").GetComponent<UILabel>()
-        //    }
-        //}
+
         if (gameStart)
         {
             foreach (HERO hERO in heroes)

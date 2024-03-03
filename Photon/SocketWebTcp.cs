@@ -103,6 +103,7 @@ namespace ExitGames.Client.Photon
             MonoBehaviour mb = this.websocketConnectionObject.AddComponent<MonoBehaviourExt>();
             this.websocketConnectionObject.hideFlags = HideFlags.HideInHierarchy;
             UnityEngine.Object.DontDestroyOnLoad(this.websocketConnectionObject);
+
             this.sock = new WebSocket(new Uri(this.ServerAddress), SerializationProtocol);          // TODO: The protocol should be set based on current PeerBase value (but that's currently not accessible)
             this.sock.Connect();
 

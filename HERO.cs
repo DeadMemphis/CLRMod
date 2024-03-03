@@ -1094,6 +1094,10 @@ public class HERO : MONO
                 this.leftbladetrail2.Deactivate();
                 this.rightbladetrail2.Deactivate();
             }
+            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+            {
+                GameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().ReportKillToChatFeed("Titan", "You", 0);
+            }
             this.breakApart(v, isBite);
             IN_GAME_MAIN_CAMERA.mainCamera.gameOver = true;
             FengGameManagerMKII.instance.gameLose2();
@@ -1132,6 +1136,10 @@ public class HERO : MONO
             this.meatDie.Play();
             IN_GAME_MAIN_CAMERA.mainCamera.setMainObject(null, true, false);
             IN_GAME_MAIN_CAMERA.mainCamera.gameOver = true;
+            if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
+            {
+                GameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().ReportKillToChatFeed("Titan", "You", 0);
+            }
             FengGameManagerMKII.instance.gameLose2();
             this.falseAttack();
             this.hasDied = true;
@@ -1299,7 +1307,6 @@ public class HERO : MONO
         //GameObject dmgsmoke = new GameObject();
         if ((!this.titanForm && !this.isCannon) && (!IN_GAME_MAIN_CAMERA.isPausing || (IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE)))
         {
-            this.bodyLean();
             this.currentSpeed = baseR.velocity.magnitude;
             if ((IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE) || basePV.isMine)
             {
@@ -1973,33 +1980,10 @@ public class HERO : MONO
                     }
                 }
             }
+            this.bodyLean();
         }
     }
-
-    public string getDebugInfo()
-    {
-        string str = "\n";
-        str = "Left:" + this.isLeftHandHooked + " ";
-        if (this.isLeftHandHooked && (this.bulletLeft != null))
-        {
-            Vector3 vector = this.bulletLT.position - baseT.position;
-            str = str + ((int)(Mathf.Atan2(vector.x, vector.z) * 57.29578f));
-        }
-        string str2 = str;
-        object[] objArray1 = new object[] { str2, "\nRight:", this.isRightHandHooked, " " };
-        str = string.Concat(objArray1);
-        if (this.isRightHandHooked && (this.bulletRight != null))
-        {
-            Vector3 vector2 = this.bulletRT.position - baseT.position;
-            str = str + ((int)(Mathf.Atan2(vector2.x, vector2.z) * 57.29578f));
-        }
-        str = (((str + "\nfacingDirection:" + ((int)this.facingDirection)) + "\nActual facingDirection:" + ((int)baseT.rotation.eulerAngles.y)) + "\nState:" + this.state.ToString()) + "\n\n\n\n\n";
-        if (this.state == HERO_STATE.Attack)
-        {
-            this.targetRotation = Quaternion.Euler(0f, this.facingDirection, 0f);
-        }
-        return str;
-    }
+    
 
     private Vector3 getGlobaleFacingVector3(float resultAngle)
     {
@@ -4024,6 +4008,8 @@ public class HERO : MONO
         {
             if (this.invincible > 0 || (PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])))
                 FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "malicious netDie1");
+           
+
             if (FengGameManagerMKII.ignoreList.Contains(info.sender.ID))
             {
                 basePV.RPC("backToHumanRPC", PhotonTargets.Others, new object[0]);
@@ -4255,6 +4241,7 @@ public class HERO : MONO
         {
             if (this.invincible > 0 || (PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])))
                 FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "malicious netDie2");
+            
             if (FengGameManagerMKII.ignoreList.Contains(info.sender.ID))
             {
                 basePV.RPC("backToHumanRPC", PhotonTargets.Others, new object[0]);
@@ -5608,6 +5595,11 @@ public class HERO : MONO
                 UILabel uilabel2 = component;
                 uilabel2.text += name.Length > 100 ? name.Substring(0, 20) : name;
             }
+            //load your name and guild before spawn, so if someone changes your name without broadcast, you put it back
+            ExitGames.Client.Photon.Hashtable hashtable = new ExitGames.Client.Photon.Hashtable();
+            hashtable.Add(PhotonPlayerProperty.name, LoginFengKAI.player.name);
+            hashtable.Add(PhotonPlayerProperty.guildName, LoginFengKAI.player.guildname);
+            PhotonNetwork.player.SetCustomProperties(hashtable);
         }
         if ((IN_GAME_MAIN_CAMERA.gametype != GAMETYPE.SINGLE) && !basePV.isMine)
         {

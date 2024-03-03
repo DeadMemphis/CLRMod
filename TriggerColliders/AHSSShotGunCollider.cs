@@ -98,6 +98,7 @@ public class AHSSShotGunCollider : MonoBehaviour
                             //int num2 = (int) ((vector3.magnitude * 10f) * this.scoreMulti);
                             int num2 = this.Damage(item.transform.root.rigidbody.velocity);
                             FengGameManagerMKII.instance.netShowDamage(num2);
+                            GameObject.Find("MultiplayerManager").GetComponent<FengGameManagerMKII>().ReportKillToChatFeed("You", item.transform.root.GetComponent<TITAN>().name, num2);
                             if (num2 > (item.transform.root.GetComponent<TITAN>().myLevel * 100f))
                             {
                                 item.transform.root.GetComponent<TITAN>().die();

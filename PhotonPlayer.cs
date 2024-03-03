@@ -9,6 +9,7 @@ public class PhotonPlayer
 {
     private int actorID;
     public readonly bool isLocal;
+    public bool BombHasExploded { get; set; }
 
     private string nameField;
     public object TagObject;
