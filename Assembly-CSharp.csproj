@@ -35,6 +35,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BombUtil.cs" />
     <Compile Include="BTN_Server_AU.cs" />
     <Compile Include="BTN_Server_CAE.cs" />
     <Compile Include="BTN_Server_IN.cs" />
@@ -57,10 +58,12 @@
     <Compile Include="CLEARSKIES\Triplet.cs" />
     <Compile Include="CLEARSKIES\Yield.cs" />
     <Compile Include="GUIHelpers.cs" />
+    <Compile Include="MapCeiling.cs" />
     <Compile Include="Photon\CustomYieldInstruction.cs" />
     <Compile Include="Photon\EventCaching.cs" />
     <Compile Include="FunctionComparer.cs" />
     <Compile Include="Global.cs" />
+    <Compile Include="ThymeUtils.cs" />
     <Compile Include="TriggerColliders\AHSSShotGunCollider.cs" />
     <Compile Include="GAMETYPE.cs" />
     <Compile Include="GUITexture.cs" />
@@ -114,7 +117,7 @@
     <Compile Include="InputManagerRC.cs" />
     <Compile Include="InputCodeRC.cs" />
     <Compile Include="SmoothSyncMovement.cs" />
-    <Compile Include="RCSettings.cs" />
+    <Compile Include="GameSettings.cs" />
     <Compile Include="UpdateModule.cs" />
     <Compile Include="Utility\RateLimit.cs" />
     <Compile Include="ViewSynchronization.cs" />

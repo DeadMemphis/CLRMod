@@ -2,6 +2,10 @@
 
 public static class GameSettings
 {
+    public static int UseOldBombEffect;
+    public static int ShowBombColor;
+    public static int UseBladesWithBladeAnim;
+
     public static int ahssReload;
     public static float aRate;
     public static int asoPreservekdr;

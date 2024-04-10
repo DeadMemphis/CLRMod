@@ -11,6 +11,7 @@ using UnityEngine;
 
 public class TITAN : MONO
 {
+    public bool isThunderSpear;
     private HashSet<string> _ignoreLookTargetAnimations; //aottg2
     private HashSet<string> _fastHeadRotationAnimations; //aottg2
     private bool _ignoreLookTarget; //aottg2
@@ -3224,6 +3225,7 @@ public class TITAN : MONO
         this.isHooked = false;
         this.isLook = false;
         this.hasSpawn = true;
+        this.isThunderSpear = false;
     }
 
     public void suicide()
@@ -4375,7 +4377,7 @@ public class TITAN : MONO
     {
         if (this.colliderEnabled)
         {
-            if ((!this.isHooked && !this.myTitanTrigger.isCollide) && !this.isLook)
+            if ((!this.isHooked && !this.myTitanTrigger.isCollide) && !this.isLook && !this.isThunderSpear)
             {
                 foreach (Collider collider in this.baseColliders)
                 {
@@ -4387,7 +4389,7 @@ public class TITAN : MONO
                 this.colliderEnabled = false;
             }
         }
-        else if ((this.isHooked || this.myTitanTrigger.isCollide) || this.isLook)
+        else if ((this.isHooked || this.myTitanTrigger.isCollide) || this.isLook && !this.isThunderSpear)
         {
             foreach (Collider collider in this.baseColliders)
             {

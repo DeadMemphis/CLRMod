@@ -45,7 +45,7 @@ public class UIMainReferences : MonoBehaviour
         {
             yield return null;
         }
-        int version = 1;
+        int version = 2;
         using (WWW iteratorVariable2 = WWW.LoadFromCacheOrDownload(url, version))
         {
             yield return iteratorVariable2;
@@ -55,7 +55,7 @@ public class UIMainReferences : MonoBehaviour
             }
             FengGameManagerMKII.RCassets = iteratorVariable2.assetBundle;
             FengGameManagerMKII.isAssetLoaded = true;
-            FengGameManagerMKII.instance.setBackground();
+            //FengGameManagerMKII.instance.setBackground();
         }
     }
 

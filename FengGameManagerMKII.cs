@@ -20,11 +20,13 @@ using System.IO;
 using UnityEditor.VersionControl;
 using System.Diagnostics.PerformanceData;
 using System.Runtime.InteropServices;
-
-
+using MapCeilingNS; 
 
 public class FengGameManagerMKII : Photon.MonoBehaviour
 {
+    public static float ceilingSlider;
+    public static KeyCode BombSpecialKey = KeyCode.V;
+    private int changingKeys;
     public bool isPlayerTTL = false;
     private object thread_locker = new object();
     public Dictionary<int, CannonValues> allowedToCannon;
@@ -259,7 +261,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     IEnumerator sethud()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(2.5f);
         IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
     }
 
@@ -3493,6 +3495,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
     public void loadconfig()
     {
 
+        GameSettings.UseOldBombEffect = PlayerPrefs.GetInt("UseOldBombEffect", 1);
+        GameSettings.ShowBombColor = PlayerPrefs.GetInt("ShowBombColor", 1);
+        ceilingSlider = PlayerPrefs.GetFloat("ceilingSlider", 0.3f);
+        GameSettings.UseBladesWithBladeAnim = PlayerPrefs.GetInt("UseBladesWithBladeAnim", 0);
         int num;
         int num2;
         object[] objArray = new object[300];
@@ -3745,10 +3751,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         objArray[0xf7] = PlayerPrefs.GetFloat("bombG", 1f);
         objArray[0xf8] = PlayerPrefs.GetFloat("bombB", 1f);
         objArray[0xf9] = PlayerPrefs.GetFloat("bombA", 1f);
-        objArray[250] = PlayerPrefs.GetInt("bombRadius", 6);
-        objArray[0xfb] = PlayerPrefs.GetInt("bombRange", 2);
-        objArray[0xfc] = PlayerPrefs.GetInt("bombSpeed", 6);
-        objArray[0xfd] = PlayerPrefs.GetInt("bombCD", 6);
+        objArray[250] = PlayerPrefs.GetFloat("bombRadius", 6);
+        objArray[0xfb] = PlayerPrefs.GetFloat("bombRange", 2);
+        objArray[0xfc] = PlayerPrefs.GetFloat("bombSpeed", 6);
+        objArray[0xfd] = PlayerPrefs.GetFloat("bombCD", 6);
         objArray[0xfe] = PlayerPrefs.GetString("cannonUp", "W");
         objArray[0xff] = PlayerPrefs.GetString("cannonDown", "S");
         objArray[0x100] = PlayerPrefs.GetString("cannonLeft", "A");
@@ -3760,6 +3766,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         objArray[0x106] = PlayerPrefs.GetString("liveCam", "Y");
         objArray[263] = 1;
         objArray[284] = PlayerPrefs.GetInt("BurstType", 0);
+        objArray[291] = PlayerPrefs.GetInt("DetonateSticky", 0);
+        objArray[297] = PlayerPrefs.GetInt("BombSpecial", 0); //one of 4 choices
+        objArray[298] = PlayerPrefs.GetInt("CeilingType", 0);
 
         inputRC = new InputManagerRC();
         inputRC.setInputHuman(InputCodeRC.reelin, (string)objArray[0x62]);
@@ -5039,6 +5048,21 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         {
             loginstate = 2;
         }
+    }
+
+    public static float MyHorizontalSlider(Rect position, float value, float leftValue, float rightValue)
+    {
+        return GUI.Slider(position,
+            Convert.ToSingle(Math.Round(value * 2, MidpointRounding.AwayFromZero) / 2),
+            //value,
+            0f, leftValue, rightValue, GUI.skin.horizontalSlider, GUI.skin.horizontalSliderThumb, true, GUIUtility.GetControlID(GUI.sliderHash, FocusType.Native, position));
+    }
+    public static float MyHorizontalSliderOnePoint(Rect position, float value, float leftValue, float rightValue)
+    {
+        return GUI.Slider(position,
+            Convert.ToSingle(Math.Round(value * 1, MidpointRounding.AwayFromZero) / 1),
+            //value,
+            0f, leftValue, rightValue, GUI.skin.horizontalSlider, GUI.skin.horizontalSliderThumb, true, GUIUtility.GetControlID(GUI.sliderHash, FocusType.Native, position));
     }
 
     public void OnGUI()
@@ -6431,6 +6455,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 Screen.lockCursor = false;
                 if (((int)settings[0x40]) != 6)
                 {
+
+
                     num7 = (((float)Screen.width) / 2f) - 350f;
                     num8 = (((float)Screen.height) / 2f) - 250f;
                     GUI.backgroundColor = Color.gray;
@@ -6468,7 +6494,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     {
                         settings[0x40] = 10;
                     }
-                    else if (GUI.Button(new Rect(num7 + 7f, num8 + 37f, 70f, 25f), "Abilities", "box"))
+                    else if (GUI.Button(new Rect(num7 + 7f, num8 + 37f, 70f, 25f), "Bomb", "box"))
                     {
                         settings[0x40] = 11;
                     }
@@ -6491,113 +6517,147 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     else if (((int)settings[0x40]) == 11)
                     {
-                        GUI.Label(new Rect(num7 + 350f, num8 + 110, 185f, 22f), "Forest Bomb Introduction", "Label");
-                        if (GUI.Button(new Rect(num7 + 530f, num8 + 110, 75f, 25f), "Open"))
-                        {
-                            Application.OpenURL("https://docs.google.com/document/d/1LGhvccaWqU9IXtWRjDhPv6DMwVyfCvi3LZRZMUUnwq8/edit?usp=sharing");
-                        }
+                        //Texture2D textured;
+                        
+                        GUI.Label(new Rect(num7 + 50f, num8 + 80f, 80f, 22f), "Color: ", "Label");
 
-                        GUI.Label(new Rect(num7 + 350f, num8 + 140, 185f, 22f), "Forest Bomb Bible", "Label");
-                        if (GUI.Button(new Rect(num7 + 530f, num8 + 140, 75f, 25f), "Open"))
-                        {
-                            Application.OpenURL("https://docs.google.com/document/d/1o5xej8c2FFpn-RoM5MuWKFJ62Yrp2iIkPgd9xZvKq6s/edit?usp=sharing");
-                        }
+                        bool ShowBombColor = false;
+                        if (GameSettings.ShowBombColor > 0) ShowBombColor = true;
+                        ShowBombColor = GUI.Toggle(new Rect(num7 + 155f, num8 + 80, 40f, 20f), ShowBombColor, "On");
+                        if (ShowBombColor) GameSettings.ShowBombColor = 1;
+                        else GameSettings.ShowBombColor = 0;
+                        
+                            textured = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+                            textured.SetPixel(0, 0, new Color((float)settings[0xf6], (float)settings[0xf7], (float)settings[0xf8], (float)settings[0xf9]));
+                            textured.Apply();
+                            GUI.DrawTexture(new Rect(num7 + 105f, num8 + 83f, 40f, 15f), textured, ScaleMode.StretchToFill);
+                            UnityEngine.Object.Destroy(textured);
+                        
+                        GUI.Label(new Rect(num7 + 42f, num8 + 105f, 20f, 22f), "R:", "Label");
+                        GUI.Label(new Rect(num7 + 42f, num8 + 130f, 20f, 22f), "G:", "Label");
+                        GUI.Label(new Rect(num7 + 42f, num8 + 155f, 20f, 22f), "B:", "Label");
+                        GUI.Label(new Rect(num7 + 42f, num8 + 180f, 20f, 22f), "A:", "Label");
+                       
+                            settings[0xf6] = GUI.HorizontalSlider(new Rect(num7 + 62f, num8 + 108f, 100f, 20f), (float)settings[0xf6], 0f, 1f);
+                            settings[0xf7] = GUI.HorizontalSlider(new Rect(num7 + 62f, num8 + 133f, 100f, 20f), (float)settings[0xf7], 0f, 1f);
+                            settings[0xf8] = GUI.HorizontalSlider(new Rect(num7 + 62f, num8 + 158f, 100f, 20f), (float)settings[0xf8], 0f, 1f);
+                            settings[0xf9] = GUI.HorizontalSlider(new Rect(num7 + 62f, num8 + 183f, 100f, 20f), (float)settings[0xf9], 0.5f, 1f);
+                        
 
-                        GUI.Label(new Rect(num7 + 350f, num8 + 170, 185f, 22f), "Forest Bomb Duels Chart", "Label");
-                        if (GUI.Button(new Rect(num7 + 530f, num8 + 170, 75f, 25f), "Open"))
-                        {
-                            Application.OpenURL("https://docs.google.com/spreadsheets/d/1aanipZCYjESg6oa8-bw7zuoxtDWZbVlz3w_8wiFSgKU/edit?usp=sharing");
-                        }
+                        float radius = Convert.ToSingle(settings[250]);
+                        float range = Convert.ToSingle(settings[251]);
+                        float speed = Convert.ToSingle(settings[252]);
+                        float cd = Convert.ToSingle(settings[253]);
 
-                        GUI.Label(new Rect(num7 + 350f, num8 + 200, 185f, 22f), "Our Discord", "Label");
-                        if (GUI.Button(new Rect(num7 + 530f, num8 + 200, 75f, 25f), "Open"))
-                        {
-                            Application.OpenURL("https://discord.gg/rJyazCYrqN");
-                        }
-                        GUI.Label(new Rect(num7 + 150f, num8 + 80f, 185f, 22f), "Bomb Mode", "Label");
-                        GUI.Label(new Rect(num7 + 80f, num8 + 110f, 80f, 22f), "Color:", "Label");
-                        textured = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-                        textured.SetPixel(0, 0, new Color((float)settings[0xf6], (float)settings[0xf7], (float)settings[0xf8], (float)settings[0xf9]));
-                        textured.Apply();
-                        GUI.DrawTexture(new Rect(num7 + 120f, num8 + 113f, 40f, 15f), textured, ScaleMode.StretchToFill);
-                        UnityEngine.Object.Destroy(textured);
-                        GUI.Label(new Rect(num7 + 72f, num8 + 135f, 20f, 22f), "R:", "Label");
-                        GUI.Label(new Rect(num7 + 72f, num8 + 160f, 20f, 22f), "G:", "Label");
-                        GUI.Label(new Rect(num7 + 72f, num8 + 185f, 20f, 22f), "B:", "Label");
-                        GUI.Label(new Rect(num7 + 72f, num8 + 210f, 20f, 22f), "A:", "Label");
-                        settings[0xf6] = GUI.HorizontalSlider(new Rect(num7 + 92f, num8 + 138f, 100f, 20f), (float)settings[0xf6], 0f, 1f);
-                        settings[0xf7] = GUI.HorizontalSlider(new Rect(num7 + 92f, num8 + 163f, 100f, 20f), (float)settings[0xf7], 0f, 1f);
-                        settings[0xf8] = GUI.HorizontalSlider(new Rect(num7 + 92f, num8 + 188f, 100f, 20f), (float)settings[0xf8], 0f, 1f);
-                        settings[0xf9] = GUI.HorizontalSlider(new Rect(num7 + 92f, num8 + 213f, 100f, 20f), (float)settings[0xf9], 0.5f, 1f);
-                        GUI.Label(new Rect(num7 + 72f, num8 + 235f, 95f, 22f), "Bomb Radius:", "Label");
-                        GUI.Label(new Rect(num7 + 72f, num8 + 260f, 95f, 22f), "Bomb Range:", "Label");
-                        GUI.Label(new Rect(num7 + 72f, num8 + 285f, 95f, 22f), "Bomb Speed:", "Label");
-                        GUI.Label(new Rect(num7 + 72f, num8 + 310f, 95f, 22f), "Bomb CD:", "Label");
-                        GUI.Label(new Rect(num7 + 72f, num8 + 335f, 95f, 22f), "Unused Points:", "Label");
-                        num30 = (int)settings[250];
-                        GUI.Label(new Rect(num7 + 168f, num8 + 235f, 20f, 22f), num30.ToString(), "Label");
-                        num30 = (int)settings[0xfb];
-                        GUI.Label(new Rect(num7 + 168f, num8 + 260f, 20f, 22f), num30.ToString(), "Label");
-                        num30 = (int)settings[0xfc];
-                        GUI.Label(new Rect(num7 + 168f, num8 + 285f, 20f, 22f), num30.ToString(), "Label");
-                        GUI.Label(new Rect(num7 + 168f, num8 + 310f, 20f, 22f), ((int)settings[0xfd]).ToString(), "Label");
-                        int num43 = (((20 - ((int)settings[250])) - ((int)settings[0xfb])) - ((int)settings[0xfc])) - ((int)settings[0xfd]);
-                        GUI.Label(new Rect(num7 + 168f, num8 + 335f, 20f, 22f), num43.ToString(), "Label");
+                        float actualRadius = BombUtil.GetBombRadius(radius, 5.40f, 7.4f, 7f);
+                        float actualRange = BombUtil.GetBombRange(range, 0f, 4f, 7f);
+                        float actualSpeed = BombUtil.GetBombSpeed(speed, 3f, 10.5f, 10.5f);
+                        float actualCD = BombUtil.GetBombCooldown(cd, 4f, 7f, 7f);
 
-                        if (GUI.Button(new Rect(num7 + 190f, num8 + 235f, 20f, 20f), "-") && ((int)settings[250]) > 4)
+                        float oldRadiusCost = BombUtil.GetOldRadiusCost(actualRadius);
+                        float oldRangeCost = BombUtil.GetOldRangeCost(actualRange);
+                        float oldSpeedCost = BombUtil.GetOldSpeedCost(actualSpeed);
+                        float oldCDCost = BombUtil.GetOldCooldownCost(actualCD);
+
+                        // max 2 decimals
+                        string actualRadStr = actualRadius.ToString("0.##");
+                        string actualRangeStr = actualRange.ToString("0.##");
+                        string actualSpeedStr = (actualSpeed / 100f).ToString("0.##");
+                        string actualCDStr = actualCD.ToString("0.##");
+
+
+                        actualRadStr = $"{radius} ({oldRadiusCost.ToString("0.##")}) ({actualRadStr}u)";
+                        actualRangeStr = $"{range} ({oldRangeCost.ToString("0.##")}) ({actualRangeStr}u)";
+                        actualSpeedStr = $"{speed} ({oldSpeedCost.ToString("0.##")}) ({actualSpeedStr}k)";
+                        actualCDStr = $"{cd} ({oldCDCost.ToString("0.##")}) ({actualCDStr}s)";
+
+                        GUI.Label(new Rect(num7 + 42f, num8 + 225f, 95f, 22f), $"Bomb Radius:", "Label");
+                        GUI.Label(new Rect(num7 + 138f, num8 + 225f, 120, 22f), actualRadStr, "Label"); //radius num
+                        GUI.Label(new Rect(num7 + 42f, num8 + 250f, 95f, 22f), $"Bomb Range:", "Label");
+                        GUI.Label(new Rect(num7 + 138f, num8 + 250f, 120, 22f), actualRangeStr, "Label"); //range num
+                        GUI.Label(new Rect(num7 + 42f, num8 + 275f, 95f, 22f), $"Bomb Speed:", "Label");
+                        GUI.Label(new Rect(num7 + 138f, num8 + 275f, 120, 22f), actualSpeedStr, "Label"); //speed num
+                        GUI.Label(new Rect(num7 + 42f, num8 + 300f, 95f, 22f), $"Bomb CD:", "Label");
+                        GUI.Label(new Rect(num7 + 138f, num8 + 300f, 120, 22f), actualCDStr, "Label"); //cd num
+
+                        GUI.Label(new Rect(num7 + 42f, num8 + 325f, 200, 40f), "Unused Points:", "Label");
+
+                        settings[250] = MyHorizontalSliderOnePoint(new Rect(num7 + 255f, num8 + 230f, 115f, 20f), radius, 0f, 10f); //rad
+                        settings[251] = MyHorizontalSliderOnePoint(new Rect(num7 + 255f, num8 + 255f, 115f, 20f), range, 0f, 10f); //range
+                        settings[252] = MyHorizontalSliderOnePoint(new Rect(num7 + 255f, num8 + 280f, 115f, 20f), speed, 0f, 10f); //speed
+                        settings[253] = MyHorizontalSliderOnePoint(new Rect(num7 + 255f, num8 + 305f, 115f, 20f), cd, 0f, 10f); //CD
+
+                        float num43 = (((20 - ((float)settings[250])) - ((float)settings[251])) - ((float)settings[252])) - ((float)settings[253]);
+                        GUI.Label(new Rect(num7 + 138f, num8 + 325f, 100f, 22f), num43.ToString(), "Label");
+
+                        GUI.Label(new Rect(num7 + 42f, num8 + 375, 160f, 20f), "Old Bomb:", "Label");
+                        bool UseOldBombEffect = false;
+                        if (GameSettings.UseOldBombEffect > 0) UseOldBombEffect = true;
+                        UseOldBombEffect = GUI.Toggle(new Rect(num7 + 140f, num8 + 375, 40f, 20f), UseOldBombEffect, "On");
+                        if (UseOldBombEffect) GameSettings.UseOldBombEffect = 1;
+                        else GameSettings.UseOldBombEffect = 0;
+
+                        GUI.Label(new Rect(num7 + 42, num8 + 400, 160f, 20f), "Blades:", "Label");
+                        bool UseBladesWithBladeAnim = false;
+                        if (GameSettings.UseBladesWithBladeAnim > 0) UseBladesWithBladeAnim = true;
+                        UseBladesWithBladeAnim = GUI.Toggle(new Rect(num7 + 140, num8 + 400, 40f, 20f), UseBladesWithBladeAnim, "On");
+                        if (UseBladesWithBladeAnim) GameSettings.UseBladesWithBladeAnim = 1;
+                        else GameSettings.UseBladesWithBladeAnim = 0;
+
+                        //GUI.Label(new Rect(num7 + 42f, num8 + 425, 160f, 50f), "<size=12>Allow RRC's \n infinite gas:", "Label");
+                        //bool AnarchyinfiniteGasPvp = false;
+                        //if (((int)settings[292]) == 1) AnarchyinfiniteGasPvp = true;
+                        //AnarchyinfiniteGasPvp = GUI.Toggle(new Rect(num7 + 140f, num8 + 425, 40f, 20f), AnarchyinfiniteGasPvp, "On");
+                        //if (AnarchyinfiniteGasPvp) settings[292] = 1;
+                        //else settings[292] = 0;
+
+                        string[] CeilingType = new string[] { "Static Ceiling", "Fade Ceiling" };
+                        settings[298] = GUI.SelectionGrid(new Rect(num7 + 200, num8 + 375, 180f, 30), (int)settings[298], CeilingType, 2);
+
+                        GUI.Label(new Rect(num7 + 200, num8 + 410, 180f, 20f), "Static Ceiling Transparency", "Label");
+                        ceilingSlider = GUI.HorizontalSlider(new Rect(num7 + 200, num8 + 435, 140f, 20f), ceilingSlider, 0.0f, 0.8f);
+
+                        //right side
+
+                        GUI.Label(new Rect(num7 + 400, num8 + 80, 160f, 20f), "Bomb Mode:", "Label");
+                        bool BombMode = false;
+                        if (((int)settings[192]) == 1) BombMode = true;
+                        BombMode = GUI.Toggle(new Rect(num7 + 520, num8 + 80, 40f, 20f), BombMode, "On");
+                        if (BombMode) settings[192] = 1;
+                        else settings[192] = 0;
+
+
+                        GUI.Label(new Rect(num7 + 400, num8 + 130, 100f, 66f), "Team Mode:", "Label");
+                        string[] strArray16 = new string[] { "Off", "No Sort", "Size-Lock", "Skill-Lock" };
+                        settings[0xc1] = GUI.SelectionGrid(new Rect(num7 + 520f, num8 + 130, 120f, 88f), (int)settings[0xc1], strArray16, 1, GUI.skin.toggle);
+
+                        GUI.Label(new Rect(num7 + 400f, num8 + 235, 160f, 20f), "Bomb Type:", "Label");
+                        string[] BombType = new string[] { "Impact", "Bouncy"/*, "Sticky"*/ };
+                        settings[291] = GUI.SelectionGrid(new Rect(num7 + 480, num8 + 235, 160f, 20), (int)settings[291], BombType, 2);
+
+
+                        GUI.Label(new Rect(num7 + 400f, num8 + 265, 160f, 20f), "Bomb Special:", "Label");
+
+                        string buttonText = BombSpecialKey.ToString();
+                        if (changingKeys == 0)
                         {
-                            if (((int)settings[250]) > 0)
+                            buttonText = "Waiting...";
+                            for (int i = 1; i <= 429; i++)
                             {
-                                settings[250] = ((int)settings[250]) - 1;
-                                PlayerPrefs.SetInt("bombRadius", (int)settings[250]);
+                                KeyCode code = (KeyCode)(i);
+                                if (Input.GetKeyDown(code))
+                                {
+                                    BombSpecialKey = code;
+                                    changingKeys = -1;
+                                    PlayerPrefs.SetInt("BombSpecialKey", (int)code);
+                                }
                             }
                         }
-                        else if (GUI.Button(new Rect(num7 + 215f, num8 + 235f, 20f, 20f), "+") && ((((int)settings[250]) < 10) && (num43 > 0)))
-                        {
-                            settings[250] = ((int)settings[250]) + 1;
-                            PlayerPrefs.SetInt("bombRadius", (int)settings[250]);
-                        }
+                        if (GUI.Button(new Rect(num7 + 505, num8 + 265, 100, 20f), buttonText))
+                            if (changingKeys == -1) changingKeys = 0;
 
-                        if (GUI.Button(new Rect(num7 + 190f, num8 + 260f, 20f, 20f), "-"))
-                        {
-                            if (((int)settings[0xfb]) > 0)
-                            {
-                                settings[0xfb] = ((int)settings[0xfb]) - 1;
-                                PlayerPrefs.SetInt("bombRange", (int)settings[251]);
-                            }
-                        }
-                        else if (GUI.Button(new Rect(num7 + 215f, num8 + 260f, 20f, 20f), "+") && ((((int)settings[251]) <3) && (num43 > 0)))
-                        {
-                            settings[0xfb] = ((int)settings[0xfb]) + 1;
-                            PlayerPrefs.SetInt("bombRange", (int)settings[251]);
-                        }
-
-                        if (GUI.Button(new Rect(num7 + 190f, num8 + 285f, 20f, 20f), "-"))
-                        {
-                            if (((int)settings[0xfc]) > 0)
-                            {
-                                settings[0xfc] = ((int)settings[0xfc]) - 1;
-                                PlayerPrefs.SetInt("bombSpeed", (int)settings[0xfc]);
-                            }
-                        }
-                        else if (GUI.Button(new Rect(num7 + 215f, num8 + 285f, 20f, 20f), "+") && ((((int)settings[0xfc]) < 10) && (num43 > 0)))
-                        {
-                            settings[0xfc] = ((int)settings[0xfc]) + 1;
-                            PlayerPrefs.SetInt("bombSpeed", (int)settings[0xfc]);
-                        }
-                        if (GUI.Button(new Rect(num7 + 190f, num8 + 310f, 20f, 20f), "-") && ((int)settings[0xfd]) > 4)
-                        {
-                            if (((int)settings[0xfd]) > 0)
-                            {
-                                settings[0xfd] = ((int)settings[0xfd]) - 1;
-                                PlayerPrefs.SetInt("bombCD", (int)settings[253]);
-                            }
-                        }
-                        else if (GUI.Button(new Rect(num7 + 215f, num8 + 310f, 20f, 20f), "+") && ((((int)settings[0xfd]) < 10) && (num43 > 0)))
-                        {
-                            settings[0xfd] = ((int)settings[0xfd]) + 1;
-                            PlayerPrefs.SetInt("bombCD", (int)settings[253]);
-                        }
+                        string[] BombSpecialType = new string[] { "Sticky Bomb", "Map" };
+                        settings[297] = GUI.SelectionGrid(new Rect(num7 + 400, num8 + 290, 250f, 20), (int)settings[297], BombSpecialType, 2);
                     }
                     else
                     {
@@ -7481,27 +7541,27 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                             settings[0xe2] = 0;
                                         }
                                     }
-                                    GUI.Label(new Rect(num7 + 100f, num8 + 152f, 160f, 22f), "PVP Bomb Mode:", "Label");
-                                    flag35 = false;
-                                    if (((int)settings[0xc0]) == 1)
-                                    {
-                                        flag35 = true;
-                                    }
-                                    flag36 = GUI.Toggle(new Rect(num7 + 250f, num8 + 152f, 40f, 20f), flag35, "On");
-                                    if (flag35 != flag36)
-                                    {
-                                        if (flag36)
-                                        {
-                                            settings[0xc0] = 1;
-                                        }
-                                        else
-                                        {
-                                            settings[0xc0] = 0;
-                                        }
-                                    }
-                                    GUI.Label(new Rect(num7 + 100f, num8 + 182f, 100f, 66f), "Team Mode:", "Label");
-                                    strArray16 = new string[] { "Off", "No Sort", "Size-Lock", "Skill-Lock" };
-                                    settings[0xc1] = GUI.SelectionGrid(new Rect(num7 + 250f, num8 + 182f, 120f, 88f), (int)settings[0xc1], strArray16, 1, GUI.skin.toggle);
+                                    //GUI.Label(new Rect(num7 + 100f, num8 + 152f, 160f, 22f), "PVP Bomb Mode:", "Label");
+                                    //flag35 = false;
+                                    //if (((int)settings[0xc0]) == 1)
+                                    //{
+                                    //    flag35 = true;
+                                    //}
+                                    //flag36 = GUI.Toggle(new Rect(num7 + 250f, num8 + 152f, 40f, 20f), flag35, "On");
+                                    //if (flag35 != flag36)
+                                    //{
+                                    //    if (flag36)
+                                    //    {
+                                    //        settings[0xc0] = 1;
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        settings[0xc0] = 0;
+                                    //    }
+                                    //}
+                                    //GUI.Label(new Rect(num7 + 100f, num8 + 182f, 100f, 66f), "Team Mode:", "Label");
+                                    //strArray16 = new string[] { "Off", "No Sort", "Size-Lock", "Skill-Lock" };
+                                    //settings[0xc1] = GUI.SelectionGrid(new Rect(num7 + 250f, num8 + 182f, 120f, 88f), (int)settings[0xc1], strArray16, 1, GUI.skin.toggle);
                                     GUI.Label(new Rect(num7 + 100f, num8 + 278f, 160f, 22f), "Infection Mode:", "Label");
                                     GUI.Label(new Rect(num7 + 100f, num8 + 300f, 160f, 22f), "Starting Titans (Integer):", "Label");
                                     settings[0xc9] = GUI.TextField(new Rect(num7 + 250f, num8 + 300f, 50f, 22f), (string)settings[0xc9]);
@@ -8300,6 +8360,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (GUI.Button(new Rect(num7 + 408f, num8 + 465f, 42f, 25f), "Save"))
                     {
+                        PlayerPrefs.SetInt("UseOldBombEffect", GameSettings.UseOldBombEffect);
+                        PlayerPrefs.SetInt("ShowBombColor", GameSettings.ShowBombColor);
+                        PlayerPrefs.SetInt("UseBladesWithBladeAnim", GameSettings.UseBladesWithBladeAnim);
+                        PlayerPrefs.SetFloat("ceilingSlider", ceilingSlider);
                         PlayerPrefs.SetInt("human", (int)settings[0]);
                         PlayerPrefs.SetInt("titan", (int)settings[1]);
                         PlayerPrefs.SetInt("level", (int)settings[2]);
@@ -8507,10 +8571,10 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         PlayerPrefs.SetFloat("bombG", (float)settings[0xf7]);
                         PlayerPrefs.SetFloat("bombB", (float)settings[0xf8]);
                         PlayerPrefs.SetFloat("bombA", (float)settings[0xf9]);
-                        PlayerPrefs.SetInt("bombRadius", (int)settings[250]);
-                        PlayerPrefs.SetInt("bombRange", (int)settings[0xfb]);
-                        PlayerPrefs.SetInt("bombSpeed", (int)settings[0xfc]);
-                        PlayerPrefs.SetInt("bombCD", (int)settings[0xfd]);
+                        PlayerPrefs.SetFloat("bombRadius", (float)settings[250]);
+                        PlayerPrefs.SetFloat("bombRange", (float)settings[251]);
+                        PlayerPrefs.SetFloat("bombSpeed", (float)settings[252]);
+                        PlayerPrefs.SetFloat("bombCD", (float)settings[253]);
                         PlayerPrefs.SetString("cannonUp", (string)settings[0xfe]);
                         PlayerPrefs.SetString("cannonDown", (string)settings[0xff]);
                         PlayerPrefs.SetString("cannonLeft", (string)settings[0x100]);
@@ -8521,6 +8585,9 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         PlayerPrefs.SetInt("deadlyCannon", (int)settings[0x105]);
                         PlayerPrefs.SetString("liveCam", (string)settings[0x106]);
                         PlayerPrefs.SetInt("BurstType", (int)settings[284]);
+                        PlayerPrefs.SetInt("DetonateSticky", (int)settings[291]);
+                        PlayerPrefs.SetInt("BombSpecial", (int)settings[297]);
+                        PlayerPrefs.SetInt("CeilingType", (int)settings[298]);
                         settings[0x40] = 4;
                     }
                     else if (GUI.Button(new Rect(num7 + 455f, num8 + 465f, 40f, 25f), "Load"))
@@ -8653,6 +8720,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         this.maxPlayers = PhotonNetwork.room.maxPlayers;
         this.playerList = string.Empty;
         char[] separator = new char[] { "`"[0] };
+        MapCeiling.CreateMapCeiling();
         UnityEngine.MonoBehaviour.print("OnJoinedRoom " + PhotonNetwork.room.name + "    >>>>   " + LevelInfo.getInfo(PhotonNetwork.room.name.Split(separator)[1]).mapName);
         this.gameTimesUp = false;
         char[] chArray3 = new char[] { "`"[0] };
@@ -8862,6 +8930,24 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             this.loadskin();
             IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
             IN_GAME_MAIN_CAMERA.mainCamera.setDayLight(IN_GAME_MAIN_CAMERA.dayLight);
+             
+
+            // barrier instantiation happens here - soup[02/20/21]
+            if (GameSettings.bombMode > 0)
+            {
+                if (HERO.MinimapSkillEnabled == true)
+                    HERO.MinimapSkillEnabled = false;
+                float num43 = (((20 - ((float)settings[250])) - ((float)settings[251])) - ((float)settings[252])) - ((float)settings[253]);
+                if (num43 >= 0f) //negative unused points
+                {
+                    PlayerPrefs.SetFloat("bombRadius", (float)settings[250]);
+                    PlayerPrefs.SetFloat("bombRange", (float)settings[251]);
+                    PlayerPrefs.SetFloat("bombSpeed", (float)settings[252]);
+                    PlayerPrefs.SetFloat("bombCD", (float)settings[253]);
+                }
+                MapCeiling.CreateMapCeiling();
+            }
+
             if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE)
             {
                 this.single_kills = 0;
@@ -12928,7 +13014,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         
         PView = base.photonView;
         instance = this;
-        this.setBackground();
+        //this.setBackground();
        // ChangeQuality.setCurrentQuality();
         //StartCoroutine(SkyTex());
 
@@ -12940,15 +13026,21 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         base.StartCoroutine(this.FPS());
 
         if (privateAppIDField == null) privateAppIDField = "create AppID (36 letters) on https://dashboard.photonengine.com/Account/SignIn?ReturnUrl=%2fen-US%2fpubliccloud";
-    }
 
-    public void setBackground()
-    {
-        if (isAssetLoaded)
+        changingKeys = -1;
+        if (PlayerPrefs.HasKey("BombSpecialKey"))
         {
-            UnityEngine.Object.Instantiate(RCassets.Load("backgroundCamera"));
+            BombSpecialKey = (KeyCode)PlayerPrefs.GetInt("BombSpecialKey");
         }
     }
+
+    //public void setBackground()
+    //{
+    //    if (isAssetLoaded)
+    //    {
+    //        UnityEngine.Object.Instantiate(RCassets.Load("backgroundCamera"));
+    //    }
+    //}
 
 
    // [RPC]

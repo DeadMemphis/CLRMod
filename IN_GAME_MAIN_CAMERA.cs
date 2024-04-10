@@ -3,8 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using CLEARSKIES;
 using Boo.Lang;
-using System.Linq;
-
+using System.Linq; 
 public class IN_GAME_MAIN_CAMERA : MonoBehaviour
 {
     public RotationAxes axes;
@@ -28,7 +27,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
     public bool gameOver;
     public static GAMETYPE gametype = GAMETYPE.STOP;
     private bool hasSnapShot;
-    
+
     public float heightMulti;
     public static int invertY = 1;
     public static bool isCheating;
@@ -75,9 +74,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
     public static bool usingTitan;
     private Vector3 verticalHeightOffset = Vector3.zero;
 
-
-
-
+    
     //delegate void CameraMove();
     //static CameraMove move = MoveORIGINAL;
     public static CameraShake shake;
@@ -201,41 +198,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
     private Transform locker;
     public static CAMERA_TYPE cameraMode = CAMERA_TYPE.ORIGINAL;
     public static bool isReady = false;
-    //{     
-    //    get
-    //    {
-    //        return _cameraMode; 
-    //    }
-    //    set
-    //    {
-    //        _cameraMode = value;
-    //        switch (value)
-    //        {
-    //            case CAMERA_TYPE.WOW:
-    //                {
-    //                    move = MoveWOW;
-    //                    break;
-    //                }
-    //            case CAMERA_TYPE.ORIGINAL:
-    //                {
-    //                    move = MoveORIGINAL;
-    //                    break;
-    //                }
-    //            case CAMERA_TYPE.TPS:
-    //                {
-    //                    move = MoveTPS;
-    //                    break;
-    //                }
-    //            case CAMERA_TYPE.OldTPS:
-    //                {
-    //                    move = MoveOldTPS;
-    //                    break;
-    //                }
-    //        }
-    //    }
-    //}
-
-
 
 
     private void Awake()
@@ -249,8 +211,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         mainG = Camera.main.gameObject;
         tiltshift = base.GetComponent<TiltShift>();
         tiltshift.enabled = (!PlayerPrefs.HasKey("GameQuality") || PlayerPrefs.GetFloat("GameQuality") >= 0.9f);
-        tiltshift = base.GetComponent<TiltShift>();
-        mainLightL = CLEARSKIES.CacheGameObject.Find<Light>("mainLight");
+        mainLightL = CLEARSKIES.CacheGameObject.Find<Light>("mainLight"); //remove dis? 
         skybox = base.GetComponent<Skybox>();
         rotationY = 0f;
         spectate = base.GetComponent<SpectatorMovement>();
@@ -258,7 +219,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         shake = base.GetComponent<CameraShake>();
         this.CreateMinimap();
     }
-
+    
     private void camareMovement()
     {
         float y = mainT.eulerAngles.y;
@@ -289,8 +250,19 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                 {
                     Screen.lockCursor = true;
                 }
-                float num5 = (Input.GetAxis("Mouse X") * 10f) * this.getSensitivityMulti();
-                float num6 = ((-Input.GetAxis("Mouse Y") * 10f) * this.getSensitivityMulti()) * this.getReverse();
+                float num5 = 0f;
+                float num6 = 0f;
+                //if (((int)FengGameManagerMKII.settings[300]) == 0)
+                //{
+                //    num5 = (Input.GetAxis("Mouse X") * 10f) * this.getSensitivityMulti();
+                //    num6 = ((-Input.GetAxis("Mouse Y") * 10f) * this.getSensitivityMulti()) * this.getReverse();
+                //}
+                //else if (((int)FengGameManagerMKII.settings[300]) == 1)
+                //{
+                    num5 = (Input.GetAxisRaw("Mouse X") * 10f) * this.getSensitivityMulti();
+                    num6 = ((-Input.GetAxisRaw("Mouse Y") * 10f) * this.getSensitivityMulti()) * this.getReverse();
+                //}
+
                 mainT.RotateAround(mainT.position, Vector3.up, num5);
                 float num7 = mainT.rotation.eulerAngles.x % 360f;
                 float num8 = num7 + num6;
@@ -315,156 +287,14 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                 mainT.position += -Vector3.up * rotationY * 0.1f * (float)Math.Pow(heightMulti, 1.1) * distanceOffsetMulti;
                 break;
         }
-        //if (IN_GAME_MAIN_CAMERA.head == null)
-        //{
-        //    //if (IN_GAME_MAIN_CAMERA.mainHERO != null && IN_GAME_MAIN_CAMERA.mainHERO.head != null)
-        //    //{
-        //    //    IN_GAME_MAIN_CAMERA.mainT.position = IN_GAME_MAIN_CAMERA.mainHERO.head.position;
-        //    //}
-        //    //else if (IN_GAME_MAIN_CAMERA.main_objectT != null)
-        //    //{
-        //    //    IN_GAME_MAIN_CAMERA.mainT.position = IN_GAME_MAIN_CAMERA.main_objectT.position;
-        //    //}
-        //    //else if (IN_GAME_MAIN_CAMERA.main_object != null)
-        //    //{
-        //    //    IN_GAME_MAIN_CAMERA.mainT.position = (IN_GAME_MAIN_CAMERA.main_objectT = IN_GAME_MAIN_CAMERA.main_object.transform).position;
-        //    //}
-        //    CLEARSKIES.StatsTab.AddLine("SOSAT", CLEARSKIES.StatsTab.DebugType.ERROR);
-        //}
-        //move();
-        //if (cameraMode == CAMERA_TYPE.WOW)
-        //{
-        //    if (Input.GetKey(KeyCode.Mouse1))
-        //    {
-        //        float angle = (Input.GetAxis("Mouse X") * 10f) * this.getSensitivityMulti();
-        //        float num2 = ((-Input.GetAxis("Mouse Y") * 10f) * this.getSensitivityMulti()) * this.getReverse();
-        //        mainT.RotateAround(mainT.position, Vector3.up, angle);
-        //        mainT.RotateAround(mainT.position, mainT.right, num2);
-        //    }
-        //    mainT.position -= (Vector3)(((mainT.forward * this.distance) * this.distanceMulti) * this.distanceOffsetMulti);
-        //}
-        //else if (cameraMode == CAMERA_TYPE.ORIGINAL)
-        //{
-        //    float num3 = 0f;
-        //    if (Input.mousePosition.x < (Screen.width * 0.4f))
-        //    {
-        //        num3 = (-((((Screen.width * 0.4f) - Input.mousePosition.x) / ((float)Screen.width)) * 0.4f) * this.getSensitivityMultiWithDeltaTime()) * 150f;
-        //        mainT.RotateAround(mainT.position, Vector3.up, num3);
-        //    }
-        //    else if (Input.mousePosition.x > (Screen.width * 0.6f))
-        //    {
-        //        num3 = ((((Input.mousePosition.x - (Screen.width * 0.6f)) / ((float)Screen.width)) * 0.4f) * this.getSensitivityMultiWithDeltaTime()) * 150f;
-        //        mainT.RotateAround(mainT.position, Vector3.up, num3);
-        //    }
-        //    float x = ((140f * ((Screen.height * 0.6f) - Input.mousePosition.y)) / ((float)Screen.height)) * 0.5f;
-        //    mainT.rotation = Quaternion.Euler(x, mainT.rotation.eulerAngles.y, mainT.rotation.eulerAngles.z);
-        //    mainT.position -= (Vector3)(((mainT.forward * 10f) * this.distanceMulti) * this.distanceOffsetMulti);
-        //}
-        //else if (cameraMode == CAMERA_TYPE.TPS)
-        //{
-        //    if (!this.inputManager.menuOn)
-        //    {
-        //        Screen.lockCursor = true;
-        //    }
-        //    float num5 = (Input.GetAxis("Mouse X") * 10f) * this.getSensitivityMulti();
-        //    float num6 = ((-Input.GetAxis("Mouse Y") * 10f) * this.getSensitivityMulti()) * this.getReverse();
-        //    mainT.RotateAround(mainT.position, Vector3.up, num5);
-        //    float num7 = mainT.rotation.eulerAngles.x % 360f;
-        //    float num8 = num7 + num6;
-        //    if (((num6 <= 0f) || (((num7 >= 260f) || (num8 <= 260f)) && ((num7 >= 80f) || (num8 <= 80f)))) && ((num6 >= 0f) || (((num7 <= 280f) || (num8 >= 280f)) && ((num7 <= 100f) || (num8 >= 100f)))))
-        //    {
-        //        mainT.RotateAround(mainT.position, mainT.right, num6);
-        //    }
-        //    mainT.position -= (Vector3)(((mainT.forward * this.distance) * this.distanceMulti) * this.distanceOffsetMulti);
-        //}
-        //else if (cameraMode == CAMERA_TYPE.OldTPS)
-        //{
-        //    if (!this.inputManager.menuOn)
-        //    {
-        //        Screen.lockCursor = true;
-        //    }
-        //    rotationY += Input.GetAxis("Mouse Y") * 2.5f * (sensitivityMulti * 2f) * invertY;
-        //    rotationY = Mathf.Clamp(rotationY, -60f, 60f);
-        //    rotationY = Mathf.Max(rotationY, -999f + heightMulti * 2f);
-        //    rotationY = Mathf.Min(rotationY, 999f);
-        //    mainT.localEulerAngles = new Vector3(-rotationY, mainT.localEulerAngles.y + Input.GetAxis("Mouse X") * 2.5f * (sensitivityMulti * 2f), z);
-        //    quaternion = Quaternion.Euler(0f, mainT.eulerAngles.y, 0f);
-        //    mainT.position -= quaternion * Vector3.forward * 10f * distanceMulti * distanceOffsetMulti;
-        //    mainT.position += -Vector3.up * rotationY * 0.1f * (float)Math.Pow(heightMulti, 1.1) * distanceOffsetMulti;
-        //}
         if (cameraDistance < 0.65f)
         {
             mainT.position += mainT.right * Mathf.Max((float)((0.6f - cameraDistance) * 2f), (float)0.65f);
         }
     }
-    public static void MoveTPS()
-    {
-        if (!FengCustomInputs.Inputs.menuOn)
-        {
-            Screen.lockCursor = true;
-        }
-        float num5 = (Input.GetAxis("Mouse X") * 10f) * mainCamera.getSensitivityMulti();
-        float num6 = ((-Input.GetAxis("Mouse Y") * 10f) * mainCamera.getSensitivityMulti()) * mainCamera.getReverse();
-        mainT.RotateAround(mainT.position, Vector3.up, num5);
-        float num7 = mainT.rotation.eulerAngles.x % 360f;
-        float num8 = num7 + num6;
-        if (((num6 <= 0f) || (((num7 >= 260f) || (num8 <= 260f)) && ((num7 >= 80f) || (num8 <= 80f)))) && ((num6 >= 0f) || (((num7 <= 280f) || (num8 >= 280f)) && ((num7 <= 100f) || (num8 >= 100f)))))
-        {
-            mainT.RotateAround(mainT.position, mainT.right, num6);
-        }
-        mainT.position -= ((mainT.forward * mainCamera.distance) * mainCamera.distanceMulti) * mainCamera.distanceOffsetMulti;
-    }
-    public static void MoveORIGINAL()
-    {
-        if (Input.mousePosition.x < (Screen.width * 0.4f))
-        {
-            mainT.RotateAround(mainT.position, Vector3.up, -(((float)Screen.width * 0.4f - Input.mousePosition.x) / (float)Screen.width * 0.4f) *
-                mainCamera.getSensitivityMultiWithDeltaTime() * 150f);
-        }
-        else if (Input.mousePosition.x > (Screen.width * 0.6f))
-        {
-            mainT.RotateAround(mainT.position, Vector3.up, (Input.mousePosition.x - (float)Screen.width * 0.6f) / (float)Screen.width * 0.4f *
-                mainCamera.getSensitivityMultiWithDeltaTime() * 150f);
-        }
-        mainT.rotation = Quaternion.Euler(140f * ((float)Screen.height * 0.6f - Input.mousePosition.y) / (float)Screen.height * 0.5f,
-            mainT.rotation.eulerAngles.y, mainT.rotation.eulerAngles.z);
-        mainT.position -= mainT.forward * 10f * mainCamera.distanceMulti * mainCamera.distanceOffsetMulti;
-    }
-    public static void MoveWOW()
-    {
-        float num3 = 0f;
-        if (Input.mousePosition.x < (Screen.width * 0.4f))
-        {
-            num3 = (-((((Screen.width * 0.4f) - Input.mousePosition.x) / Screen.width) * 0.4f) * mainCamera.getSensitivityMultiWithDeltaTime()) * 150f;
-            mainT.RotateAround(mainT.position, Vector3.up, num3);
-        }
-        else if (Input.mousePosition.x > (Screen.width * 0.6f))
-        {
-            num3 = ((((Input.mousePosition.x - (Screen.width * 0.6f)) / Screen.width) * 0.4f) * mainCamera.getSensitivityMultiWithDeltaTime()) * 150f;
-            mainT.RotateAround(mainT.position, Vector3.up, num3);
-        }
-        float x = ((140f * ((Screen.height * 0.6f) - Input.mousePosition.y)) / Screen.height) * 0.5f;
-        mainT.rotation = Quaternion.Euler(x, mainT.rotation.eulerAngles.y, mainT.rotation.eulerAngles.z);
-        mainT.position -= ((mainT.forward * 10f) * mainCamera.distanceMulti) * mainCamera.distanceOffsetMulti;
-    }
-    public static void MoveOldTPS()
-    {
-        float z = mainT.eulerAngles.z;
-        float y = mainT.eulerAngles.y;
-        Quaternion quaternion = Quaternion.Euler(0f, y, 0f);
-        if (!FengCustomInputs.Inputs.menuOn)
-        {
-            Screen.lockCursor = true;
-        }
-        mainCamera.rotationY += Input.GetAxis("Mouse Y") * 2.5f * (sensitivityMulti * 2f) * invertY;
-        mainCamera.rotationY = Mathf.Clamp(mainCamera.rotationY, -60f, 60f);
-        mainCamera.rotationY = Mathf.Max(mainCamera.rotationY, -999f + mainCamera.heightMulti * 2f);
-        mainCamera.rotationY = Mathf.Min(mainCamera.rotationY, 999f);
-        mainT.localEulerAngles = new Vector3(-mainCamera.rotationY, mainT.localEulerAngles.y + Input.GetAxis("Mouse X") * 2.5f * (IN_GAME_MAIN_CAMERA.sensitivityMulti * 2f), z);
-        quaternion = Quaternion.Euler(0f, mainT.eulerAngles.y, 0f);
-        mainT.position -= quaternion * Vector3.forward * 10f * mainCamera.distanceMulti * mainCamera.distanceOffsetMulti;
-        mainT.position += -Vector3.up * mainCamera.rotationY * 0.1f * (float)System.Math.Pow(mainCamera.heightMulti, 1.1) * mainCamera.distanceOffsetMulti;
-    }
+
+
+
     public void CameraMovementLive(HERO hero)
     {
         float magnitude = hero.rigidbody.velocity.magnitude;
@@ -500,10 +330,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                 Minimap.instance.myCam.enabled = false;
             }
             minimap.CreateMinimap(Minimap.instance.myCam, 0x200, 0.3f, info.minimapPreset);
-            //if ((((int)FengGameManagerMKII.settings[0xe7]) == 0) || (GameSettings.globalDisableMinimap == 1))
-            //{
-            //    minimap.SetEnabled(false);
-            //}
         }
     }
 
@@ -651,6 +477,21 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
     public void setDayLight(DayLight val)
     {
         dayLight = val;
+        if (dayLight == DayLight.Day)
+        {
+            RenderSettings.ambientLight = FengColor.dayAmbientLight;
+            mainLightL.color = FengColor.dayLight;
+            skybox.material = this.skyBoxDAY;
+        }
+
+        if (dayLight == DayLight.Dawn)
+        {
+            RenderSettings.ambientLight = FengColor.dawnAmbientLight;
+            mainLightL.color = FengColor.dawnAmbientLight;
+            skybox.material = this.skyBoxDAWN;
+        }
+
+
         if (dayLight == DayLight.Night)
         {
             Transform transform = ((GameObject)UnityEngine.Object.Instantiate(CLEARSKIES.CacheResources.Load("flashlight"))).transform;
@@ -660,18 +501,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
             RenderSettings.ambientLight = FengColor.nightAmbientLight;
             mainLightL.color = FengColor.nightLight;
             skybox.material = this.skyBoxNIGHT;
-        }
-        if (dayLight == DayLight.Day)
-        {
-            RenderSettings.ambientLight = FengColor.dayAmbientLight;
-            mainLightL.color = FengColor.dayLight;
-            skybox.material = this.skyBoxDAY;
-        }
-        if (dayLight == DayLight.Dawn)
-        {
-            RenderSettings.ambientLight = FengColor.dawnAmbientLight;
-            mainLightL.color = FengColor.dawnAmbientLight;
-            skybox.material = this.skyBoxDAWN;
         }
         this.snapShotCamera.gameObject.GetComponent<Skybox>().material = skybox.material;
     }
@@ -702,8 +531,8 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         }
         if (!usingTitan || (gametype == GAMETYPE.SINGLE))
         {
-            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_bottom").localPosition = new Vector3(0f, (int)(mposh + 5f), 0f);
-            CLEARSKIES.CacheGameObject.Find<Transform>("GasUI").localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition;
+            CLEARSKIES.CacheGameObject.Find<Transform>("skill_cd_bottom").localPosition = new Vector3(0f, (int)(mposh + 5f), 0f); //32, 32
+            CLEARSKIES.CacheGameObject.Find<Transform>("GasUI").localPosition = CLEARSKIES.CacheGameObject.Find("skill_cd_bottom").transform.localPosition; //1,1
             CLEARSKIES.CacheGameObject.Find<Transform>("stamina_titan").localPosition = new Vector3(0f, 9999f, 0f);
             CLEARSKIES.CacheGameObject.Find<Transform>("stamina_titan_bottom").localPosition = new Vector3(0f, 9999f, 0f);
         }
@@ -738,7 +567,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
     {
         mainobject = obj;
         mainTITAN = null;
-        if (obj == null)
+        if (obj == null) //specmode
         {
             mainHERO = null;
             main_objectT = null;
@@ -746,6 +575,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
             head = null;
             headT = null;
             distanceMulti = this.heightMulti = 1f;
+
         }
         else if (mainobject != null && (main_objectT = mainobject.transform) != null && (head = main_objectT.Find("Amarture/Core/Controller_Body/hip/spine/chest/neck/head")) != null)
         {
@@ -763,6 +593,15 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         {
             mainHERO = mainobject.GetComponent<HERO>();
             main_objectR = mainobject.rigidbody;
+
+            //  main_objectR.GetComponent<HERO>().SetInterpolationIfEnabled(true);
+            //if (((int)FengGameManagerMKII.settings[294]) == 2)
+            //    main_objectR.interpolation = RigidbodyInterpolation.None;
+            //else if (((int)FengGameManagerMKII.settings[294]) == 0)
+            //    main_objectR.interpolation = RigidbodyInterpolation.Interpolate;
+            //else if (((int)FengGameManagerMKII.settings[294]) == 1)
+            //    main_objectR.interpolation = RigidbodyInterpolation.Extrapolate;
+
             headT = head.transform;
             distanceMulti = this.heightMulti = 0.64f;
             if (resetRotation)
@@ -995,7 +834,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         }
     }
 
-  
+
     public void startSnapShot2(Vector3 p, int dmg, GameObject target, float startTime)
     {
         int num;
@@ -1062,7 +901,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                     list = new List<GameObject>(from h in FengGameManagerMKII.allheroes
                                                 where h != null
                                                 select h);
-                    this.currentPeekPlayerIndex++;                  
+                    this.currentPeekPlayerIndex++;
                     if (this.currentPeekPlayerIndex >= list.Count)
                     {
                         this.currentPeekPlayerIndex = 0;
@@ -1086,7 +925,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                     }
                     if (this.currentPeekPlayerIndex < 0)
                     {
-                        this.currentPeekPlayerIndex = list.Count;
+                        this.currentPeekPlayerIndex = list.Count - 1;
                     }
                     if (list.Count > 0)
                     {
@@ -1120,13 +959,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                     {
                         Time.timeScale = 0f;
                     }
-                    //UIReferArray uireferArray = CacheGameObject.Find<UIReferArray>("UI_IN_GAME");
-                    //NGUITools.SetActive(uireferArray.panels[0], false);
-                    //NGUITools.SetActive(uireferArray.panels[1], true);
-                    //NGUITools.SetActive(uireferArray.panels[2], false);
-                    //NGUITools.SetActive(uireferArray.panels[3], false);
-                    //FengCustomInputs.Inputs.showKeyMap();
-                    //FengCustomInputs.Inputs.justUPDATEME();
                     FengCustomInputs.Inputs.menuOn = (Screen.showCursor = true);
                     Screen.lockCursor = false;
                 }
@@ -1184,6 +1016,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                     {
                         Screen.showCursor = false;
                     }
+                    this.needSetHUD = true;
                 }
                 if (FengCustomInputs.Inputs.isInputDown[InputCode.hideCursor])
                 {
@@ -1223,6 +1056,7 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                     HERO component = main_object.GetComponent<HERO>();
                     if ((((component != null) && (((int)FengGameManagerMKII.settings[0x107]) == 1)) && component.sync.enabled) && component.isPhotonCamera)
                     {
+
                         this.CameraMovementLive(component);
                     }
                     else if (this.lockAngle)
@@ -1245,9 +1079,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                     Transform transform = lockTargetT.Find("Amarture/Core/Controller_Body/hip/spine/chest/neck");
                     Vector3 vector2 = transform.position - MainObjectPosition;
                     vector2.Normalize();
-                    //this.lockCameraPosition = main_objectP;
-                    //this.lockCameraPosition -= (Vector3) (((vector2 * distance) * distanceMulti) * distanceOffsetMulti);
-                    //this.lockCameraPosition += (Vector3) (((up * 3f) * this.heightMulti) * distanceOffsetMulti);
                     mainT.position = Vector3.Lerp(mainT.position, this.lockCameraPosition = MainObjectPosition - vector2 *
                         10f * distanceMulti * distanceOffsetMulti + Vector3.up * 3f * this.heightMulti * distanceOffsetMulti,
                         Time.deltaTime * 4f);
@@ -1276,9 +1107,6 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                 Vector3 end = MainObjectPosition;
                 Vector3 normalized = (MainObjectPosition - mainT.position).normalized;
                 end -= (Vector3)((distance * normalized) * distanceMulti);
-                //LayerMask mask = ((int)1) << LayerMask.NameToLayer("Ground");
-                //LayerMask mask2 = ((int)1) << LayerMask.NameToLayer("EnemyBox");
-                //LayerMask mask3 = mask | mask2;
                 if (head != null)
                 {
                     if (headT == null)

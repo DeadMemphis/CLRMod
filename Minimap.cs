@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+using CLEARSKIES;
 
 [DisallowMultipleComponent]
 public class Minimap : MonoBehaviour
@@ -18,7 +19,7 @@ public class Minimap : MonoBehaviour
     private float cornerSizeRatio;
     private Preset initialPreset;
     public static Minimap instance;
-    private bool isEnabled;
+    public bool isEnabled;
     private bool isEnabledTemp;
     private Vector3 lastMinimapCenter;
     private float lastMinimapOrthoSize;
@@ -116,10 +117,11 @@ public class Minimap : MonoBehaviour
         RenderTexture active = RenderTexture.active;
         RenderTexture.active = cam.targetTexture;
         cam.Render();
-        Texture2D textured = new Texture2D(cam.targetTexture.width, cam.targetTexture.height, TextureFormat.RGB24, false) {
+        Texture2D textured = new Texture2D(cam.targetTexture.width, cam.targetTexture.height, TextureFormat.RGB24, false)
+        {
             filterMode = FilterMode.Bilinear
         };
-        textured.ReadPixels(new Rect(0f, 0f, (float) cam.targetTexture.width, (float) cam.targetTexture.height), 0, 0);
+        textured.ReadPixels(new Rect(0f, 0f, (float)cam.targetTexture.width, (float)cam.targetTexture.height), 0, 0);
         textured.Apply();
         RenderTexture.active = active;
         return textured;
@@ -136,7 +138,8 @@ public class Minimap : MonoBehaviour
 
     private void CheckUserInput()
     {
-        if ((((int) FengGameManagerMKII.settings[0xe7]) == 1) && (GameSettings.globalDisableMinimap == 0) && GameSettings.bombMode == 0)
+        //if bomb disabled and globalmap enabled and mapenabled OR bomb enabled and minimapSKill enabled
+        if ((GameSettings.globalDisableMinimap == 0 && GameSettings.bombMode == 0 && ((int)FengGameManagerMKII.settings[0xe7]) == 1) || (GameSettings.bombMode == 1 && HERO.MinimapSkillEnabled))
         {
             if (this.minimapIsCreated)
             {
@@ -180,7 +183,7 @@ public class Minimap : MonoBehaviour
                             {
                                 axis *= 3f;
                             }
-                            this.lastMinimapOrthoSize = Mathf.Max((float) (this.lastMinimapOrthoSize + axis), (float) 1f);
+                            this.lastMinimapOrthoSize = Mathf.Max((float)(this.lastMinimapOrthoSize + axis), (float)1f);
                             flag2 = true;
                         }
                         if (Input.GetKey(KeyCode.UpArrow))
@@ -327,7 +330,7 @@ public class Minimap : MonoBehaviour
         this.minimap.anchoredPosition = Vector2.zero;
         this.minimap.sizeDelta = this.minimapMaskT.sizeDelta;
         Image image = obj4.AddComponent<Image>();
-        Rect rect = new Rect(0f, 0f, (float) map.width, (float) map.height);
+        Rect rect = new Rect(0f, 0f, (float)map.width, (float)map.height);
         image.sprite = UnityEngine.Sprite.Create(map, rect, new Vector3(0.5f, 0.5f));
         image.type = Image.Type.Simple;
     }
@@ -410,23 +413,23 @@ public class Minimap : MonoBehaviour
     private void Initialize()
     {
         Vector3 pivot = new Vector3(0.5f, 0.5f);
-        Texture2D texture = (Texture2D) FengGameManagerMKII.RCassets.Load("icon");
-        Rect rect = new Rect(0f, 0f, (float) texture.width, (float) texture.height);
+        Texture2D texture = (Texture2D)FengGameManagerMKII.RCassets.Load("icon");
+        Rect rect = new Rect(0f, 0f, (float)texture.width, (float)texture.height);
         whiteIconSprite = UnityEngine.Sprite.Create(texture, rect, pivot);
-        texture = (Texture2D) FengGameManagerMKII.RCassets.Load("iconpointer");
-        rect = new Rect(0f, 0f, (float) texture.width, (float) texture.height);
+        texture = (Texture2D)FengGameManagerMKII.RCassets.Load("iconpointer");
+        rect = new Rect(0f, 0f, (float)texture.width, (float)texture.height);
         pointerSprite = UnityEngine.Sprite.Create(texture, rect, pivot);
-        texture = (Texture2D) FengGameManagerMKII.RCassets.Load("supplyicon");
-        rect = new Rect(0f, 0f, (float) texture.width, (float) texture.height);
+        texture = (Texture2D)FengGameManagerMKII.RCassets.Load("supplyicon");
+        rect = new Rect(0f, 0f, (float)texture.width, (float)texture.height);
         supplySprite = UnityEngine.Sprite.Create(texture, rect, pivot);
-        texture = (Texture2D) FengGameManagerMKII.RCassets.Load("mapborder");
-        rect = new Rect(0f, 0f, (float) texture.width, (float) texture.height);
+        texture = (Texture2D)FengGameManagerMKII.RCassets.Load("mapborder");
+        rect = new Rect(0f, 0f, (float)texture.width, (float)texture.height);
         Vector4 border = new Vector4(5f, 5f, 5f, 5f);
         borderSprite = UnityEngine.Sprite.Create(texture, rect, pivot, 100f, 1, SpriteMeshType.FullRect, border);
-        this.MINIMAP_ICON_SIZE = new Vector2((float) whiteIconSprite.texture.width, (float) whiteIconSprite.texture.height);
-        this.MINIMAP_POINTER_SIZE = ((float) (pointerSprite.texture.width + pointerSprite.texture.height)) / 2f;
+        this.MINIMAP_ICON_SIZE = new Vector2((float)whiteIconSprite.texture.width, (float)whiteIconSprite.texture.height);
+        this.MINIMAP_POINTER_SIZE = ((float)(pointerSprite.texture.width + pointerSprite.texture.height)) / 2f;
         this.MINIMAP_POINTER_DIST = (this.MINIMAP_ICON_SIZE.x + this.MINIMAP_ICON_SIZE.y) * 0.25f;
-        this.MINIMAP_SUPPLY_SIZE = new Vector2((float) supplySprite.texture.width, (float) supplySprite.texture.height);
+        this.MINIMAP_SUPPLY_SIZE = new Vector2((float)supplySprite.texture.width, (float)supplySprite.texture.height);
         this.assetsInitialized = true;
     }
 
@@ -461,7 +464,7 @@ public class Minimap : MonoBehaviour
         }
         this.minimapMaskT.anchorMin = this.minimapMaskT.anchorMax = new Vector2(0.5f, 0.5f);
         this.minimapMaskT.anchoredPosition = Vector2.zero;
-        this.minimapMaskT.sizeDelta = new Vector2((float) this.MINIMAP_SIZE, (float) this.MINIMAP_SIZE);
+        this.minimapMaskT.sizeDelta = new Vector2((float)this.MINIMAP_SIZE, (float)this.MINIMAP_SIZE);
         this.minimap.sizeDelta = this.minimapMaskT.sizeDelta;
         this.borderT.sizeDelta = this.minimapMaskT.sizeDelta;
         if (this.minimapIcons != null)
@@ -496,7 +499,7 @@ public class Minimap : MonoBehaviour
         this.borderT.sizeDelta = this.minimapMaskT.sizeDelta;
         if (this.minimapIcons != null)
         {
-            float num = 1f - ((this.MINIMAP_SIZE - this.MINIMAP_CORNER_SIZE) / ((float) this.MINIMAP_SIZE));
+            float num = 1f - ((this.MINIMAP_SIZE - this.MINIMAP_CORNER_SIZE) / ((float)this.MINIMAP_SIZE));
             float a = this.MINIMAP_POINTER_SIZE * num;
             a = Mathf.Max(a, this.MINIMAP_POINTER_SIZE * 0.5f);
             float originDistance = (this.MINIMAP_POINTER_SIZE - a) / this.MINIMAP_POINTER_SIZE;
@@ -507,8 +510,8 @@ public class Minimap : MonoBehaviour
                 if (icon != null)
                 {
                     Vector2 sizeForStyle = this.GetSizeForStyle(icon.style);
-                    sizeForStyle.x = Mathf.Max((float) (sizeForStyle.x * num), (float) (sizeForStyle.x * 0.5f));
-                    sizeForStyle.y = Mathf.Max((float) (sizeForStyle.y * num), (float) (sizeForStyle.y * 0.5f));
+                    sizeForStyle.x = Mathf.Max((float)(sizeForStyle.x * num), (float)(sizeForStyle.x * 0.5f));
+                    sizeForStyle.y = Mathf.Max((float)(sizeForStyle.y * num), (float)(sizeForStyle.y * 0.5f));
                     icon.SetSize(sizeForStyle);
                     if (icon.rotation)
                     {
@@ -633,9 +636,9 @@ public class Minimap : MonoBehaviour
             }
             else
             {
-                float num = 1f - ((this.MINIMAP_SIZE - this.MINIMAP_CORNER_SIZE) / ((float) this.MINIMAP_SIZE));
-                sizeForStyle.x = Mathf.Max((float) (sizeForStyle.x * num), (float) (sizeForStyle.x * 0.5f));
-                sizeForStyle.y = Mathf.Max((float) (sizeForStyle.y * num), (float) (sizeForStyle.y * 0.5f));
+                float num = 1f - ((this.MINIMAP_SIZE - this.MINIMAP_CORNER_SIZE) / ((float)this.MINIMAP_SIZE));
+                sizeForStyle.x = Mathf.Max((float)(sizeForStyle.x * num), (float)(sizeForStyle.x * 0.5f));
+                sizeForStyle.y = Mathf.Max((float)(sizeForStyle.y * num), (float)(sizeForStyle.y * 0.5f));
                 icon.SetSize(sizeForStyle);
                 if (icon.rotation)
                 {
@@ -689,7 +692,7 @@ public class Minimap : MonoBehaviour
                 {
                     RCextensions.RemoveAt<MinimapIcon>(ref this.minimapIcons, i);
                 }
-                else if (!icon.UpdateUI(this.minimapOrthographicBounds, this.maximized ? ((float) this.MINIMAP_SIZE) : this.MINIMAP_CORNER_SIZE))
+                else if (!icon.UpdateUI(this.minimapOrthographicBounds, this.maximized ? ((float)this.MINIMAP_SIZE) : this.MINIMAP_CORNER_SIZE))
                 {
                     icon.Destroy();
                     RCextensions.RemoveAt<MinimapIcon>(ref this.minimapIcons, i);
@@ -769,7 +772,7 @@ public class Minimap : MonoBehaviour
             GameObject uiElement = new GameObject("MinimapIcon");
             RectTransform transform = uiElement.AddComponent<RectTransform>();
             transform.anchorMin = transform.anchorMax = new Vector3(0.5f, 0.5f);
-            transform.sizeDelta = new Vector2((float) spriteForStyle.texture.width, (float) spriteForStyle.texture.height);
+            transform.sizeDelta = new Vector2((float)spriteForStyle.texture.width, (float)spriteForStyle.texture.height);
             Image image = uiElement.AddComponent<Image>();
             image.sprite = spriteForStyle;
             image.type = Image.Type.Simple;
@@ -783,7 +786,7 @@ public class Minimap : MonoBehaviour
             GameObject uiElement = new GameObject("MinimapIcon");
             RectTransform transform = uiElement.AddComponent<RectTransform>();
             transform.anchorMin = transform.anchorMax = new Vector3(0.5f, 0.5f);
-            transform.sizeDelta = new Vector2((float) spriteForStyle.texture.width, (float) spriteForStyle.texture.height);
+            transform.sizeDelta = new Vector2((float)spriteForStyle.texture.width, (float)spriteForStyle.texture.height);
             Image image = uiElement.AddComponent<Image>();
             image.sprite = spriteForStyle;
             image.type = Image.Type.Simple;
@@ -791,7 +794,7 @@ public class Minimap : MonoBehaviour
             GameObject uiPointer = new GameObject("IconPointer");
             RectTransform transform2 = uiPointer.AddComponent<RectTransform>();
             transform2.anchorMin = transform2.anchorMax = transform.anchorMin;
-            transform2.sizeDelta = new Vector2((float) Minimap.pointerSprite.texture.width, (float) Minimap.pointerSprite.texture.height);
+            transform2.sizeDelta = new Vector2((float)Minimap.pointerSprite.texture.width, (float)Minimap.pointerSprite.texture.height);
             Image image2 = uiPointer.AddComponent<Image>();
             image2.sprite = Minimap.pointerSprite;
             image2.type = Image.Type.Simple;
@@ -862,7 +865,7 @@ public class Minimap : MonoBehaviour
             vector.x = (vector.x < 0f) ? -num2 : num2;
             float num3 = Mathf.Abs(vector.y) / x;
             vector.y = (vector.y < 0f) ? -num3 : num3;
-            Vector2 vector2 = (Vector2) (vector * minimapSize);
+            Vector2 vector2 = (Vector2)(vector * minimapSize);
             this.uiRect.anchoredPosition = vector2;
             if (this.rotation)
             {
