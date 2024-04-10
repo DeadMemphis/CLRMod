@@ -899,7 +899,7 @@ public class HERO : MONO
 
     private void checkDashRebind()
     {
-        if (FengGameManagerMKII.inputRC.isInputHuman(InputCodeRC.dash))
+        if (FengGameManagerMKII.inputRC.isInputHumanDown(InputCodeRC.dash))
         {
             if (FengCustomInputs.Inputs.isInput[InputCode.up])
             {
@@ -4005,11 +4005,13 @@ public class HERO : MONO
     public void netDie(Vector3 v, bool isBite, int viewID = -1, string titanName = "", bool killByTitan = true, PhotonMessageInfo info = null)
     {
         if ((basePV.isMine && (info != null)) && (IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.BOSS_FIGHT_CT))
-        {
+        { 
             if (this.invincible > 0 || (PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])))
                 FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "malicious netDie1");
-           
-
+            else if (GameSettings.bombMode > 0 && !info.sender.BombHasExploded)
+            {
+                FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "kill without bomb explosion");
+            }
             if (FengGameManagerMKII.ignoreList.Contains(info.sender.ID))
             {
                 basePV.RPC("backToHumanRPC", PhotonTargets.Others, new object[0]);
@@ -4239,9 +4241,12 @@ public class HERO : MONO
     {
         if ((basePV.isMine && (info != null)) && (IN_GAME_MAIN_CAMERA.gamemode != GAMEMODE.BOSS_FIGHT_CT))
         {
-            if (this.invincible > 0 || (PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])))
+            if (this.invincible > 0 || (GameSettings.bombMode == 0 && PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead] != null && RCextensions.returnBoolFromObject(PhotonNetwork.player.customProperties[PhotonPlayerProperty.dead])))
                 FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "malicious netDie2");
-            
+            else if (GameSettings.bombMode > 0 && !info.sender.BombHasExploded)
+            {
+                FengGameManagerMKII.instance.kickPlayerRC(info.sender, true, "kill without bomb explosion");
+            }
             if (FengGameManagerMKII.ignoreList.Contains(info.sender.ID))
             {
                 basePV.RPC("backToHumanRPC", PhotonTargets.Others, new object[0]);
@@ -5645,12 +5650,7 @@ public class HERO : MONO
     {
         if (IN_GAME_MAIN_CAMERA.gametype == GAMETYPE.SINGLE || base.photonView.isMine && interpolate)
         {
-            if (((int)FengGameManagerMKII.settings[294]) == 0)
                 baseR.interpolation = RigidbodyInterpolation.Interpolate;
-            else if (((int)FengGameManagerMKII.settings[294]) == 1)
-                baseR.interpolation = RigidbodyInterpolation.Extrapolate;
-           else if (((int)FengGameManagerMKII.settings[294]) == 2)
-                baseR.interpolation = RigidbodyInterpolation.None;
         }
         else if (!interpolate) baseR.interpolation = RigidbodyInterpolation.None;
     }
@@ -5829,13 +5829,18 @@ public class HERO : MONO
                         this.updateExt();
                         if (!this.grounded && (this.state != HERO_STATE.AirDodge))
                         {
-                            if (((int)FengGameManagerMKII.settings[0xb5]) == 1)
+                            if (((int)FengGameManagerMKII.settings[284]) == 0)
+                            {
+                                this.checkDashDoubleTap();
+                            }
+                            else if (((int)FengGameManagerMKII.settings[284]) == 1)
                             {
                                 this.checkDashRebind();
                             }
                             else
                             {
                                 this.checkDashDoubleTap();
+                                this.checkDashRebind();
                             }
                             if (this.dashD)
                             {
@@ -6990,14 +6995,14 @@ public class HERO : MONO
         {
             amount = useGasSpeed;
         }
-        if (this.currentGas > 0f)
-        {
-            this.currentGas -= amount;
-            if (this.currentGas < 0f)
-            {
-                this.currentGas = 0f;
-            }
-        }
+        //if (this.currentGas > 0f)
+        //{
+        //    this.currentGas -= amount;
+        //    if (this.currentGas < 0f)
+        //    {
+        //        this.currentGas = 0f;
+        //    }
+        //}
     }
 
     [RPC]

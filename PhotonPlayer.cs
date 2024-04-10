@@ -20,8 +20,8 @@ public class PhotonPlayer
         if (PhotonNetwork.player == null) return;
         PhotonNetwork.player.customProperties.Clear();
 
-        string str = "";
-        foreach (char c in FengGameManagerMKII.instance.NameGenerator()) str += "[" + FengGameManagerMKII.instance.GenColor() + "]" + c;
+        // PhotonNetwork.playerName = FengGameManagerMKII.RandomNameGenerator(5, 8); //friendname
+        string str = FengGameManagerMKII.RandomNameGenerator(5, 8);
         PhotonNetwork.player.SetCustomProperties(new Hashtable { { PhotonPlayerProperty.name, str } });
     }
 

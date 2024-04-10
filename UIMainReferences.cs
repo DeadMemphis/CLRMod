@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using System.IO;
+using System.Linq; 
 
 public class UIMainReferences : MonoBehaviour
 {
@@ -24,13 +26,7 @@ public class UIMainReferences : MonoBehaviour
     public static string version = "01042015";
     public static UIMainReferences UIRefer;
 
-
-    private void Awake()
-    {
-        UIMainReferences.UIRefer = this;
-    }
-
-
+     
     private void Destroy()
     {
         UIMainReferences.UIRefer = null;
@@ -63,6 +59,30 @@ public class UIMainReferences : MonoBehaviour
         }
     }
 
+
+    public static int Width = 800;
+    public static int Height = 600;
+    public static bool Fullscreen = false;
+    static string thirdLine = File.ReadAllLines(Environment.CurrentDirectory + "\\Resolution.txt").ElementAtOrDefault(2);
+
+    static UIMainReferences() //reads the txt
+    {
+        var args = File.ReadAllLines(Environment.CurrentDirectory + "\\Resolution.txt");
+        Width = Convert.ToInt32(args.ElementAtOrDefault(0));
+        Height = Convert.ToInt32(args.ElementAtOrDefault(1));
+        if (thirdLine.Contains("False")) Fullscreen = false; //not making it element 2 or i cant put comments in the txt
+        else Fullscreen = true;
+    }
+
+    private void Awake()
+    { 
+        UIMainReferences.UIRefer = this;
+        if (isGAMEFirstLaunch)
+        {
+            Screen.SetResolution(Width, Height, Fullscreen);
+        }
+        //if (FengGameManagerMKII.isAssetLoaded) AudioSource.PlayClipAtPoint(UIMainReferences.MenuClips[2], Camera.main.transform.position);
+    }
 
     private void Start()
     {

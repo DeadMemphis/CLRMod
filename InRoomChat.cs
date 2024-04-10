@@ -68,7 +68,7 @@ public class InRoomChat : Photon.MonoBehaviour
                 MessageHistoryUpdatecache = false;
                 MessageHistoryCache = string.Empty;
 
-                if (messages.Count < 15)
+                if (messages.Count < 5)
                 {
                     for (int i = 0; i < messages.Count; i++)
                     {
@@ -77,7 +77,7 @@ public class InRoomChat : Photon.MonoBehaviour
                 }
                 else
                 {
-                    for (int i = messages.Count - 15; i < messages.Count; i++)
+                    for (int i = messages.Count - 5; i < messages.Count; i++)
                     {
                         MessageHistoryCache += messages[i] + Environment.NewLine;
                     }
@@ -430,12 +430,7 @@ public class InRoomChat : Photon.MonoBehaviour
         {
             if (FengGameManagerMKII.ignoreList.Contains(player.ID))
                 FengGameManagerMKII.ignoreList.Remove(player.ID);
-
-            if (NetworkingPeer.instantiateCounter.ContainsKey(player))
-                NetworkingPeer.instantiateCounter[player].Clear();
-
-            if (NetworkingPeer.rpcCounter.ContainsKey(player))
-                NetworkingPeer.rpcCounter[player].Clear();
+            
 
             FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
         }
@@ -450,12 +445,7 @@ public class InRoomChat : Photon.MonoBehaviour
 
             if (FengGameManagerMKII.instance.DCPeopleList.Contains(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name])))
                 FengGameManagerMKII.instance.DCPeopleList.Remove(RCextensions.returnStringFromObject(player.customProperties[PhotonPlayerProperty.name]));
-
-            if (NetworkingPeer.instantiateCounter.ContainsKey(player))
-                NetworkingPeer.instantiateCounter[player].Clear();
-
-            if (NetworkingPeer.rpcCounter.ContainsKey(player))
-                NetworkingPeer.rpcCounter[player].Clear();
+            
 
             FengGameManagerMKII.instance.RecompilePlayerList(0.1f);
         }

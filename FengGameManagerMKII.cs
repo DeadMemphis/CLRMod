@@ -221,28 +221,29 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     [DllImport("user32.dll", EntryPoint = "GetActiveWindow")]
     private static extern int GetActiveWindow();
+    
 
     void OnApplicationFocus(bool focus)
     {
         if (!focus)
-        { 
-            Application.targetFrameRate = 60;
+        {
+            Application.targetFrameRate = 100;
         }
         else
-        { 
-            int num2 = Convert.ToInt32((string)settings[184]); 
+        {
+            int num2 = Convert.ToInt32((string)settings[184]);
             if (int.TryParse((string)settings[184], out num2) && (num2 > 0))
                 Application.targetFrameRate = num2;
-            else Application.targetFrameRate = -1;
+            else Application.targetFrameRate = -1; 
         }
-        
+
         if (!UIMainReferences.isGAMEFirstLaunch) //when uimainref is loaded, only then u can do alt tab
         {
             //if fullscreen goes window and hides the app
             if (!focus && Screen.fullScreen)
             {
                 // removes fullscreen going to windowed so application keeps working when going in background
-                Screen.SetResolution(Screen.width, Screen.height, false);
+                Screen.SetResolution(UIMainReferences.Width, UIMainReferences.Height, false);
                 //minimize (not necessary, but without, the windowed resolution will not be hidden when u press windows/alt tab)
                 var handle = GetActiveWindow();
                 ShowWindow(handle, 11);
@@ -250,16 +251,15 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             //goes back to app
             else if (focus && /*windowed after left*/ !Screen.fullScreen)//firstlaunch check so that it doesnt run when app is being opened, it's when borderless window is put
             {
-                Screen.SetResolution(Screen.width, Screen.height, false);
+                Screen.SetResolution(UIMainReferences.Width, UIMainReferences.Height, UIMainReferences.Fullscreen);
                 base.StartCoroutine(sethud());
             }
         }
     }
 
-
     IEnumerator sethud()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         IN_GAME_MAIN_CAMERA.mainCamera.setHUDposition();
     }
 
@@ -3496,8 +3496,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         int num;
         int num2;
         object[] objArray = new object[300];
-        objArray[295] = PlayerPrefs.GetInt("PhysicsType", 0);
-        objArray[294] = PlayerPrefs.GetInt("Interpolation", 0);
         objArray[0] = PlayerPrefs.GetInt("human", 1);
         objArray[1] = PlayerPrefs.GetInt("titan", 1);
         objArray[2] = PlayerPrefs.GetInt("level", 1);
@@ -3761,7 +3759,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         objArray[0x105] = PlayerPrefs.GetInt("deadlyCannon", 0);
         objArray[0x106] = PlayerPrefs.GetString("liveCam", "Y");
         objArray[263] = 1;
-        objArray[267] = PlayerPrefs.GetInt("ProtocolType", 1);
+        objArray[284] = PlayerPrefs.GetInt("BurstType", 0);
 
         inputRC = new InputManagerRC();
         inputRC.setInputHuman(InputCodeRC.reelin, (string)objArray[0x62]);
@@ -6963,13 +6961,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                             if (((int)settings[0x40]) == 0)
                             {
                                 int num47;
-                                string[] Pol = new string[] { "Interpolation",  "Extrapolation", "None" };
-                                FengGameManagerMKII.settings[294] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 380, 280f, 40), (int)FengGameManagerMKII.settings[294], Pol, 3);
-
-                                GUI.Label(new Rect(num7 + 72f, num8 + 420, 190f, 20f), "Physics Update rate (restart):", "Label");
-                                string[] PhysicsType = new string[] { "50/s \n(aottg)", "60/s", "75/s" };
-                                FengGameManagerMKII.settings[295] = GUI.SelectionGrid(new Rect(num7 + 72, num8 + 445, 280f, 40), (int)FengGameManagerMKII.settings[295], PhysicsType, 3);
-
 
 
                                 GUI.Label(new Rect(num7 + 150f, num8 + 51f, 185f, 22f), "Graphics", "Label");
@@ -6982,12 +6973,8 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 GUI.Label(new Rect(num7 + 72f, num8 + 242f, 150f, 22f), "Overall Quality:", "Label");
                                 GUI.Label(new Rect(num7 + 72f, num8 + 272f, 185f, 22f), "Disable Mipmapping:", "Label");
                                 GUI.Label(new Rect(num7 + 72f, num8 + 297f, 185f, 65f), "*Disabling mipmapping will increase custom texture quality at the cost of performance.", "Label");
-                                
-                                GUI.Label(new Rect(num7 + 72f, num8 + 351, 185f, 65f), "Protocol:", "Label");
-                                string[] ProtocolType = new string[] { "<size=14>UDP</size>", "<size=14>TCP</size>", "<size=14>Web</size>" };
-                                FengGameManagerMKII.settings[267] = GUI.SelectionGrid(new Rect(num7 + 140, num8 + 350, 160f, 25f), (int)FengGameManagerMKII.settings[267], ProtocolType, 3);
-                                
-
+                                 
+                                 
                                 this.qualitySlider = GUI.HorizontalSlider(new Rect(num7 + 199f, num8 + 247f, 115f, 20f), this.qualitySlider, 0f, 1f);
                                 PlayerPrefs.SetFloat("GameQuality", this.qualitySlider);
                                 if (this.qualitySlider < 0.167f)
@@ -7753,9 +7740,21 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                 }
                                 if (((int)settings[190]) == 0)
                                 {
+                                    GUI.Label(new Rect(num7 + 80, num8 + 460, 100f, 22f), "<size=14>Burst:</size>", "Label");
+                                    if (GUI.Button(new Rect(num7 + 190, num8 + 460f, 120f, 20f), (string)settings[182])) //burst key
+                                    {
+                                        settings[0xB6] = "waiting...";
+                                        settings[100] = 182;
+                                    }
+
+                                    GUI.Label(new Rect(num7 + 390, num8 + 435, 100f, 22f), "Burst Type:", "Label");
+                                    string[] BurstType = new string[] { "<size=10>Double Tap</size>", "<size=13>Rebind</size>", "<size=14>Both</size>" };
+                                    settings[284] = GUI.SelectionGrid(new Rect(num7 + 500f, num8 + 435, 195f, 25f), (int)settings[284], BurstType, 3);
+
+                                    
                                     list7 = new List<string> {
                                         "Forward:", "Backward:", "Left:", "Right:", "Jump:", "Dodge:", "Left Hook:", "Right Hook:", "Both Hooks:", "Lock:", "Attack:", "Special:", "Salute:", "Change Camera:", "Reset:", "Pause:",
-                                        "Show/Hide Cursor:", "Fullscreen:", "Change Blade:", "Flare Green:", "Flare Red:", "Flare Black:", "Reel in:", "Reel out:", "Gas Burst:", "Minimap Max:", "Minimap Toggle:", "Minimap Reset:", "Open Chat:", "Live Spectate"
+                                        "Show/Hide Cursor:", "Fullscreen:", "Change Blade:", "Flare Green:", "Flare Red:", "Flare Black:", "Reel in:", "Reel out:", /*"Gas Burst:",*/ "Minimap Max:", "Minimap Toggle:", "Minimap Reset:", "Open Chat:", "Live Spectate"
                                      };
                                     for (num13 = 0; num13 < list7.Count; num13++)
                                     {
@@ -7778,11 +7777,11 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                     {
                                         flag38 = true;
                                     }
-                                    bool flag39 = false;
-                                    if (((int)settings[0xb5]) == 1)
-                                    {
-                                        flag39 = true;
-                                    }
+                                    //bool flag39 = false;
+                                    //if (((int)settings[0xb5]) == 1)
+                                    //{
+                                    //    flag39 = true;
+                                    //}
                                     bool flag40 = GUI.Toggle(new Rect(num7 + 457f, num8 + 261f, 40f, 20f), flag37, "On");
                                     if (flag37 != flag40)
                                     {
@@ -7807,18 +7806,18 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                             settings[0x74] = 0;
                                         }
                                     }
-                                    bool flag42 = GUI.Toggle(new Rect(num7 + 457f, num8 + 311f, 40f, 20f), flag39, "On");
-                                    if (flag39 != flag42)
-                                    {
-                                        if (flag42)
-                                        {
-                                            settings[0xb5] = 1;
-                                        }
-                                        else
-                                        {
-                                            settings[0xb5] = 0;
-                                        }
-                                    }
+                                    //bool flag42 = GUI.Toggle(new Rect(num7 + 457f, num8 + 311f, 40f, 20f), flag39, "On");
+                                    //if (flag39 != flag42)
+                                    //{
+                                    //    if (flag42)
+                                    //    {
+                                    //        settings[0xb5] = 1;
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        settings[0xb5] = 0;
+                                    //    }
+                                    //}
                                     for (num13 = 0; num13 < 0x16; num13++)
                                     {
                                         num18 = num13;
@@ -7834,42 +7833,42 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                                             FengCustomInputs.Inputs.setNameRC(num13, "waiting...");
                                         }
                                     }
-                                    if (GUI.Button(new Rect(num7 + 500f, num8 + 261f, 120f, 20f), (string)settings[0x62], "box"))
+                                    if (GUI.Button(new Rect(num7 + 500f, num8 + 261f, 120f, 20f), (string)settings[98], "box")) //reel in
                                     {
                                         settings[0x62] = "waiting...";
                                         settings[100] = 0x62;
                                     }
-                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 286f, 120f, 20f), (string)settings[0x63], "box"))
+                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 286f, 120f, 20f), (string)settings[99], "box")) //reel out
                                     {
                                         settings[0x63] = "waiting...";
                                         settings[100] = 0x63;
                                     }
-                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 311f, 120f, 20f), (string)settings[0xb6], "box"))
-                                    {
-                                        settings[0xb6] = "waiting...";
-                                        settings[100] = 0xb6;
-                                    }
-                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 336f, 120f, 20f), (string)settings[0xe8], "box"))
+                                    //else if (GUI.Button(new Rect(num7 + 500f, num8 + 311f, 120f, 20f), (string)settings[182], "box"))
+                                    //{
+                                    //    settings[0xb6] = "waiting...";
+                                    //    settings[100] = 0xb6;
+                                    //}
+                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + /*336*/311f, 120f, 20f), (string)settings[232], "box")) //mapmaximize
                                     {
                                         settings[0xe8] = "waiting...";
                                         settings[100] = 0xe8;
                                     }
-                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 361f, 120f, 20f), (string)settings[0xe9], "box"))
+                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + /*361*/336f, 120f, 20f), (string)settings[233], "box")) //maptoggle
                                     {
                                         settings[0xe9] = "waiting...";
                                         settings[100] = 0xe9;
                                     }
-                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 386f, 120f, 20f), (string)settings[0xea], "box"))
+                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + /*386*/361f, 120f, 20f), (string)settings[234], "box")) //mapreset
                                     {
                                         settings[0xea] = "waiting...";
                                         settings[100] = 0xea;
                                     }
-                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 411f, 120f, 20f), (string)settings[0xec], "box"))
+                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + /*411*/386f, 120f, 20f), (string)settings[236], "box"))  //chat rebind
                                     {
                                         settings[0xec] = "waiting...";
                                         settings[100] = 0xec;
                                     }
-                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + 436f, 120f, 20f), (string)settings[0x106], "box"))
+                                    else if (GUI.Button(new Rect(num7 + 500f, num8 + /*436*/411f, 120f, 20f), (string)settings[262], "box")) //livecam
                                     {
                                         settings[0x106] = "waiting...";
                                         settings[100] = 0x106;
@@ -8301,8 +8300,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (GUI.Button(new Rect(num7 + 408f, num8 + 465f, 42f, 25f), "Save"))
                     {
-                        PlayerPrefs.SetInt("PhysicsType", (int)settings[295]);
-                        PlayerPrefs.SetInt("Interpolation", (int)settings[294]);
                         PlayerPrefs.SetInt("human", (int)settings[0]);
                         PlayerPrefs.SetInt("titan", (int)settings[1]);
                         PlayerPrefs.SetInt("level", (int)settings[2]);
@@ -8454,7 +8451,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         PlayerPrefs.SetInt("vsync", (int)settings[0xb7]);
                         PlayerPrefs.SetString("fpscap", (string)settings[0xb8]);
                         PlayerPrefs.SetInt("speedometer", (int)settings[0xbd]);
-                        PlayerPrefs.SetInt("bombMode", (int)settings[0xc0]);
+                        PlayerPrefs.SetInt("bombMode", (int)settings[192]);
                         PlayerPrefs.SetInt("teamMode", (int)settings[0xc1]);
                         PlayerPrefs.SetInt("rockThrow", (int)settings[0xc2]);
                         PlayerPrefs.SetInt("explodeModeOn", (int)settings[0xc3]);
@@ -8523,6 +8520,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         PlayerPrefs.SetString("cannonSlow", (string)settings[260]);
                         PlayerPrefs.SetInt("deadlyCannon", (int)settings[0x105]);
                         PlayerPrefs.SetString("liveCam", (string)settings[0x106]);
+                        PlayerPrefs.SetInt("BurstType", (int)settings[284]);
                         settings[0x40] = 4;
                     }
                     else if (GUI.Button(new Rect(num7 + 455f, num8 + 465f, 40f, 25f), "Load"))
@@ -8759,248 +8757,52 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
         UnityEngine.MonoBehaviour.print("OnLeftLobby");
     }
 
-    public string NameGenerator()
+    /// <summary>
+    /// Generates a random name for when client is dcd.
+    /// </summary>
+    /// <param name="minLength">The minimum length of the random name.</param>
+    /// <param name="maxLength">The max length of the random name.</param>
+    /// <param name="colors">The number of colors to use in the name. Must be less than minLength</param>
+    /// <returns></returns>
+    public static string RandomNameGenerator(int minLength, int maxLength)
     {
-        string[] DASHAAA = new string[] {
-                "A",
-                "B",
-                "C",
-                "D",
-                "E",
-                "F",
-                "G",
-                "H",
-                "I",
-                "J",
-                "K",
-                "L",
-                "M",
-                "N",
-                "O",
-                "P",
-                "Q",
-                "R",
-                "S",
-                "T",
-                "U",
-                "V",
-                "W",
-                "X",
-                "Y",
-                "Z",
-                "A",
-                "B",
-                "C",
-                "D",
-                "E",
-                "F",
-                "G",
-                "H",
-                "I",
-                "J",
-                "K",
-                "L",
-                "M",
-                "N",
-                "O",
-                "P",
-                "Q",
-                "R",
-                "S",
-                "T",
-                "U",
-                "V",
-                "W",
-                "X",
-                "Y",
-                "Z",
-        };
-        string[] DASHAAA1 = new string[] {
-                "a",
-                "a",
-                "b",
-                "c",
-                "d",
-                "e",
-                "f",
-                "g",
-                "h",
-                "i",
-                "j",
-                "k",
-                "l",
-                "m",
-                "n",
-                "o",
-                "p",
-                "q",
-                "r",
-                "s",
-                "t",
-                "u",
-                "v",
-                "w",
-                "x",
-                "y",
-                "z",
-                "at",
-                "bh",
-                "qc",
-                "id",
-                "me",
-                "pf",
-                "qg",
-                "eh",
-                "yi",
-                "xj",
-                "pk",
-                "yl",
-                "wm",
-                "nn",
-                "vo",
-                "zp",
-                "kq",
-                "lr",
-                "ds",
-                "ut",
-                "au",
-                "ov",
-                "uw",
-                "wx",
-                "jy",
-                "zs",
-               "dai",
-                "yb",
-                "mc",
-                "zda",
-                "pe",
-                "df",
-                "agu",
-                "mh",
-                "ic",
-                "jhv",
-                "kk",
-                "la",
-                "mpm",
-                "nt",
-                "oe",
-                "pww",
-                "ql",
-                "rn",
-                "svu",
-                "tk",
-                "ud",
-                "val",
-                "wj",
-                "xo",
-                "yws",
-                "zb",
-                "by",
-                "eo",
-                "hw",
-                "ku",
-                "nj",
-                "qh",
-                "tx",
-                "wz",
-                "zi"};
-        string[] DASHAAA2 = new string[] {
-             "a",
-                "a",
-                "b",
-                "c",
-                "d",
-                "e",
-                "f",
-                "g",
-                "h",
-                "i",
-                "j",
-                "k",
-                "l",
-                "m",
-                "n",
-                "o",
-                "p",
-                "q",
-                "r",
-                "s",
-                "t",
-                "u",
-                "v",
-                "w",
-                "x",
-                "y",
-                "z",
-                "dai",
-                "yb",
-                "mc",
-                "zda",
-                "pe",
-                "df",
-                "agu",
-                "mh",
-                "ic",
-                "jhv",
-                "kk",
-                "la",
-                "mpm",
-                "nt",
-                "oe",
-                "pww",
-                "ql",
-                "rn",
-                "svu",
-                "tk",
-                "ud",
-                "val",
-                "wj",
-                "xo",
-                "yws",
-                "zb",
-                "by",
-                "eo",
-                "hw",
-                "ku",
-                "nj",
-                "qh",
-                "tx",
-                "wz",
-                "zi" ,
-                "at",
-                "bh",
-                "qc",
-                "id",
-                "me",
-                "pf",
-                "qg",
-                "eh",
-                "yi",
-                "xj",
-                "pk",
-                "yl",
-                "wm",
-                "nn",
-                "vo",
-                "zp",
-                "kq",
-                "lr",
-                "ds",
-                "ut",
-                "au",
-                "ov",
-                "uw",
-                "wx",
-                "jy",
-                "zs",};
-        string n_name = DASHAAA[UnityEngine.Random.Range(0, DASHAAA.Length)] + DASHAAA1[UnityEngine.Random.Range(0, DASHAAA.Length)] + DASHAAA2[UnityEngine.Random.Range(0, DASHAAA.Length)];
-        return n_name;
-    }
+        int colors = UnityEngine.Random.Range(2, 4);
+        if (minLength < colors)
+        {
+            return $"[ffffff]How is {minLength} < {colors} you idiot.";
+        }
+        if (maxLength < minLength || minLength < 1)
+        {
+            return $"[ffffff]How is {maxLength} < {minLength} you idiot.";
+        }
 
-    public string GenColor()
-    {
-        System.Random _r = new System.Random();
-        return String.Format("{0:X6}", _r.Next(16777216));
+        System.Random rand = new System.Random((int)DateTime.UtcNow.Ticks);
+        string randName = "";
+
+        // Let the first character be capitalized
+        int red = rand.Next((int)(0.8 * 255), 255);
+        int green = rand.Next((int)(0.2 * 255), 255);
+        int blue = rand.Next((int)(0.1 * 255), 255);
+        randName += String.Format("[{0:X}{1:X}{2:X}]", blue, green, red);
+
+        randName += (char)rand.Next('A', 'Z');
+
+        int length = rand.Next(minLength, maxLength);
+        int colorDist = length - colors;
+        for (int i = 1; i < length; i++)
+        {
+            if (i % colorDist == 0)
+            {
+                // use the inverse of the luminance equation with some extra brightness to get only a bright color range
+                red = rand.Next((int)(0.6 * 255), 255);
+                green = rand.Next((int)(0.5 * 255), 255);
+                blue = rand.Next((int)(0.6 * 255), 255);
+                randName += String.Format("[{0:X}{1:X}{2:X}]", blue, green, red);
+            }
+            // Let the rest be lowercase.
+            randName += (char)rand.Next('a', 'z');
+        }
+        return randName;
     }
 
     public void OnLeftRoom()
@@ -9030,10 +8832,6 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
     private void OnLevelWasLoaded(int level)
     {
-        if (((int)FengGameManagerMKII.settings[295]) == 0) Time.fixedDeltaTime = 1f / 50; //test
-        else if (((int)FengGameManagerMKII.settings[295]) == 1) Time.fixedDeltaTime = 1f / 60;
-        else if (((int)FengGameManagerMKII.settings[295]) == 2) Time.fixedDeltaTime = 1f / 75;
-
         if ((level != 0) && ((Application.loadedLevelName != "characterCreation") && (Application.loadedLevelName != "SnapShot")))
         {
             ChangeQuality.setCurrentQuality();
@@ -13006,31 +12804,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
             return;
         }
     }
-
-    public IEnumerator SkyTex()
-    {
-
-        WWW sky = new WWW("file:///" + Application.dataPath + "/Textures/FullMoonLeft.png");
-        yield return sky;
-        ImageFront = sky.texture;
-        Material sky1 = Camera.main.GetComponent<Skybox>().material;
-        ImageFront.wrapMode = TextureWrapMode.Clamp;
-        
-
-        sky1.SetTexture("_FrontTex", ImageFront);
-        sky1.SetTexture("_BackTex", ImageFront);
-        sky1.SetTexture("_LeftTex", ImageFront);
-        sky1.SetTexture("_RightTex", ImageFront);
-        sky1.SetTexture("_UpTex", ImageFront);
-        sky1.SetTexture("_DownTex", ImageFront);
-        //sky1.SetTexture("_FrontTex", ImageFront);
-        //sky3.SetTexture("_BackTex", ImageBack);
-        //sky7.SetTexture("_LeftTex", ImageLeft);
-        //sky9.SetTexture("_RightTex", ImageRight);
-        //sky11.SetTexture("_UpTex", ImageUp);
-        //sky5.SetTexture("_DownTex", ImageDown);
-    }
-
+    
     private void AutoLoad()
     {
         nameField = PlayerPrefs.GetString("name", "someguest");
@@ -13266,44 +13040,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                 component.text = component.text + " ping:" + PhotonNetwork.GetPing();
             }
         }
-
-
-        if (PhotonNetwork.inRoom || (GameObject.Find("ButtonCREDITS") != null && GameObject.Find("ButtonCREDITS").transform.parent.gameObject != null && NGUITools.GetActive(GameObject.Find("ButtonCREDITS").transform.parent.gameObject)))
-        {
-            #region connection protocols
-
-            if ((int)FengGameManagerMKII.settings[267] == 0)
-            {
-                if (PhotonNetwork.networkingPeer.UsedProtocol != ConnectionProtocol.Udp)
-                {
-                    PlayerPrefs.SetInt("ProtocolType", (int)FengGameManagerMKII.settings[267]);
-                    PhotonNetwork.SwitchToProtocol(ConnectionProtocol.Udp);
-                }
-            }
-            else if ((int)FengGameManagerMKII.settings[267] == 1)
-            {
-                if (PhotonNetwork.networkingPeer.UsedProtocol != ConnectionProtocol.Tcp)
-                {
-                    PlayerPrefs.SetInt("ProtocolType", (int)FengGameManagerMKII.settings[267]);
-                    PhotonNetwork.SwitchToProtocol(ConnectionProtocol.Tcp);
-                }
-            }
-            else if ((int)FengGameManagerMKII.settings[267] == 2)
-            {
-                if (PhotonNetwork.networkingPeer.UsedProtocol != ConnectionProtocol.WebSocket)
-                {
-                    PlayerPrefs.SetInt("ProtocolType", (int)FengGameManagerMKII.settings[267]);
-                    PhotonNetwork.SwitchToProtocol(ConnectionProtocol.WebSocket);
-                }
-            }
-
-            if (PhotonNetwork.networkingPeer.SocketImplementationConfig.ContainsKey(ExitGames.Client.Photon.ConnectionProtocol.WebSocket))
-                PhotonNetwork.networkingPeer.SocketImplementationConfig[ExitGames.Client.Photon.ConnectionProtocol.WebSocket] = typeof(ExitGames.Client.Photon.SocketWebTcp);
-            else
-                PhotonNetwork.networkingPeer.SocketImplementationConfig.Add(ExitGames.Client.Photon.ConnectionProtocol.WebSocket, typeof(ExitGames.Client.Photon.SocketWebTcp));
-            #endregion
-        }
-
+         
         if (gameStart)
         {
             foreach (HERO hERO in heroes)
@@ -13414,7 +13151,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
 
                         if (ignoreList.Contains(photonPlayer.ID))  text += "[FF0000][X] "; 
 
-                        if (photonPlayer.isLocal)  text += "[00CC00][RCOpt]"; 
+                        if (photonPlayer.isLocal)  text += "[Opt]"; 
                         else text += "[FFCC00]";
                         text += "[" + photonPlayer.ID + "] "; // Convert.ToString(photonPlayer.ID)
 
@@ -13485,7 +13222,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                         }
                         //  iteratorVariable1 = iteratorVariable1 + "[" + MainColor + "][[7b001c]" + Checkmod(player7) + "[" + MainColor + "]] ";
 
-                        if (player7.isLocal) iteratorVariable1 += "[00CC00][RCOpt]";
+                        if (player7.isLocal) iteratorVariable1 += "[Opt]";
                         else iteratorVariable1 += "[FFCC00]";
                         iteratorVariable1 = iteratorVariable1 + "[" + Convert.ToString(player7.ID) + "] ";
 
@@ -13678,7 +13415,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (player4.isLocal)
                     {
-                        iteratorVariable1 = iteratorVariable1 + "[00CC00][RCOpt]";
+                        iteratorVariable1 = iteratorVariable1 + "[Opt]";
                     }
                     else
                     {
@@ -13742,7 +13479,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (player5.isLocal)
                     {
-                        iteratorVariable1 = iteratorVariable1 + "[00CC00][RCOpt]";
+                        iteratorVariable1 = iteratorVariable1 + "[Opt]";
                     }
                     else
                     {
@@ -13806,7 +13543,7 @@ public class FengGameManagerMKII : Photon.MonoBehaviour
                     }
                     if (player6.isLocal)
                     {
-                        iteratorVariable1 = iteratorVariable1 + "[00CC00][RCOpt]";
+                        iteratorVariable1 = iteratorVariable1 + "[Opt]";
                     }
                     else
                     {

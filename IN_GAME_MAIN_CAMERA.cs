@@ -687,7 +687,8 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
         CLEARSKIES.CacheGameObject.Find<Transform>("Flare").localPosition = new Vector3(((int)mposw + 14), (int)mposh, 0f);
 
         uilabel.transform.localPosition = new Vector3((int)pposw, (int)mposh, 0f);
-        uilabel.text = "Pause : " + FengCustomInputs.Inputs.inputString[InputCode.pause] + " ";
+        uilabel.text = "Menu(" + FengCustomInputs.Inputs.inputString[InputCode.pause] + "), " + IN_GAME_MAIN_CAMERA.cameraMode.ToString() + "(" + FengCustomInputs.Inputs.inputString[InputCode.camera] + ")";
+
 
         CLEARSKIES.CacheGameObject.Find<Transform>("LabelInfoTopCenter").localPosition = new Vector3(0f, (int)pposh, 0f);
         CLEARSKIES.CacheGameObject.Find<Transform>("LabelInfoTopRight").localPosition = new Vector3((int)pposw, (int)pposh, 0f);
@@ -1137,12 +1138,12 @@ public class IN_GAME_MAIN_CAMERA : MonoBehaviour
                 Screen.lockCursor = !Screen.lockCursor;
                 Screen.lockCursor = !Screen.lockCursor;
             }
-            if (FengCustomInputs.Inputs.isInputDown[InputCode.fullscreen])
+            if (FengCustomInputs.Inputs.isInputDown[InputCode.fullscreen]) //backspace
             {
                 Screen.fullScreen = !Screen.fullScreen;
                 if (Screen.fullScreen)
                 {
-                    Screen.SetResolution(1600, 900, false);
+                    Screen.SetResolution(UIMainReferences.Width, UIMainReferences.Height, false);
                 }
                 else
                 {

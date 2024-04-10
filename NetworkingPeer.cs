@@ -712,31 +712,11 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         Vector3 zero;
         int[] numArray;
         object[] objArray;
-        if (!(evData[(byte)0] is string))
-        {
-            FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)0");
-            return null;
-        }
         string key = (string) evData[(byte) 0];
-        if (!(evData[(byte)6] is int))
-        {
-            FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)6");
-            return null;
-        }
         int timestamp = (int) evData[(byte) 6];
-        if (!(evData[(byte)7] is int))
-        {
-            FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)7");
-            return null;
-        }
         int instantiationId = (int) evData[(byte) 7];
         if (evData.ContainsKey((byte) 1))
         {
-            if (!(evData[(byte)1] is Vector3))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)1");
-                return null;
-            }
             zero = (Vector3) evData[(byte) 1];
         }
         else
@@ -746,40 +726,20 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         Quaternion identity = Quaternion.identity;
         if (evData.ContainsKey((byte) 2))
         {
-            if (!(evData[(byte)2] is Quaternion))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)2");
-                return null;
-            }
             identity = (Quaternion) evData[(byte) 2];
         }
         int item = 0;
         if (evData.ContainsKey((byte) 3))
         {
-            if (!(evData[(byte)3] is int))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)3");
-                return null;
-            }
             item = (int) evData[(byte) 3];
         }
         short num4 = 0;
         if (evData.ContainsKey((byte) 8))
         {
-            if (!(evData[(byte)8] is short))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)8");
-                return null;
-            }
             num4 = (short) evData[(byte) 8];
         }
         if (evData.ContainsKey((byte) 4))
         {
-            if (!(evData[(byte)4] is int[]))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)4");
-                return null;
-            }
             numArray = (int[])evData[(byte)4];
         }
         else
@@ -792,11 +752,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
         if (evData.ContainsKey((byte) 5))
         {
-            if (!(evData[(byte)5] is object[]))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(photonPlayer, true, "DI: invalid (byte)5");
-                return null;
-            }
             objArray = (object[])evData[(byte)5];
         }
         else
@@ -950,418 +905,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         }
     }
 
-
-    #region 0xca instantiate antispam 
-   
-
-    public static Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>> instantiateCounter = new Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>>(); //made public to remove counter in ignore
-    public static int checkInstantiateSPAM(string str, PhotonPlayer sender)
-    {
-        str = str.ToLower();
-        switch (str)
-        {
-            case "aottg_hero 1":
-                return 5;
-
-            case "fx/flarebullet1":
-            case "fx/flarebullet2":
-            case "fx/flarebullet3":
-                return 5;
-
-            case "hook": //in case someone freezes and sends all at once
-                return 60;
-            case "aot_supply":
-                return 30;
-
-            case "colossal_titan":
-            case "female_titan":
-                return 2;
-
-            case "fx/fxtitanspawn":
-            case "titan_ver3.1": //can spawn max 50 titans, restarts twice
-                return 101;
-
-            case "titan_eren_trost":
-                return 20;
-            case "titan_new_1": //these 2 models arent used
-            case "titan_new_2":
-                return 5;
-
-
-            default:
-                return 50;
-        }
-    }
-
-    public static bool tracktheseforkinInstantiate(PhotonPlayer sender, string key)  //questo lo metto in executerpc
-    {
-        key = key.ToLower();
-
-        // if (_excp.Contains(key)) return false;
-
-        if (!instantiateCounter.ContainsKey(sender))
-            instantiateCounter.Add(sender, new Dictionary<string, SpamCounter>());
-        if (!instantiateCounter[sender].ContainsKey(key))
-            instantiateCounter[sender].Add(key, new SpamCounter());
-        else
-            instantiateCounter[sender][key].count++;
-
-        if (instantiateCounter[sender][key].count > checkInstantiateSPAM(key, sender))
-        {
-            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Instantiate " + key + " SPAM (" + instantiateCounter[sender][key].count + ")");
-            return false;
-        }
-        else if (Time.time - instantiateCounter[sender][key].time > 1f)
-            instantiateCounter[sender][key].reset();
-        return true;
-    }
-    #endregion
-
-
-    //2018 dabbing on infamous "photon modders" who make a stopwatch method on each rpc in assembly 2020 *censoring names*
-    #region anti rpc spam
-    public class SpamCounter
-    {
-        public int count;
-        public float time;
-
-        public SpamCounter()
-        {
-            this.reset();
-            count++;
-        }
-
-        public void reset()
-        {
-            count = 0;
-            time = Time.time;
-        }
-    }
     
-    public static Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>> rpcCounter = new Dictionary<PhotonPlayer, Dictionary<string, SpamCounter>>();
-
-    //public static bool lengthCheck(object[] param, int length)
-    //   => param.Length > length;
-
-    public static bool NoLength(object[] param)
-        => param.Length == 0;
-
-    public static bool CorrectLength(object[] param, int length)
-        => param.Length == length;
-
-    public static int checkniggersRPCSPAM(string str, PhotonPlayer sender, object[] param)
-    {
-        str = str.ToLower();
-        switch (str)
-        {
-            #region should not be received at all
-            case "titangetkill":
-            case "showchatcontent":
-            case "removeme":
-            case "killobject":
-            case "loadskine":
-            case "showhitdamage":
-            case "destroyrpc":
-            case "instantiaterpc":
-                return 0;
-
-            #endregion
-
-            case "requirestatus":
-                return PhotonNetwork.isMasterClient ? (NoLength(param) ? 20 : 0) : 0;
-
-            #region titanNumber
-            //2 rpcs per titan, max is 100, add 10 PTs (maybe include restarts too? but need to double :c)
-            case "sethairrpc2":
-                return CorrectLength(param, 3) ? 220 : 0;
-            case "netsetabnormaltype":
-                return CorrectLength(param, 1) ? 220 : 0;
-            case "sethairprc":
-                return CorrectLength(param, 5) ? 220 : 0;
-            //1 rpc per titan, max is 100, add 10 PTs
-            case "loadskinrpc":
-                return sender.isMasterClient ? 110 : 20;
-            case "netsetlevel":
-                return CorrectLength(param, 3) ? 110 : 0;
-            case "labelrpc":
-                return sender.isMasterClient ? 110 : 20;
-            #endregion
-
-            #region params change in more classes or are optional
-            case "netdie":
-            case "netdie2":
-                return 15;
-            case "laugh":
-            case "nettauntattack":
-            case "someoneisdead":
-            case "hitanklerpc":
-                return sender.isMasterClient ? 60 : 30;
-            #endregion
-
-            #region 0 parameters
-            case "netungrabbed":
-            case "askformount":
-            case "acceptmount":
-            case "rpcloadlevel":
-            case "boxcatched":
-            case "respawnheroinnewround":
-                return NoLength(param) ? 10 : 0;
-            case "restartgamebyclient":
-            case "endmovingrock":
-            case "hitbytitanrpc":
-            case "startmovingrock":
-                return NoLength(param) ? 40 : 0;
-            case "setmasterrc":
-            case "backtohuman":
-            case "backtohumanrpc":
-            case "grabtoright":
-            case "grabtoleft":
-            case "badguyreleaseme":
-            case "changedoor":
-            case "grabbedTargetEscape":
-            case "startnecksteam":
-            case "startsweepsmoke":
-            case "stopsweepsmoke":
-            case "hookfail":
-            case "netsetisgrabbedfalse":
-            case "returnfromcannon":
-            case "spawntitanrpc":
-                return NoLength(param) ? (sender.isMasterClient ? 150 : 130) : 0;
-            case "netcontinueanimation":
-                return NoLength(param) ? 200 : 0;
-            #endregion
-
-            #region 1 param
-            case "diebycannon": //18 cannons dc you, and you need to ignore in time so u put 10 not 15
-                return CorrectLength(param, 1) ? 10 : 0;
-            case "physicsrate": //each is sent every 3s so
-            case "mountcharacter":
-            case "unmountcharacter":
-            case "blowaway":
-            case "changestate":
-            case "netgamewin":
-            case "netgamelose":
-            case "pauserpc":
-            case "netshowdamage":
-                return CorrectLength(param, 1) ? 20 : 0;
-            case "hitanklel":
-            case "hitankler":
-            case "verifyplayerhasleft":
-            case "playsoundrpc":
-            case "rockplayanimation":
-            case "hitbyftrpc":
-                return CorrectLength(param, 1) ? 60 : 0;
-            case "tiemeto":
-            case "settingrpc":
-                return CorrectLength(param, 1) ? 100 : 0;
-            case "setdust":
-            case "tiemetoobj":
-            case "refreshpvpstatus_ahss":
-            case "changehumanpt":
-                return CorrectLength(param, 1) ? 150 : 0;
-            case "setmyteam":
-            case "setmyphotoncamera":
-            case "customlevelrpc":
-            case "setsize":
-            case "changetitanpt":
-            case "netrefreshracingresult":
-            case "whoismyerentitan":
-            case "hiteyerpc":
-            case "spawncannonrpc":
-            case "setteamrpc":
-            case "ignoreplayerarray":
-            case "netlaunch":
-            case "requestcontrolrpc":
-                return CorrectLength(param, 1) ? (sender.isMasterClient ? 150 : 130) : 0;
-            case "setiflooktarget":
-                return CorrectLength(param, 1) ? 200 : 0;
-            #endregion
-
-            #region 2 param 
-            case "primitiverace":
-                return CorrectLength(param, 2) ? (sender.isMasterClient ? 6 : 0) : 0;
-            case "getracingresult":
-                return CorrectLength(param, 2) ? (sender.isMasterClient ? 10 : 5) : 0;
-            case "chatpm":
-            case "emotetextrpc":
-            case "emoteemojirpc":
-                return CorrectLength(param, 2) ? 10 : 0;
-            case "chat":
-            case "dieheadblowrpc":
-            case "dieblowrpc":
-            case "netgrabbed":
-                return CorrectLength(param, 2) ? 20 : 0;
-            case "onetitandown":
-                return CorrectLength(param, 2) ? (sender.isMasterClient ? 20 : 15) : 0;
-            case "hitlrpc":
-            case "hitrrpc":
-            case "hitanklerrpc":
-            case "hitanklelrpc":
-                return CorrectLength(param, 2) ? 50 : 0;
-            case "launchrpc":
-                return CorrectLength(param, 2) ? 55 : 0;
-            case "refreshpvpstatus":
-                return CorrectLength(param, 2) ? 150 : 0;
-            case "netplayanimationat":
-            case "clearlevel":
-            case "titangethit":
-            case "netupdatephase1":
-                return CorrectLength(param, 2) ? (sender.isMasterClient ? 50 : 30) : 0;
-            case "mymasteris":
-            case "rpchookedbyhuman":
-                return CorrectLength(param, 2) ? 200 : 0;
-            #endregion
-
-            #region 3 param and more
-            case "setvelocityandleft":
-                return CorrectLength(param, 3) ? 120 : 0;
-            case "emcustommaprpc":
-                return CorrectLength(param, 4) ? 10 : 0;
-            case "initrpc":
-                return CorrectLength(param, 4) ? 50 : 0;
-            case "updatekillinfo":
-                return CorrectLength(param, 5) ? 30 : 0;
-            case "showresult":
-                return CorrectLength(param, 6) ? 20 : 0;
-            case "setweatherrpc":
-                return CorrectLength(param, 6) ? (sender.isMasterClient ? 20 : 0) : 0;
-            case "refreshstatus":
-                return CorrectLength(param, 8) ? (sender.isMasterClient ? 50 : 30) : 0;
-            #endregion
-
-            #region custom rpcs
-            case "request_alt_stat":
-            case "characters":
-            case "friendskin":
-            case "setmycannon":
-            case "privtecyanrpc":
-            case "whoismyfemaletitan":
-            case "mcsyncnyan":
-            case "backtohumanforannierpc":
-            case "dogechat":
-            case "cyan_modrpc":
-            case "setdaylight":
-            case "hookdmrpc":
-            case "loadobjects":
-            case "confchat":
-            case "andymoduserconnected":
-            case "exitconference":
-            case "kickedconference":
-            case "addconference":
-            case "backtoanniehumanrpc":
-            case "whoismyannietitan":
-            case "vicerequest":
-            case "trydc":
-            case "noagm":
-            case "setf":
-            case "tartarusrpc":
-            case "archupozorenje":
-            case "whoismyreinertitan":
-            case "setarmoredtexture":
-            case "backtoreinerhumanrpc":
-            case "crownrpc":
-            case "deliteconference":
-            case "fillgas2":
-            case "receivesatanplayers":
-            case "iseren":
-            case "flarecolorrpc":
-            case "efecto":
-            case "dropobj":
-            case "droppicked":
-            case "netthrowblade":
-            case "pedomoduser":
-            case "setarmored2texture":
-            case "goarmored":
-            case "ysnrpc":
-            case "optimizedrpc":
-            case "nrcrpc":
-            case "setanimationspeed":
-            case "addmetocelist":
-            case "sonidosrpc":
-            case "rip":
-            case "goberserk":
-            case "setberserktexture":
-            case "rechanrgedts":
-            case "firesinglets":
-            case "firebothts":
-            case "hatrpc":
-            case "nekorpc":
-            case "setagm":
-            case "whoismycolossaltitan":
-            case "lannister":
-            case "rcrpc":
-            case "creategameobjects":
-            case "recompileplayerrpc":
-            case "updatesatanplayers":
-            case "pairrpc":
-            case "sizetitans":
-            case "berserksoundrpc":
-            case "wrcrpc":
-            case "shinratensei":
-            case "deleteMod":
-            case "wingsrpc":
-            case "slbmap":
-            case "backtobertholdthumanrpc":
-            case "haharpc":
-            case "setskillid":
-            case "cosas":
-            case "universeChat":
-            case "golden":
-            case "link":
-            case "team_winner_popup":
-            case "mishirpc":
-            case "hornsrpc":
-            case "mod":
-            case "ignoreplayer":
-            case "Parrotrpc":
-            case "attachnoGoal":
-            case "resetrpcmgr":
-            case "trapjoin":
-            case "wdectect":
-            case "tictactoe":
-            case "lolirpc":
-            case "setexpfogmode":
-            case "eren":
-            case "smoothangle":
-            case "guim":
-                return 10;
-            #endregion
-
-
-            default:
-                return sender.isMasterClient ? 70 : 30; // was 50, better raise to 70 cause of aot2 servers
-        }
-
-    }
-
-    static List<string> _excp = new List<string>(new string[] { "netcrossfade", "setmytarget", "setphase", "netpauseanimation", "netplayanimation", "net3dmgsmoke" });
-
-    public static bool tracktheseforkinRPC(PhotonPlayer sender, string key, object[] parameters)  //questo lo metto in executerpc
-    {
-        key = key.ToLower();
-
-        if (_excp.Contains(key)) return false;
-
-        if (!rpcCounter.ContainsKey(sender))
-            rpcCounter.Add(sender, new Dictionary<string, SpamCounter>());
-        if (!rpcCounter[sender].ContainsKey(key))
-            rpcCounter[sender].Add(key, new SpamCounter());
-        else
-            rpcCounter[sender][key].count++;
-
-        if (rpcCounter[sender][key].count > checkniggersRPCSPAM(key, sender, parameters))
-        {
-            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC " + key + " SPAM (" + rpcCounter[sender][key].count + ") with: (" + parameters.Length + ") params");
-            return false;
-        }
-        else if (Time.time - rpcCounter[sender][key].time > 1f)
-            rpcCounter[sender][key].reset();
-
-        return true;
-    }
-
-    #endregion
-
 
     /* for sagittarius & others to understand how ev.200 works and whats in 2016 hash crashes they copied omegalul
      RPC Hashtable Structure
@@ -1376,25 +920,8 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     {
         if (!FengGameManagerMKII.ignoreList.Contains(sender.ID)) //idr the reason of this anymore maybe to ensure it was an id
         {
-            if (!(rpcData.Keys.Count == 4 || rpcData.Keys.Count == 3))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC: < | > keys length.");
-                return;
-            }
-            bool flag3 = rpcData.ContainsKey((byte)0) && rpcData.ContainsKey((byte)2) && (rpcData.ContainsKey((byte)3) || rpcData.ContainsKey((byte)5));
-            if (!flag3)
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "rpc: missing key.");
-                return;
-            }
-            if (!(rpcData[(byte)0] is int && rpcData[(byte)2] is int))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC: invalid (byte)0/2.");
-                return;
-            }
             if ((rpcData == null) || !rpcData.ContainsKey((byte)0))
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Null Data RPC (" + base.ByteCountCurrentDispatch + ")");
+            { 
                 Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
             }
             else
@@ -1404,20 +931,10 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 int num2 = 0;
                 if (rpcData.ContainsKey((byte)1))
                 {
-                    if (!(rpcData[(byte)1] is short))
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC: (byte)1 not short");
-                        return;
-                    }
                     num2 = (short)rpcData[(byte)1];
                 }
                 if (rpcData.ContainsKey((byte)5))
                 {
-                    if (!(rpcData[(byte)5] is byte))
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC: invalid (byte5)");
-                        return;
-                    }
                     int num3 = (byte)rpcData[(byte)5];
                     if (num3 > (PhotonNetwork.PhotonServerSettings.RpcList.Count - 1))
                     {
@@ -1428,11 +945,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 else
                 {
-                    if (!(rpcData[(byte)3] is string))
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC: invalid (byte3).");
-                        return;
-                    }
                     str = (string)rpcData[(byte)3];
                    
                     if (!sender.isLocal)
@@ -1442,53 +954,17 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Change skin");
                             return;
                         }
-                        if (str == "loadskinRPC" || str == "SetWeatherRPC")
-                        {
-                            if (base.ByteCountCurrentDispatch > 2500)
-                            {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge (skin/weather) - ({ByteCountCurrentDispatch})");
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            if (FengGameManagerMKII.level.StartsWith("Custom"))
-                            {
-                                if (base.ByteCountCurrentDispatch > 20000)
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge (200) - ({ByteCountCurrentDispatch})");
-                                    return;
-                                }
-                            }
-                            else if (base.ByteCountCurrentDispatch > 1200)
-                            {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge (200) - ({ByteCountCurrentDispatch})");
-                                return;
-                            }
-                        }
                     }
                 }
                 object[] parameters = null;
                 if (rpcData.ContainsKey((byte)4))
                 {
-                    if (!(rpcData[(byte)4] is object[]))
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC: invalid (byte4)");
-                        return;
-                    }
-                    object[] array = rpcData[(byte)4] as object[];
-                    if (array.Length > 8)
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC: long args length.");
-                        return;
-                    }
                     parameters = (object[])rpcData[(byte)4];
                 }
                 if (parameters == null)
                 {
                     parameters = new object[0];
                 }
-                if (!sender.isLocal && sender != null) tracktheseforkinRPC(sender, str, parameters); //check valid spam
                 PhotonView photonView = this.GetPhotonView(viewID);
                 if (photonView == null)
                 {
@@ -1512,7 +988,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 else if (str == string.Empty)
                 {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Null String RPC");
                     // Debug.LogError("Malformed RPC; this should never occur. Content: " + SupportClass.DictionaryToString(rpcData));
                 }
                 else
@@ -1676,7 +1151,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             }
                             else
                             {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC " + str + " with too many params");
                                 //  Debug.LogError(string.Concat(new object[] { "PhotonView with ID ", viewID, " has ", num7, " methods \"", str, "\" that takes ", callParameterTypes.Length, " argument(s): ", str2, ". Should be just one?" }));
                             }
                         }
@@ -1891,10 +1365,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             this.RemovePlayer(actorID, playerWithID);
             object[] parameters = new object[] { playerWithID };
             SendMonoMessage(PhotonNetworkingMessage.OnPhotonPlayerDisconnected, parameters);
-            if (instantiateCounter.ContainsKey(playerWithID))
-                instantiateCounter[playerWithID].Clear();
-            if (rpcCounter.ContainsKey(playerWithID))
-                rpcCounter[playerWithID].Clear();
         }
         else
         {
@@ -1938,8 +1408,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
         {
             SendMonoMessage(PhotonNetworkingMessage.OnLeftRoom, new object[0]);
         }
-        instantiateCounter.Clear();
-        rpcCounter.Clear();
     }
 
     protected internal void LoadLevelIfSynced()
@@ -2066,153 +1534,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     }
 
     //was comparing mine to bahaa's to see how to fuck his leaked mod, after finding exploits and fixing them was too lazy to bring mine back Lol
-
-    private bool CheckOSR(object Evdata, PhotonPlayer sender)
-    {
-        if (sender == null) return true;
-        else if (sender.isLocal) return true;
-        else
-        {
-            if (Evdata is ExitGames.Client.Photon.Hashtable)
-            {
-                ExitGames.Client.Photon.Hashtable hashtable = Evdata as ExitGames.Client.Photon.Hashtable;
-                bool containsshorts = false;
-                if (hashtable.ContainsKey((byte)0))
-                {
-                    if (hashtable[(byte)0] is int)
-                    {
-                        if (hashtable.ContainsKey((byte)1))
-                        {
-                            if (!(hashtable[(byte)1] is short))
-                            {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid (byte)1" + hashtable);
-                                return false;
-                            }
-                        }
-
-
-                        foreach (object obj in hashtable.Keys)
-                        {
-                            if (obj is byte)
-                            {
-                                if ((byte)obj >= 2)
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) byte keys length" + hashtable);
-                                    return false;
-                                }
-                            }
-                        }
-
-                        short index = 2;
-                        if (!hashtable.ContainsKey((byte)1)) index--;
-                        for (short i = index; i < hashtable.Count; i++)
-                        {
-                            if (hashtable[(short)i] is ExitGames.Client.Photon.Hashtable hashtable2 /*&& hashtable2 != null*/)
-                            {
-                                if (hashtable2 == null)
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) hashtable2 null" + hashtable);
-                                    return false;
-                                }
-                                containsshorts = true;
-                                if (hashtable2.Keys.Count != 2)
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) keys length" + hashtable);
-                                    return false;
-                                }
-                                if (!(hashtable2.ContainsKey((byte)0) && hashtable2.ContainsKey((byte)1)))
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) missing key(s)" + hashtable);
-                                    return false;
-                                }
-                                if (!(hashtable[(byte)0] is int && hashtable2[(byte)1] is object[]))
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid value type" + hashtable);
-                                    return false;
-                                }
-                                int num = (int)hashtable2[(byte)0];
-                                bool pview = num / 1000 == sender.ID;
-                                if (!pview)
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) photonview" + hashtable);
-                                    return false;
-                                }
-                                object[] array = hashtable2[(byte)1] as object[];
-                                if (!(array.Length == 2 || array.Length == 3 || array.Length == 4))
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid objArray length (" + array.Length + ")" + hashtable);
-                                    return false;
-                                }
-
-                                bool IsCustomType = false;
-                                switch (array.Length)
-                                {
-                                    case 2: //when titans are killed
-                                        {
-                                            if (array[0] is Vector3 && array[1] is Quaternion)
-                                            {
-                                                IsCustomType = true;
-                                            }
-                                            break;
-                                        }
-                                    case 3: //titans and cannons
-                                        {
-                                            if (array[0] is Vector3 && array[1] is Quaternion && (/*titans*/array[2] is Vector3 || /*cannons*/array[2] is Quaternion))
-                                            {
-                                                IsCustomType = true;
-                                            }
-                                            break;
-                                        }
-                                    case 4: //characters
-                                        {
-                                            if (array[0] is Vector3 && array[1] is Quaternion && array[2] is Vector3 && array[3] is Quaternion)
-                                            {
-                                                IsCustomType = true;
-                                            }
-                                            break;
-                                        }
-                                }
-                                if (!IsCustomType)
-                                {
-                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) objArray not customType (length: " + array.Length + ")" + hashtable
-                                        + "\n0:" + array[0] + ", 1:" + array[1] + ",2:" + array[2]);
-                                    return false;
-                                }
-
-                            }
-                            else
-                            {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) invalid index " + hashtable);
-                                return false;
-                            }
-                            if (!containsshorts)
-                            {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) not (short)2" + hashtable);
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                    else
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) missing (byte)0" + hashtable);
-                        return false;
-                    }
-                }
-                else
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) missing (byte)1" + hashtable);
-                    return false;
-                }
-            }
-            else
-            {
-                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR(" + base.ByteCountCurrentDispatch + "b) not hash");
-                return false;
-            }
-        }
-    }
-
+    
     public void OnEvent(EventData photonEvent)
     {
         int key = -1;
@@ -2235,9 +1557,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
     }
 
 
-
-    string[] validProps = new string[] { "sender", "ready", "isadmin", "uniform_type", "total_dmg", "team", "statSKILL", "statGAS", "statBLA", "statSPD", "statACL", "skin_color", "sex", "RCteam", "RCBombRadius", "RCBombA", "RCBombB", "RCBombG", "RCBombR", "part_chest_skinned_cloth_texture", "part_chest_skinned_cloth_mesh", "part_chest_object_texture", "part_chest_object_mesh", "part_chest_1_object_texture", "part_chest_1_object_mesh", "max_dmg", "kills", "isTitan", "heroCostumeId", "hairInfo", "dead", "eye_texture_id", "glass_texture_id", "hair_color1", "hair_color2", "hair_color3", "deaths", "guildName", "division", "name", "beard_texture_id", "body_texture", "character", "costumeId", "currentLevel", "customBool", "customFloat", "customInt", "customString", };
-
+    
     private void EventHandler(byte code, PhotonPlayer sender, EventData photonEvent, int key)
     {
         ExitGames.Client.Photon.Hashtable hashtable;
@@ -2249,8 +1569,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 {
                     byte[] bytes = (byte[])photonEvent[0xf5];
                     if (bytes.Length >= 10000)// Too large for a message
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
+                    { 
                         return;
                     }
                 }
@@ -2258,32 +1577,16 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
             case 176:
                 {
                     if (base.ByteCountCurrentDispatch > 100)
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
+                    { 
                         return;
                     }
                 }
                 return;
             case 200: //rpcs
-                if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "RPC not hash " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
-                try { ExecuteRPC(photonEvent[245] as ExitGames.Client.Photon.Hashtable, sender); } catch { }
+                    ExecuteRPC(photonEvent[245] as ExitGames.Client.Photon.Hashtable, sender);
                 break;
             case 201: //0xc9 OSR or OnSerializeRead, pos rotation etc
             case 206: //0xce
-                if (base.ByteCountCurrentDispatch > 6500)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
-                if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "OSR not hash " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 hashtable = photonEvent[245] as ExitGames.Client.Photon.Hashtable; 
                 int networkTime = (int)hashtable[(byte)0];
                 short correctPrefix = -1;
@@ -2296,77 +1599,30 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 for (short i = num6; i < hashtable.Count; i++)
                 {
-                    if (this.CheckOSR(photonEvent[245], sender)) //bool complicates a bunch of stuff but makes it cleaner than putting all antis here
                         OnSerializeRead(hashtable[i] as ExitGames.Client.Photon.Hashtable, sender, networkTime, correctPrefix);
                 }
                 break;
             case 202: //202-oxca DoInstantiate or DI: used to instantiate gameobjects like titans etc
-                if (base.ByteCountCurrentDispatch > 200) //biggest i saw was 101
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
-                if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "DI not hashtable " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 ExitGames.Client.Photon.Hashtable evData = (ExitGames.Client.Photon.Hashtable)photonEvent[245];
                 if ((photonEvent[245] is ExitGames.Client.Photon.Hashtable) || (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable)))
                 {
                     if (evData[(byte)0] is string)
                     {
-                        string str = (string)evData[(byte)0];
-                        if (str == null)
-                        {
-                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "DI null string " + photonEvent.Parameters.ToStringFull());
-                            return;
-                        }
-                        if (str.Length > 30)
-                        {
-                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "DI big string " + photonEvent.Parameters.ToStringFull());
-                            return;
-                        }
                         if (evData.ContainsKey((byte)7))
                         {
-                            int instantiationId = (int)evData[(byte)7];
-                            int expectedmin = sender.ID * PhotonNetwork.MAX_VIEW_IDS;
-                            int expectedmax = expectedmin + PhotonNetwork.MAX_VIEW_IDS;
-
-                            if (instantiationId < expectedmin || instantiationId > expectedmax)
-                            {
-                                FengGameManagerMKII.instance.kickPlayerRC(sender, true, "DI: view " + photonEvent.Parameters.ToStringFull());
-                                return;
-                            }
                             if (evData.ContainsKey((byte)6))
                             {
-                                if (!sender.isLocal && sender != null) tracktheseforkinInstantiate(sender, str); //check valid spam
                                 int timestamp = (int)evData[(byte)6];
                                 this.DoInstantiate2(evData, sender, null); //more checks inside this method
                                 return;
                             }
                         }
                     }
-                    else
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "DI: (byte)0 " + photonEvent.Parameters.ToStringFull());
-                        return;
-                    }
                     break;
                 }
                 return;
             case 203: //0xcb to kick people
-                if (base.ByteCountCurrentDispatch > 500)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
-                if (photonEvent.Parameters.Count != 1 && photonEvent.Parameters.Count != 2)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "Invalid Kick " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
-                else if (!sender.isMasterClient && !sender.isLocal)
+                if (!sender.isMasterClient && !sender.isLocal)
                 {
                     FengGameManagerMKII.instance.kickPlayerRC(sender, true, "not MC kick " + photonEvent.Parameters.ToStringFull());
                     return;
@@ -2374,22 +1630,7 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 PhotonNetwork.LeaveRoom();
                 break;
             case 204: //0xcc to remove instantiated GameObjects
-                if (base.ByteCountCurrentDispatch > 100)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
-                if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "204 not hashtable " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                if (hashtable.Keys.Count != 1)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "204 keys length " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 if (hashtable[(byte)0] is int)
                 {
                     int num8 = (int)hashtable[(byte)0];
@@ -2400,29 +1641,9 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                         RemoveInstantiatedGO(obj3, true);
                     }
                 }
-                else
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "204 invalid (byte)0 " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 break;
             case 207: //0xcf destroy the game objects of someone, like bodys character
-                if (base.ByteCountCurrentDispatch > 100)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
-                if (!(photonEvent[245] is ExitGames.Client.Photon.Hashtable))
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "207 not hash " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 hashtable = photonEvent[0xf5] as ExitGames.Client.Photon.Hashtable;
-                if (hashtable.Keys.Count != 1)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "207 keys length " + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                     if (hashtable != null)
                 {
                     if (hashtable[(byte)0] is int)
@@ -2436,36 +1657,10 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             DestroyPlayerObjects(playerId, true);
                         }
                     }
-                    else
-                    {
-                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "207 (byte)0 " + photonEvent.Parameters.ToStringFull());
-                        return;
-                    }
                 }
                 break;
             case 208: //0xd0, to switch MC with guests,
-                if (base.ByteCountCurrentDispatch > 500)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
-                if (!(photonEvent[0xf5] is ExitGames.Client.Photon.Hashtable))
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "208 not hash" + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 hashtable = (ExitGames.Client.Photon.Hashtable)photonEvent[0xf5];
-
-                if (hashtable.Keys.Count != 1)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "208 keys length" + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
-                if (!(hashtable[(byte)1] is int))
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "208 invalid (byte)1" + photonEvent.Parameters.ToStringFull());
-                    return;
-                }
                 
                 int num10 = (int)hashtable[(byte)1];
                 if (sender == null || !sender.isMasterClient || num10 != sender.ID)
@@ -2568,16 +1763,6 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                 }
                 break;
             case 253:
-                if (base.ByteCountCurrentDispatch > 500)
-                {
-                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, $"Huge ({photonEvent.Code}) - ({ByteCountCurrentDispatch}) - {photonEvent.Parameters.ToStringFull()}");
-                    return;
-                }
-                if (photonEvent == null || !(photonEvent[0xfd] is int))
-                {
-                    if (sender != null) FengGameManagerMKII.instance.kickPlayerRC(sender, true, "false prop change");
-                    return;
-                }
                 hash = photonEvent[0xfd];
                 if (hash is int)
                 {
@@ -2593,120 +1778,18 @@ internal class NetworkingPeer : LoadbalancingPeer, IPhotonPeerListener
                             if (sender != null)
                             {
                                 pActorProperties["sender"] = sender;
-
-                                PhotonPlayer propChangeTarget = PhotonPlayer.Find(iD); //who has his prop changed
-
-                                // for you is important if only you are target... but now i want to see shittery everyone does
-
-                               // if (propChangeTarget.isLocal)
-                                {
-                                    //if you are target
-                                    //control that he doesnt want to delete all of your props and in case ban 
-                                    if (propChangeTarget == null)
-                                    {
-                                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "deletes all props");
-                                        return;
-                                    }
-
-                                    //update the sender
-                                    pActorProperties["sender"] = sender;
-
-
-
-                                    if (sender != propChangeTarget)
-                                    {
-                                        if (pActorProperties.ContainsKey("isTitan"))
-                                        {
-                                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "changing race");
-                                            return;
-                                        }
-                                        if (pActorProperties.ContainsKey("dead"))
-                                        {
-                                            FengGameManagerMKII.instance.kickPlayerRC(sender, true, "changing visibility");
-                                            return;
-                                        }
-                                        ExitGames.Client.Photon.Hashtable oldProp = propChangeTarget.customProperties;
-                                        List<object> keys = new List<object>();
-
-                                        //a temporary thing you need to see what must be reuploaded/removed
-                                        ExitGames.Client.Photon.Hashtable thingsToReUpload = new ExitGames.Client.Photon.Hashtable();
-
-                                        foreach (DictionaryEntry d in pActorProperties)
-                                        {
-                                            //I add a check that the prop exists between your props 
-                                            if (!keys.Contains(d.Key))
-                                            {
-                                                if (validProps.Contains(d.Key.ToString()) == false) //adds a prop not present in things u put
-                                                {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets custom prop on " + propChangeTarget.uiname.hexColor() + " {" + propChangeTarget.ID + "}: " + pActorProperties);
-                                                    thingsToReUpload.Add(d.Key, null);
-                                                }
-                                                //result: if its custom prop, it always clears it and dcs the sender. If it's not the custom prop changed but the one u have, you do the same if the sender is not mc.
-                                                //I add the wrong prop to the unes to recharge then 
-                                            }
-
-                                            //in case you already had the prop
-                                            if (oldProp.ContainsKey(d.Key))
-                                            {
-                                                //if he wants to delete you one prop, auto dc him
-                                                if (d.Value == null) //resetkdall from not mc to you even if ur not mc, dc, like a prop on 0
-                                                {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "deletes prop " + d.Key + "of " + propChangeTarget.uiname.hexColor() + " {" + propChangeTarget.ID + "}");
-                                                    //I add the prop that was removed to the ones to reput 
-                                                    thingsToReUpload.Add(d.Key, oldProp[d.Key]);
-                                                }
-                                                else if (d.Value != null && !pActorProperties.ContainsKey("kills") && !pActorProperties.ContainsKey("deaths") && !pActorProperties.ContainsKey("max_dmg") && !pActorProperties.ContainsKey("total_dmg"))
-                                                {
-                                                    FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets value on " + propChangeTarget.uiname.hexColor() + " {" + propChangeTarget.ID + "}: (" + d.Key + ") (" + d.Value + ")");
-                                                    //I add the prop that was removed to the ones to reput 
-                                                    thingsToReUpload.Add(d.Key, oldProp[d.Key]);
-                                                }
-                                                else if (!sender.isMasterClient)
-                                                {
-                                                    if (pActorProperties.ContainsKey("kills") && ((Convert.ToInt32(pActorProperties["kills"].ToString()) - propChangeTarget.customProperties["kills"].ToInt32()) > 1 || (Convert.ToInt32(pActorProperties["kills"].ToString())) < 0))
-                                                    {
-                                                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets kill on " + propChangeTarget.uiname.hexColor() + " {" + propChangeTarget.ID + "}: (" + d.Value + ")");
-                                                        thingsToReUpload.Add(d.Key, oldProp[d.Key]);
-                                                    }
-                                                    else if (pActorProperties.ContainsKey("max_dmg") && (Convert.ToInt32(pActorProperties["max_dmg"].ToString()) >= 16000 || Convert.ToInt32(pActorProperties["max_dmg"].ToString()) < 0))
-                                                    {
-                                                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets max_dmg on " + propChangeTarget.uiname.hexColor() + " {" + propChangeTarget.ID + "}: (" + d.Value + ")");
-                                                        thingsToReUpload.Add(d.Key, oldProp[d.Key]);
-                                                    }
-                                                    else if (pActorProperties.ContainsKey("total_dmg") && ((Convert.ToInt32(pActorProperties["total_dmg"].ToString()) - propChangeTarget.customProperties["total_dmg"].ToInt32()) >= 16000 || (Convert.ToInt32(pActorProperties["total_dmg"].ToString()) < 0)))
-                                                    {
-                                                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets total_dmg on " + propChangeTarget.uiname.hexColor() + " {" + propChangeTarget.ID + "}: (" + d.Value + ")");
-                                                        thingsToReUpload.Add(d.Key, oldProp[d.Key]);
-                                                    }
-                                                    else if (pActorProperties.ContainsKey("deaths") && ((Convert.ToInt32(pActorProperties["deaths"].ToString()) - propChangeTarget.customProperties["deaths"].ToInt32()) > 1 || Convert.ToInt32(pActorProperties["deaths"].ToString()) < 0))
-                                                    {
-                                                        FengGameManagerMKII.instance.kickPlayerRC(sender, true, "sets deaths on " + propChangeTarget.uiname.hexColor() + " {" + propChangeTarget.ID + "}: (" + d.Value + ")");
-                                                        thingsToReUpload.Add(d.Key, oldProp[d.Key]);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        //after you finish the loop of control, I execute one check on thingsToReUpload / to clean props later, if before was said it's needed
-                                        if (thingsToReUpload.Count > 0)
-                                        {
-                                            //if you need to fix at least one prop
-                                            PhotonNetwork.player.SetCustomProperties(thingsToReUpload);
-                                        }
-                                    }
-                                }
-
+                                
                                 if (FengGameManagerMKII.banHash.ContainsValue(RCextensions.returnStringFromObject(sender.customProperties[PhotonPlayerProperty.name])))
                                 {
                                     FengGameManagerMKII.instance.kickPlayerRC(sender, false, "banned.");
                                 }
 
-                                if (pActorProperties.ContainsKey("RCBombRadius") && ((RCextensions.returnFloatFromObject(pActorProperties["RCBombRadius"]) - 20f) / 4f) % 0.5f != 0) ////bomb rads have decimals-not integers
+                                if (pActorProperties.ContainsKey("RCBombRadius") && ((RCextensions.returnFloatFromObject(pActorProperties["RCBombRadius"]) - 20f) / 4f) > 10) ////bomb rads have decimals-not integers
                                 {
                                     FengGameManagerMKII.instance.kickPlayerRC(sender, false, "Bomb Rad: " + (RCextensions.returnFloatFromObject(pActorProperties["RCBombRadius"]) - 20f) / 4f);
                                     return;
                                 }
-
-
+                                 
                                 if (PhotonNetwork.isMasterClient && !sender.isLocal && iD == sender.ID && (pActorProperties.ContainsKey("statACL") || pActorProperties.ContainsKey("statBLA") || pActorProperties.ContainsKey("statGAS") || pActorProperties.ContainsKey("statSPD")))
                                 {
                                     PhotonPlayer player2 = sender;
